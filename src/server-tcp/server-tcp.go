@@ -13,7 +13,7 @@ func main() {
 
   fmt.Println("Launching server...")
 
-  ln, err := net.Listen("tcp", ":666")
+  ln, err := net.Listen("tcp", ":10666")
 
   if err != nil {
 	log.Println(err)
