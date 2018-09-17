@@ -10,28 +10,18 @@ import java.net.Socket;
 
 public class Server {
     private ServerSocket serverSocket;
-    private Socket clientSocket;
-    private PrintWriter out;
-    private BufferedReader in;
 
     public static void main(String[] args) {
         Server server = new Server();
-        server.start(6666);
+        server.start(61666);
     }
 
     public void start(int port) {
         try {
             serverSocket = new ServerSocket(port);
 
-            clientSocket = serverSocket.accept();
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            String greeting = in.readLine();
-            if ("hello server".equals(greeting)) {
-                out.println("hello client");
-            } else {
-                out.println("unrecognised greeting");
-            }
+            while (true)
+                new ServerThread(serverSocket.accept()).run();
         } catch (IOException e) {
             e.printStackTrace();
             stop();
@@ -40,13 +30,9 @@ public class Server {
 
     public void stop() {
         try {
-            in.close();
-            out.close();
-            clientSocket.close();
             serverSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
-            stop();
         }
     }
 }

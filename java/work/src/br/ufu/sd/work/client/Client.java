@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Client {
     private Socket clientSocket;
@@ -13,9 +14,15 @@ public class Client {
 
     public static void main(String[] args) {
         Client client = new Client();
-        client.startConnection("127.0.0.1", 6666);
-        String response = client.sendMessage("hello server");
-        System.out.println(response);
+        client.startConnection("127.0.0.1", 61666);
+
+        Scanner s = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("digite um comando");
+            String response = client.sendMessage(s.nextLine());
+            System.out.println(response);
+        }
 
     }
 
