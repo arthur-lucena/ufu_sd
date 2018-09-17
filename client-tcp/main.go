@@ -10,6 +10,8 @@ import (
 
 func main() {
 
+	execute("rsrs", nil);
+
 	// connect to this socket
 	conn, err := net.Dial("tcp", "127.0.0.1:666")
 
