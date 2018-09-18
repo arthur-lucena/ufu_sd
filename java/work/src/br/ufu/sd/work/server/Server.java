@@ -1,38 +1,40 @@
 package br.ufu.sd.work.server;
 
-import java.io.BufferedReader;
+import br.ufu.sd.work.util.ClientSocketCommand;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
-import java.net.Socket;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 
 public class Server {
     private ServerSocket serverSocket;
+    private BlockingQueue<ClientSocketCommand> queue;
 
     public static void main(String[] args) {
         Server server = new Server();
+
         server.start(61666);
     }
 
     public void start(int port) {
         try {
+            queue = new ArrayBlockingQueue<>(10000);
             serverSocket = new ServerSocket(port);
 
-            while (true)
-                new ServerThread(serverSocket.accept()).run();
-        } catch (IOException e) {
-            e.printStackTrace();
-            stop();
-        }
-    }
+            new Thread(new CommandQueueConsumption(queue)).start();
 
-    public void stop() {
-        try {
-            serverSocket.close();
+            while (true)
+                new Thread(new ReceiveCommand(serverSocket.accept(), queue)).start();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                serverSocket.close();
+            } catch (IOException e1) {
+
+            }
         }
     }
 }
