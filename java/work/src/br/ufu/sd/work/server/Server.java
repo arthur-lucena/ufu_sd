@@ -1,20 +1,27 @@
 package br.ufu.sd.work.server;
 
 import br.ufu.sd.work.util.ClientSocketCommand;
+import br.ufu.sd.work.util.Command;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 
 public class Server {
-    private ServerSocket serverSocket;
     private BlockingQueue<ClientSocketCommand> queue;
+
+    private ServerSocket serverSocket;
+    private Socket clientSocket;
+    private ObjectInputStream inFromClient;
+    private ObjectOutputStream outToClient;
 
     public static void main(String[] args) {
         Server server = new Server();
-
         server.start(61666);
     }
 
@@ -25,8 +32,23 @@ public class Server {
 
             new Thread(new CommandQueueConsumption(queue)).start();
 
-            while (true)
-                new Thread(new ReceiveCommand(serverSocket.accept(), queue)).start();
+            while (true) {
+                clientSocket = serverSocket.accept();
+
+                System.out.println(clientSocket);
+
+                outToClient = new ObjectOutputStream(clientSocket.getOutputStream());
+                inFromClient = new ObjectInputStream(clientSocket.getInputStream());
+
+                Command command = new Command();
+                command.setName("Conectado!");
+                command.setExecuted(true);
+
+                outToClient.writeObject(command);
+
+                new Thread(new ReceiveCommand(inFromClient, outToClient, queue)).start();
+
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
