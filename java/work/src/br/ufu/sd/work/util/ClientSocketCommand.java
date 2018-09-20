@@ -1,18 +1,18 @@
 package br.ufu.sd.work.util;
 
-import java.net.Socket;
+import java.io.ObjectOutputStream;
 
 public class ClientSocketCommand {
-    private Socket clientSocket;
+    private ObjectOutputStream outToClient;
     private Command command;
 
-    public ClientSocketCommand(Socket clientSocket, Command command) {
-        this.clientSocket = clientSocket;
+    public ClientSocketCommand(ObjectOutputStream outToClient, Command command) {
+        this.outToClient = outToClient;
         this.command = command;
     }
 
-    public Socket getClientSocket() {
-        return clientSocket;
+    public ObjectOutputStream getOutToClient() {
+        return outToClient;
     }
 
     public Command getCommand() {

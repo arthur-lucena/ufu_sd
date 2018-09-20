@@ -1,6 +1,8 @@
 package br.ufu.sd.work.util;
 
-public class Command {
+import java.io.Serializable;
+
+public class Command implements Serializable {
     private String name;
     private String[] args;
     private int idClient;
