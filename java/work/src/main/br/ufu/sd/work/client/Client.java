@@ -1,7 +1,5 @@
 package br.ufu.sd.work.client;
 
-import br.ufu.sd.work.util.commands.Insert;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
