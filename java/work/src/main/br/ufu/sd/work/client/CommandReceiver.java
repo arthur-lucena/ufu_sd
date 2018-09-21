@@ -17,14 +17,23 @@ public class CommandReceiver implements Runnable {
 
     public void terminate() {
         running = false;
+        try {
+            inFromServer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void run() {
         while (running) {
             try {
-                Command command = (Command) inFromServer.readObject();
-                System.out.println(command.getCommandString() + " executado!");
+                Object objectReceived = inFromServer.readObject();
+
+                if (objectReceived != null) {
+                    Command command = (Command) objectReceived;
+                    System.out.println(command.getCommandString() + " executado!");
+                }
             } catch (IOException e) {
                 e.printStackTrace();
                 running = false;
@@ -33,8 +42,5 @@ public class CommandReceiver implements Runnable {
                 running = false;
             }
         }
-
-        System.out.println("saindo");
-        return;
     }
 }

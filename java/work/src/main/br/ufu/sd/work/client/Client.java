@@ -13,6 +13,12 @@ public class Client {
     private ObjectOutputStream outToServer;
     private ObjectInputStream inFromServer;
 
+    private final static String INSERT = "insert";
+    private final static String UPDATE = "update";
+    private final static String DELETE = "delete";
+    private final static String SELECT = "select";
+    private final static String EXIT = "exit";
+
 
     public static void main(String[] args) {
         new Client().start();
@@ -29,7 +35,7 @@ public class Client {
         commandReceiverThread.start();
 
         while (running) {
-            System.out.println("digite um comando: (insert | update | delete | select) <argumento1:argumento2:argumentoN>");
+            System.out.println("digite um comando: (insert | update | delete | select) <argumento1:argumento2:argumentoN> - exit : para sair");
             String allCommand = s.nextLine();
 
             // TODO adicionar argumentos futuramente
@@ -39,10 +45,10 @@ public class Client {
 
             String stringCommand = allCommand;
 
-            if ("insert".equals(stringCommand) || "update".equals(stringCommand) ||
-            "delete".equals(stringCommand) || "select".equals(stringCommand)) {
+            if (INSERT.equals(stringCommand) || UPDATE.equals(stringCommand) ||
+                DELETE.equals(stringCommand) || SELECT.equals(stringCommand)) {
                 cs.send(stringCommand);
-            } else if ("exit".equals(stringCommand)) {
+            } else if (EXIT.equals(stringCommand)) {
                 running = false;
 
                 try {
@@ -66,14 +72,12 @@ public class Client {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
             } else{
                 System.out.println("commando invalido");
             }
         }
 
-        System.out.println("até =D");
-        return;
+        System.out.println("saindo... =D");
     }
 
     private void createConnection() {

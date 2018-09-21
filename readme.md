@@ -5,16 +5,16 @@
  - enviar comando ao servidor
 
 ***Leitura de comando***
- - [ ] 1 thread em loop infinito apresentando menu de comandos e lendo comandos do teclado 
- - [ ] uma vez digitado um comando, o mesmo é validado
- - [ ] se válido comando é enviado ao servidor
- - [ ] se inválido,  mensagem de erro é apresentada
- - [ ] o comando “sair” termina a execução deste thread
+ - [x] 1 thread em loop infinito apresentando menu de comandos e lendo comandos do teclado 
+ - [x] uma vez digitado um comando, o mesmo é validado
+ - [x] se válido comando é enviado ao servidor
+ - [x] se inválido,  mensagem de erro é apresentada
+ - [x] o comando “sair” termina a execução deste thread
 
 ***Apresentação de respostas***
- - [ ] 1 thread em loop infinito recebendo mensagens do servidor
- - [ ] uma vez recebida uma mensagem, a mesma é apresentada na tela
- - [ ] uma vez terminado o thread de leitura de comandos, espera-se pelo menos 5 segundos por novas mensagens do servidor e então se termina este     thread
+ - [x] 1 thread em loop infinito recebendo mensagens do servidor
+ - [x] uma vez recebida uma mensagem, a mesma é apresentada na tela
+ - [x] uma vez terminado o thread de leitura de comandos, espera-se pelo menos 5 segundos por novas mensagens do servidor e então se termina este     thread
 
 ## Servidor
 
@@ -23,7 +23,7 @@
  - retorna para o cliente uma msg de sucesso após o processamento do comando
 
 ***Processamento dos comandos***
- - [ ]  1 ou mais threads recebendo comandos e colocando em uma fila F1
+ - [x] 1 ou mais threads recebendo comandos e colocando em uma fila F1
  - [ ] 1 thread consumindo comandos de F1 e colocando cópias do comando em uma fila F2 e em outra fila F3
  - [ ] 1 thread consumindo comandos de F2 e gravando-os em disco.
  - [ ] 1 thread consumindo de F3 aplicando o comando no banco de dados.
