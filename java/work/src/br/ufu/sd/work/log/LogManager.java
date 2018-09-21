@@ -27,9 +27,9 @@ public class LogManager {
         }
     }
 
-    public static void append(Metadata metadata, OperationStatus status) {
+    public static void append(Metadata metadata) {
         try {
-            Files.write(Paths.get("/log.txt"), getMetadata(metadata, status).getBytes(), StandardOpenOption.APPEND);
+            Files.write(Paths.get("/log.txt"), getMetadata(metadata).getBytes(), StandardOpenOption.APPEND);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -51,15 +51,12 @@ public class LogManager {
     private static Metadata toMetadata(String log) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         List<String> data = Arrays.asList(log.split(","));
-        return Metadata.builder()
-                .message(data.get(0))
-                .createdAt(LocalDateTime.parse(data.get(1), formatter))
-                .updatedAt(LocalDateTime.parse(data.get(2), formatter))
-                .build();
+        return new Metadata(data.get(0), LocalDateTime.parse(data.get(1), formatter),
+                LocalDateTime.parse(data.get(2), formatter));
     }
 
-    private static String getMetadata(Metadata metadata, OperationStatus status) {
-        return String.format("%s, %s, %s, %s", metadata.getMessage(), metadata.getCreatedAt().toString(),
-                metadata.getUpdatedAt().toString(), status.name());
+    private static String getMetadata(Metadata metadata) {
+        return String.format("%s, %s, %s", metadata.getMessage(), metadata.getCreatedAt().toString(),
+                metadata.getUpdatedAt().toString());
     }
 }
