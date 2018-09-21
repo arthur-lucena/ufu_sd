@@ -13,11 +13,15 @@ public class Logger {
     public static void main(String[] args) {
 
         Metadata metadata = new Metadata("hello you", "user_create", LocalDateTime.now(), "user_update", LocalDateTime.now());
-        LogManager logManager = new LogManager();
+        LogManager logManager = new LogManager("src/main/br/ufu/sd/work/log/log.txt");
         logManager.createFile();
         logManager.append(metadata);
         List<Metadata> metadataList = logManager.read();
         metadataList.forEach(s -> System.out.println(s.toString()));
+
+        //get command
+        //convert to metadata
+        //write to file
 
     }
 

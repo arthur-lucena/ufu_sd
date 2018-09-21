@@ -2,17 +2,12 @@ package br.ufu.sd.work.log;
 
 import br.ufu.sd.work.model.Metadata;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -21,7 +16,11 @@ import static java.util.stream.Collectors.toList;
  */
 public class LogManager {
 
-    private Path filePath = Paths.get("src/br/ufu/sd/work/log/log.txt");
+    private Path filePath;
+
+    public LogManager(String path) {
+        this.filePath = Paths.get(path);
+    }
 
     public void createFile() {
         if(!Files.exists(filePath)) {
@@ -35,7 +34,7 @@ public class LogManager {
 
     public void append(Metadata metadata) {
         try {
-            Files.write(filePath, getMetadata(metadata).getBytes(), StandardOpenOption.APPEND);
+            Files.write(filePath, getMetadataAsWritableString(metadata).getBytes(), StandardOpenOption.APPEND);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -67,8 +66,9 @@ public class LogManager {
                 data.get(3), LocalDateTime.parse(data.get(4)));
     }
 
-    private String getMetadata(Metadata metadata) {
+    private String getMetadataAsWritableString(Metadata metadata) {
         return String.format("%s,%s,%s,%s,%s\n", metadata.getMessage(), metadata.getCreatedBy(),
                 metadata.getCreatedAt().toString(), metadata.getUpdatedBy(), metadata.getUpdatedAt().toString());
     }
+
 }
