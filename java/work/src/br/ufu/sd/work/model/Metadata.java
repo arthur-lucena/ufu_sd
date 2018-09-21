@@ -8,15 +8,17 @@ import java.time.LocalDateTime;
 public class Metadata {
 
     private String message;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
     private String createdBy;
+    private LocalDateTime createdAt;
     private String updatedBy;
+    private LocalDateTime updatedAt;
 
-    public Metadata(String message, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Metadata(String message, String createdBy, LocalDateTime createdAt, String updatedBy, LocalDateTime updatedAt) {
         this.message = message;
         this.createdAt = createdAt;
+        this.createdBy = createdBy;
         this.updatedAt = updatedAt;
+        this.updatedBy = updatedBy;
     }
 
     public String getMessage() {
@@ -38,4 +40,12 @@ public class Metadata {
     public String getUpdatedBy() {
         return updatedBy;
     }
-}
+
+    public String toString() {
+        return "message: "+ message + ", " +
+                "createdBy: " + createdBy + ", " +
+                "createdAt: " + createdAt.toString() + ", " +
+                "updatedBy: " + updatedBy + ", " +
+                "updatedAt: " + updatedAt;
+    }
+ }

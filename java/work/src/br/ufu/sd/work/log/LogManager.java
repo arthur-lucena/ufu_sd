@@ -4,7 +4,9 @@ import br.ufu.sd.work.model.Metadata;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
@@ -19,44 +21,54 @@ import static java.util.stream.Collectors.toList;
  */
 public class LogManager {
 
-    private static File logFile;
+    private Path filePath = Paths.get("src/br/ufu/sd/work/log/log.txt");
 
-    public static void createFile() {
-        if(logFile == null) {
-            logFile = new File("/", "log.txt");
+    public void createFile() {
+        if(!Files.exists(filePath)) {
+            try {
+                Files.createFile(filePath);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public static void append(Metadata metadata) {
+    public void append(Metadata metadata) {
         try {
-            Files.write(Paths.get("/log.txt"), getMetadata(metadata).getBytes(), StandardOpenOption.APPEND);
-        } catch (IOException e) {
+            Files.write(filePath, getMetadata(metadata).getBytes(), StandardOpenOption.APPEND);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static List<Metadata> read() {
+    public List<Metadata> read() {
         List<String> loggedOperations = new ArrayList<>();
-        try {
-            loggedOperations = Files.readAllLines(Paths.get("/log.txt"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        loggedOperations = getLines(loggedOperations);
+
         if(!loggedOperations.isEmpty()) {
-            return loggedOperations.stream().map(LogManager::toMetadata).collect(toList());
+            return loggedOperations.stream().map(this::toMetadata).collect(toList());
         }
         return new ArrayList<>();
     }
 
-    private static Metadata toMetadata(String log) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        List<String> data = Arrays.asList(log.split(","));
-        return new Metadata(data.get(0), LocalDateTime.parse(data.get(1), formatter),
-                LocalDateTime.parse(data.get(2), formatter));
+    private List<String> getLines(List<String> loggedOperations) {
+        try {
+            loggedOperations = Files.readAllLines(filePath);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return loggedOperations;
     }
 
-    private static String getMetadata(Metadata metadata) {
-        return String.format("%s, %s, %s", metadata.getMessage(), metadata.getCreatedAt().toString(),
-                metadata.getUpdatedAt().toString());
+    private Metadata toMetadata(String log) {
+        List<String> data = Arrays.asList(log.split(","));
+        return new Metadata(data.get(0), data.get(1), LocalDateTime.parse(data.get(2)),
+                data.get(3), LocalDateTime.parse(data.get(4)));
+    }
+
+    private String getMetadata(Metadata metadata) {
+        return String.format("%s,%s,%s,%s,%s\n", metadata.getMessage(), metadata.getCreatedBy(),
+                metadata.getCreatedAt().toString(), metadata.getUpdatedBy(), metadata.getUpdatedAt().toString());
     }
 }
