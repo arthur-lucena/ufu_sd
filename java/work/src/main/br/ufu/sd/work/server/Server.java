@@ -41,7 +41,7 @@ public class Server {
                 inFromClient = new ObjectInputStream(clientSocket.getInputStream());
 
                 Command command = new Command();
-                command.setName("Conectado!");
+                command.setCommandString("Conectado!");
                 command.setExecuted(true);
 
                 outToClient.writeObject(command);

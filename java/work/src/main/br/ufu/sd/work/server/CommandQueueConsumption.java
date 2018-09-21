@@ -4,7 +4,6 @@ import br.ufu.sd.work.util.ClientSocketCommand;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.util.concurrent.BlockingQueue;
 
 public class CommandQueueConsumption implements Runnable {
