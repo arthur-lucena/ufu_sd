@@ -2,6 +2,7 @@ package br.ufu.sd.work.client;
 
 
 import br.ufu.sd.work.util.Command;
+import br.ufu.sd.work.util.commands.api.ICommand;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -16,9 +17,9 @@ public class CommandSender {
 
     public void send(String commandString) {
         try {
-            Command command = new Command();
-            command.setName(commandString);
-            outToServer.writeObject(command);
+            Command commandSend = new Command();
+            commandSend.setCommandString(commandString);
+            outToServer.writeObject(commandSend);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,20 +1,22 @@
 package br.ufu.sd.work.util;
 
+import br.ufu.sd.work.util.commands.api.ICommand;
+
 import java.io.Serializable;
 
 public class Command implements Serializable {
-    private String name;
+    private String commandString;
     private String[] args;
     private int idClient;
     private long timeStamp;
     private boolean executed;
 
-    public String getName() {
-        return name;
+    public String getCommandString() {
+        return commandString;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCommandString(String commandString) {
+        this.commandString = commandString;
     }
 
     public String[] getArgs() {
