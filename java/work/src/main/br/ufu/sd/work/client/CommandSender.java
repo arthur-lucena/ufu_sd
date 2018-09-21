@@ -2,7 +2,6 @@ package br.ufu.sd.work.client;
 
 
 import br.ufu.sd.work.util.Command;
-import br.ufu.sd.work.util.commands.api.ICommand;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;

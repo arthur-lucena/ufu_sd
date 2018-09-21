@@ -1,7 +1,5 @@
 package br.ufu.sd.work.util;
 
-import br.ufu.sd.work.util.commands.api.ICommand;
-
 import java.io.Serializable;
 
 public class Command implements Serializable {
