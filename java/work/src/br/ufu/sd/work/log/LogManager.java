@@ -22,7 +22,7 @@ public class LogManager {
     private static File logFile;
 
     public static void createFile() {
-        if(!logFile.exists()) {
+        if(logFile == null) {
             logFile = new File("/", "log.txt");
         }
     }
