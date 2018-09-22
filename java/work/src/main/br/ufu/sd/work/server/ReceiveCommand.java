@@ -1,6 +1,5 @@
 package br.ufu.sd.work.server;
 
-import br.ufu.sd.work.util.ClientSocketCommand;
 import br.ufu.sd.work.util.MessageCommand;
 import br.ufu.sd.work.util.commands.Delete;
 import br.ufu.sd.work.util.commands.Insert;
@@ -13,13 +12,13 @@ import java.io.ObjectOutputStream;
 import java.util.concurrent.BlockingQueue;
 
 public class ReceiveCommand implements Runnable {
-    private BlockingQueue<ClientSocketCommand> queue;
+    private BlockingQueue<OutputStreamCommand> queue;
     private ObjectInputStream inFromClient;
     private ObjectOutputStream outToClient;
     private volatile boolean running = true;
 
     public ReceiveCommand(ObjectInputStream inFromClient, ObjectOutputStream outToClient,
-                          BlockingQueue<ClientSocketCommand> queue) {
+                          BlockingQueue<OutputStreamCommand> queue) {
         this.inFromClient = inFromClient;
         this.outToClient = outToClient;
         this.queue = queue;
@@ -53,7 +52,7 @@ public class ReceiveCommand implements Runnable {
                         break;
                 }
 
-                queue.add(new ClientSocketCommand(outToClient, messageCommand));
+                queue.add(new OutputStreamCommand(outToClient, messageCommand));
             } catch (IOException e) {
                 e.printStackTrace();
                 running = false;

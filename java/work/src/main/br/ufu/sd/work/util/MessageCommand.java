@@ -13,6 +13,19 @@ public class MessageCommand implements Serializable {
     private long timeStamp;
     private boolean executed;
 
+    public MessageCommand() {
+
+    }
+
+    public MessageCommand(MessageCommand messageCommand) {
+        this.typeCommand = messageCommand.getTypeCommand();
+        this.command = messageCommand.getCommand();
+        this.args = messageCommand.getArgs();
+        this.idClient = messageCommand.getIdClient();
+        this.timeStamp = messageCommand.getTimeStamp();
+        this.executed = messageCommand.getExecuted();
+    }
+
     public ICommand getCommand() {
         return command;
     }

@@ -1,6 +1,5 @@
 package br.ufu.sd.work.server;
 
-import br.ufu.sd.work.util.ClientSocketCommand;
 import br.ufu.sd.work.util.MessageCommand;
 
 import java.io.IOException;
@@ -13,8 +12,7 @@ import java.util.concurrent.BlockingQueue;
 
 
 public class Server {
-    private BlockingQueue<ClientSocketCommand> queue;
-
+    private BlockingQueue<OutputStreamCommand> queue;
     private ServerSocket serverSocket;
     private Socket clientSocket;
     private ObjectInputStream inFromClient;
@@ -27,10 +25,12 @@ public class Server {
 
     public void start(int port) {
         try {
-            queue = new ArrayBlockingQueue<>(10000);
+            queue = new ArrayBlockingQueue<>(1000000);
             serverSocket = new ServerSocket(port);
 
-            new Thread(new CommandQueueConsumption(queue)).start();
+            CommandQueueConsumption runnable = new CommandQueueConsumption(queue);
+            Thread t = new Thread(runnable);
+            t.start();
 
             while (true) {
                 clientSocket = serverSocket.accept();
