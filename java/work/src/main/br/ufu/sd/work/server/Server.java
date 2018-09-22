@@ -1,5 +1,6 @@
 package br.ufu.sd.work.server;
 
+import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.util.MessageCommand;
 
 import java.io.IOException;
@@ -17,6 +18,7 @@ public class Server {
     private Socket clientSocket;
     private ObjectInputStream inFromClient;
     private ObjectOutputStream outToClient;
+    private Dictionary dictionary;
 
     public static void main(String[] args) {
         Server server = new Server();
@@ -28,7 +30,7 @@ public class Server {
             queue = new ArrayBlockingQueue<>(1000000);
             serverSocket = new ServerSocket(port);
 
-            CommandQueueConsumption runnable = new CommandQueueConsumption(queue);
+            CommandQueueConsumption runnable = new CommandQueueConsumption(queue, dictionary);
             Thread t = new Thread(runnable);
             t.start();
 
