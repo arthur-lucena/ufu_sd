@@ -1,6 +1,5 @@
 package br.ufu.sd.work.server;
 
-import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.util.ClientSocketCommand;
 import br.ufu.sd.work.util.MessageCommand;
 import br.ufu.sd.work.util.commands.Delete;

@@ -3,13 +3,11 @@ package br.ufu.sd.work.server;
 import br.ufu.sd.work.util.ClientSocketCommand;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.concurrent.BlockingQueue;
 
 public class CommandQueueConsumption implements Runnable {
 
     private BlockingQueue<ClientSocketCommand> queue;
-    private ObjectOutputStream outToClient;
     private ClientSocketCommand csc;
 
     public CommandQueueConsumption(BlockingQueue<ClientSocketCommand> queue) {
