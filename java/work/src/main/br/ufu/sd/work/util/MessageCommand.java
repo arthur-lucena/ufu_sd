@@ -4,13 +4,14 @@ import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.util.commands.api.ICommand;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 public class MessageCommand implements Serializable {
     private ETypeCommand typeCommand;
     private ICommand command;
     private String[] args;
     private int idClient;
-    private long timeStamp;
+    private LocalDateTime timeStamp;
     private boolean executed;
 
     public MessageCommand() {
@@ -24,6 +25,16 @@ public class MessageCommand implements Serializable {
         this.idClient = messageCommand.getIdClient();
         this.timeStamp = messageCommand.getTimeStamp();
         this.executed = messageCommand.getExecuted();
+    }
+
+    public MessageCommand(ETypeCommand typeCommand, ICommand command,
+                          String[] args, int idClient, LocalDateTime timeStamp, boolean executed) {
+        this.typeCommand = typeCommand;
+        this.command = command;
+        this.args = args;
+        this.idClient = idClient;
+        this.timeStamp = timeStamp;
+        this.executed = executed;
     }
 
     public ICommand getCommand() {
@@ -58,11 +69,11 @@ public class MessageCommand implements Serializable {
         this.idClient = idClient;
     }
 
-    public long getTimeStamp() {
+    public LocalDateTime getTimeStamp() {
         return timeStamp;
     }
 
-    public void setTimeStamp(long timeStamp) {
+    public void setTimeStamp(LocalDateTime timeStamp) {
         this.timeStamp = timeStamp;
     }
 
