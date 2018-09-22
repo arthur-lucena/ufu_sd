@@ -63,11 +63,6 @@ public class LogManager {
         return loggedOperations;
     }
 
-    private Metadata toMetadata(String log) {
-        List<String> data = Arrays.asList(log.split(","));
-        return new Metadata(data.get(0), data.get(1), LocalDateTime.parse(data.get(2)),
-                data.get(3), LocalDateTime.parse(data.get(4)));
-    }
 
     private String getMetadataAsWritableString(Metadata metadata) {
         return String.format("%s,%s,%s,%s,%s\n",
