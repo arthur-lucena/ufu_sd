@@ -1,12 +1,9 @@
 package br.ufu.sd.work.server;
 
 import br.ufu.sd.work.log.LogManager;
-import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.model.Metadata;
 import br.ufu.sd.work.util.MessageCommand;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 
 import static br.ufu.sd.work.model.ETypeCommand.INSERT;
@@ -46,7 +43,7 @@ public class LogQueueConsumption implements Runnable {
     private void consume() {
         try {
             messageCommand = logQueue.take();
-            System.out.println("logando " + messageCommand.getTypeCommand().getCommandString());
+            System.out.println("logando " + messageCommand.getTypeCommand().getName());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
