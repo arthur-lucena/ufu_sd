@@ -1,6 +1,6 @@
 package br.ufu.sd.work.client;
 
-import br.ufu.sd.work.util.Command;
+import br.ufu.sd.work.util.MessageCommand;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -31,8 +31,13 @@ public class CommandReceiver implements Runnable {
                 Object objectReceived = inFromServer.readObject();
 
                 if (objectReceived != null) {
-                    Command command = (Command) objectReceived;
-                    System.out.println(command.getCommandString() + " executado!");
+                    MessageCommand messageCommand = (MessageCommand) objectReceived;
+
+                    if (messageCommand.getCommand() == null) {
+                        System.out.println("Conectado!");
+                    } else {
+                        System.out.println(messageCommand.getTypeCommand().getCommandString() + " executado!");
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();

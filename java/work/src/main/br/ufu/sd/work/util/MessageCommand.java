@@ -1,20 +1,32 @@
 package br.ufu.sd.work.util;
 
+import br.ufu.sd.work.model.ETypeCommand;
+import br.ufu.sd.work.util.commands.api.ICommand;
+
 import java.io.Serializable;
 
-public class Command implements Serializable {
-    private String commandString;
+public class MessageCommand implements Serializable {
+    private ETypeCommand typeCommand;
+    private ICommand command;
     private String[] args;
     private int idClient;
     private long timeStamp;
     private boolean executed;
 
-    public String getCommandString() {
-        return commandString;
+    public ICommand getCommand() {
+        return command;
     }
 
-    public void setCommandString(String commandString) {
-        this.commandString = commandString;
+    public void setCommand(ICommand command) {
+        this.command = command;
+    }
+
+    public ETypeCommand getTypeCommand() {
+        return typeCommand;
+    }
+
+    public void setTypeCommand(ETypeCommand typeCommand) {
+        this.typeCommand = typeCommand;
     }
 
     public String[] getArgs() {

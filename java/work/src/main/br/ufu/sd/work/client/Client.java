@@ -1,5 +1,7 @@
 package br.ufu.sd.work.client;
 
+import br.ufu.sd.work.model.ETypeCommand;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -12,13 +14,6 @@ public class Client {
     private Socket clientSocket;
     private ObjectOutputStream outToServer;
     private ObjectInputStream inFromServer;
-
-    private final static String INSERT = "insert";
-    private final static String UPDATE = "update";
-    private final static String DELETE = "delete";
-    private final static String SELECT = "select";
-    private final static String EXIT = "exit";
-
 
     public static void main(String[] args) {
         new Client().start();
@@ -45,10 +40,12 @@ public class Client {
 
             String stringCommand = allCommand;
 
-            if (INSERT.equals(stringCommand) || UPDATE.equals(stringCommand) ||
-                DELETE.equals(stringCommand) || SELECT.equals(stringCommand)) {
+            if (ETypeCommand.INSERT.getCommandString().equals(stringCommand) ||
+                    ETypeCommand.UPDATE.getCommandString().equals(stringCommand) ||
+                    ETypeCommand.DELETE.getCommandString().equals(stringCommand) ||
+                    ETypeCommand.SELECT.getCommandString().equals(stringCommand)) {
                 cs.send(stringCommand);
-            } else if (EXIT.equals(stringCommand)) {
+            } else if (ETypeCommand.EXIT.getCommandString().equals(stringCommand)) {
                 running = false;
 
                 try {

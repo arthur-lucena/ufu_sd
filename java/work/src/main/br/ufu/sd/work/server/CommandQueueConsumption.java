@@ -32,9 +32,9 @@ public class CommandQueueConsumption implements Runnable {
             try {
                 csc = queue.take();
                 // TODO logar
-                csc.getCommand().setExecuted(true);
+                csc.getMessageCommand().setExecuted(true);
 
-                csc.getOutToClient().writeObject(csc.getCommand());
+                csc.getOutToClient().writeObject(csc.getMessageCommand());
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {

@@ -1,7 +1,12 @@
 package br.ufu.sd.work.server;
 
+import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.util.ClientSocketCommand;
-import br.ufu.sd.work.util.Command;
+import br.ufu.sd.work.util.MessageCommand;
+import br.ufu.sd.work.util.commands.Delete;
+import br.ufu.sd.work.util.commands.Insert;
+import br.ufu.sd.work.util.commands.Select;
+import br.ufu.sd.work.util.commands.Update;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -29,8 +34,27 @@ public class ReceiveCommand implements Runnable {
     public void run() {
         while (running) {
             try {
-                Command command = (Command) inFromClient.readObject();
-                queue.add(new ClientSocketCommand(outToClient, command));
+                MessageCommand messageCommand = (MessageCommand) inFromClient.readObject();
+
+                switch (messageCommand.getTypeCommand()) {
+                    case INSERT :
+                        messageCommand.setCommand(new Insert());
+                        break;
+                    case UPDATE :
+                        messageCommand.setCommand(new Update());
+                        break;
+                    case DELETE :
+                        messageCommand.setCommand(new Delete());
+                        break;
+                    case SELECT :
+                        messageCommand.setCommand(new Select());
+                        break;
+                    default:
+                        // TODO tratar?
+                        break;
+                }
+
+                queue.add(new ClientSocketCommand(outToClient, messageCommand));
             } catch (IOException e) {
                 e.printStackTrace();
                 running = false;

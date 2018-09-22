@@ -1,7 +1,7 @@
 package br.ufu.sd.work.server;
 
 import br.ufu.sd.work.util.ClientSocketCommand;
-import br.ufu.sd.work.util.Command;
+import br.ufu.sd.work.util.MessageCommand;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -40,14 +40,9 @@ public class Server {
                 outToClient = new ObjectOutputStream(clientSocket.getOutputStream());
                 inFromClient = new ObjectInputStream(clientSocket.getInputStream());
 
-                Command command = new Command();
-                command.setCommandString("Conectado!");
-                command.setExecuted(true);
-
-                outToClient.writeObject(command);
+                outToClient.writeObject(new MessageCommand());
 
                 new Thread(new ReceiveCommand(inFromClient, outToClient, queue)).start();
-
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -4,18 +4,18 @@ import java.io.ObjectOutputStream;
 
 public class ClientSocketCommand {
     private ObjectOutputStream outToClient;
-    private Command command;
+    private MessageCommand messageCommand;
 
-    public ClientSocketCommand(ObjectOutputStream outToClient, Command command) {
+    public ClientSocketCommand(ObjectOutputStream outToClient, MessageCommand command) {
         this.outToClient = outToClient;
-        this.command = command;
+        this.messageCommand = messageCommand;
     }
 
     public ObjectOutputStream getOutToClient() {
         return outToClient;
     }
 
-    public Command getCommand() {
-        return command;
+    public MessageCommand getMessageCommand() {
+        return messageCommand;
     }
 }
