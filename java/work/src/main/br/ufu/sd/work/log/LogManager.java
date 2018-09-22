@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -47,7 +48,7 @@ public class LogManager {
         loggedOperations = getLines(loggedOperations);
 
         if(!loggedOperations.isEmpty()) {
-            return loggedOperations.stream().map(this::toMetadata).collect(toList());
+            return loggedOperations.stream().map(Metadata::fromLogString).collect(toList());
         }
         return new ArrayList<>();
     }
@@ -69,8 +70,12 @@ public class LogManager {
     }
 
     private String getMetadataAsWritableString(Metadata metadata) {
-        return String.format("%s,%s,%s,%s,%s\n", metadata.getMessage(), metadata.getCreatedBy(),
-                metadata.getCreatedAt().toString(), metadata.getUpdatedBy(), metadata.getUpdatedAt().toString());
+        return String.format("%s,%s,%s,%s,%s\n",
+                metadata.getMessage(),
+                metadata.getCreatedBy(),
+                Optional.ofNullable(metadata.getCreatedAt()).map(LocalDateTime::toString).orElse(null),
+                metadata.getUpdatedBy(),
+                Optional.ofNullable(metadata.getUpdatedAt()).map(LocalDateTime::toString).orElse(null));
     }
 
 }

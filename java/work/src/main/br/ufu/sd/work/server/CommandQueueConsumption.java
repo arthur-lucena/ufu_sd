@@ -1,5 +1,6 @@
 package br.ufu.sd.work.server;
 
+import br.ufu.sd.work.log.LogManager;
 import br.ufu.sd.work.util.MessageCommand;
 
 import java.io.IOException;
@@ -12,10 +13,12 @@ public class CommandQueueConsumption implements Runnable {
     private BlockingQueue<MessageCommand> logQueue;
     private BlockingQueue<OutputStreamCommand> executionQueue;
     private OutputStreamCommand osc;
+    private LogManager logManager;
     private volatile boolean running = true;
 
     public CommandQueueConsumption(BlockingQueue<OutputStreamCommand> queue) {
         this.queue = queue;
+        this.logManager = new LogManager("src/main/br/ufu/sd/work/log/log.txt");
     }
 
     public void terminate() {
@@ -31,7 +34,7 @@ public class CommandQueueConsumption implements Runnable {
         Thread t1 = new Thread(runnable1);
         t1.start();
 
-        LogQueueConsumption runnable2 = new LogQueueConsumption(logQueue);
+        LogQueueConsumption runnable2 = new LogQueueConsumption(logQueue, logManager);
         Thread t2 = new Thread(runnable2);
         t2.start();
 
