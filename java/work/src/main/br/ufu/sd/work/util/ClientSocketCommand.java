@@ -6,7 +6,7 @@ public class ClientSocketCommand {
     private ObjectOutputStream outToClient;
     private MessageCommand messageCommand;
 
-    public ClientSocketCommand(ObjectOutputStream outToClient, MessageCommand command) {
+    public ClientSocketCommand(ObjectOutputStream outToClient, MessageCommand messageCommand) {
         this.outToClient = outToClient;
         this.messageCommand = messageCommand;
     }

@@ -31,7 +31,8 @@ public class CommandQueueConsumption implements Runnable {
 
             try {
                 csc = queue.take();
-                // TODO logar
+                // TODO criar fila de log
+                // TODO criar fila de execuçao
                 csc.getMessageCommand().setExecuted(true);
 
                 csc.getOutToClient().writeObject(csc.getMessageCommand());

@@ -1,5 +1,7 @@
 package br.ufu.sd.work.util.commands.api;
 
-public interface ICommand {
+import java.io.Serializable;
+
+public interface ICommand extends Serializable {
     void run(String[] args);
 }
