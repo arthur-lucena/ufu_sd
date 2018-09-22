@@ -24,9 +24,9 @@
 
 ***Processamento dos comandos***
  - [x] 1 ou mais threads recebendo comandos e colocando em uma fila F1
- - [ ] 1 thread consumindo comandos de F1 e colocando cópias do comando em uma fila F2 e em outra fila F3
- - [ ] 1 thread consumindo comandos de F2 e gravando-os em disco.
- - [ ] 1 thread consumindo de F3 aplicando o comando no banco de dados.
+ - [x] 1 thread consumindo comandos de F1 e colocando cópias do comando em uma fila F2 e em outra fila F3
+ - [x] 1 thread consumindo comandos de F2 e gravando-os em disco.
+ - [x] 1 thread consumindo de F3 aplicando o comando no banco de dados.
 
 ***Gravação dos comandos em um arquivo de log***
  - [ ] mantendo o arquivo aberto durante a execução do programa
