@@ -40,7 +40,7 @@ public class ExecutionQueueConsumption implements Runnable {
                 osc = executionQueue.take();
                 osc.getMessageCommand().getCommand().run(this.osc, this.dictionary, this.insertID);
                 if(osc.getMessageCommand().getTypeCommand().equals(ETypeCommand.INSERT )) {
-                    this.insertID = insertID ++;
+                    this.insertID = insertID + 1;
                 }
                 osc.getMessageCommand().setExecuted(true);
                 osc.getOutputClient().writeObject(osc.getMessageCommand());
