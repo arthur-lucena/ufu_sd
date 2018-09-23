@@ -1,14 +1,20 @@
 package br.ufu.sd.work.util.commands;
 
 import br.ufu.sd.work.model.Dictionary;
+import br.ufu.sd.work.server.OutputStreamCommand;
 import br.ufu.sd.work.util.commands.api.ICommand;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
 public class Insert implements ICommand {
-    public byte[] value;
 
     @Override
-    public void run(String[] args, Dictionary dictionary) {
+    public void run(OutputStreamCommand osc, Dictionary dictionary, Long insertID) {
+        String[] args = osc.getMessageCommand().getArgs();
+        String formattedInsert = String.join(",",args);
         System.out.println("executando commando de insert com os argumentos" + args);
-
+        dictionary.getData().put(insertID, formattedInsert.getBytes());
+        System.out.println("inserção realizada" + args);
     }
 }

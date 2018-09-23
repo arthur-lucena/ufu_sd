@@ -1,6 +1,7 @@
 package br.ufu.sd.work.server;
 
 import br.ufu.sd.work.model.Dictionary;
+import br.ufu.sd.work.log.LogManager;
 import br.ufu.sd.work.util.MessageCommand;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -14,12 +15,16 @@ private BlockingQueue<OutputStreamCommand> executionQueue;
 private OutputStreamCommand osc;
 private volatile boolean running = true;
 private Dictionary dictionary;
+private LogManager logManager;
+
+
 
 
 
     public CommandQueueConsumption(BlockingQueue<OutputStreamCommand> queue, Dictionary dictionary) {
         this.queue = queue;
         this.dictionary = dictionary;
+        this.logManager = new LogManager("src/main/br/ufu/sd/work/log/log.txt");
     }
 
     public void terminate() {
@@ -35,7 +40,7 @@ private Dictionary dictionary;
         Thread t1 = new Thread(runnable1);
         t1.start();
 
-        LogQueueConsumption runnable2 = new LogQueueConsumption(logQueue);
+        LogQueueConsumption runnable2 = new LogQueueConsumption(logQueue, logManager);
         Thread t2 = new Thread(runnable2);
         t2.start();
 
@@ -53,7 +58,7 @@ private Dictionary dictionary;
             try {
                 osc = queue.take();
                 executionQueue.add(osc);
-                logQueue.add(new MessageCommand(osc.getMessageCommand()));
+                //logQueue.add(new MessageCommand(osc.getMessageCommand()));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

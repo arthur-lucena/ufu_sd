@@ -7,13 +7,13 @@ public enum ETypeCommand {
     SELECT("select"),
     EXIT("exit");
 
-    private String commandString;
+    private String name;
 
-    ETypeCommand(String commandString) {
-        this.commandString = commandString;
+    ETypeCommand(String name) {
+        this.name = name;
     }
 
-    public String getCommandString() {
-        return commandString;
+    public String getName() {
+        return name;
     }
 }

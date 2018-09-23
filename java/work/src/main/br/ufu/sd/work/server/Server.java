@@ -10,6 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class Server {
@@ -18,7 +19,7 @@ public class Server {
     private Socket clientSocket;
     private ObjectInputStream inFromClient;
     private ObjectOutputStream outToClient;
-    private Dictionary dictionary;
+    private Dictionary dictionary = new Dictionary(new ConcurrentHashMap<>());
 
     public static void main(String[] args) {
         Server server = new Server();
