@@ -15,10 +15,11 @@ public class CommandSender {
         this.outToServer = outToServer;
     }
 
-    public void send(String commandString) {
+    public void send(String commandString, String[] args) {
         try {
             MessageCommand messageCommand = new MessageCommand();
             messageCommand.setTypeCommand(ETypeCommand.valueOf(commandString.toUpperCase()));
+            messageCommand.setArgs(args);
             outToServer.writeObject(messageCommand);
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,23 +1,29 @@
 package br.ufu.sd.work.server;
 
+import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.log.LogManager;
 import br.ufu.sd.work.util.MessageCommand;
 
-import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class CommandQueueConsumption implements Runnable {
 
-    private BlockingQueue<OutputStreamCommand> queue;
-    private BlockingQueue<MessageCommand> logQueue;
-    private BlockingQueue<OutputStreamCommand> executionQueue;
-    private OutputStreamCommand osc;
-    private LogManager logManager;
-    private volatile boolean running = true;
+private BlockingQueue<OutputStreamCommand> queue;
+private BlockingQueue<MessageCommand> logQueue;
+private BlockingQueue<OutputStreamCommand> executionQueue;
+private OutputStreamCommand osc;
+private volatile boolean running = true;
+private Dictionary dictionary;
+private LogManager logManager;
 
-    public CommandQueueConsumption(BlockingQueue<OutputStreamCommand> queue) {
+
+
+
+
+    public CommandQueueConsumption(BlockingQueue<OutputStreamCommand> queue, Dictionary dictionary) {
         this.queue = queue;
+        this.dictionary = dictionary;
         this.logManager = new LogManager("src/main/br/ufu/sd/work/log/log.txt");
     }
 
@@ -30,7 +36,7 @@ public class CommandQueueConsumption implements Runnable {
         executionQueue = new ArrayBlockingQueue<>(1000000);
         logQueue = new ArrayBlockingQueue<>(1000000);
 
-        ExecutionQueueConsumption runnable1 = new ExecutionQueueConsumption(executionQueue);
+        ExecutionQueueConsumption runnable1 = new ExecutionQueueConsumption(executionQueue, dictionary);
         Thread t1 = new Thread(runnable1);
         t1.start();
 
@@ -52,7 +58,7 @@ public class CommandQueueConsumption implements Runnable {
             try {
                 osc = queue.take();
                 executionQueue.add(osc);
-                logQueue.add(new MessageCommand(osc.getMessageCommand()));
+                //logQueue.add(new MessageCommand(osc.getMessageCommand()));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

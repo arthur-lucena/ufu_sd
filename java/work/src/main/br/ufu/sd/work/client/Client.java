@@ -34,17 +34,15 @@ public class Client {
             String allCommand = s.nextLine();
 
             // TODO adicionar argumentos futuramente
-            //String[] allCommandArray = allCommand.split(" ");
-            //String stringCommand = allCommandArray[0];
-            //String args = allCommandArray[1].split(":");
-
-            String stringCommand = allCommand;
+            String[] allCommandArray = allCommand.split(" ");
+            String stringCommand = allCommandArray[0];
+            String[] args = allCommandArray[1].split(":");
 
             if (ETypeCommand.INSERT.getName().equals(stringCommand) ||
                     ETypeCommand.UPDATE.getName().equals(stringCommand) ||
                     ETypeCommand.DELETE.getName().equals(stringCommand) ||
                     ETypeCommand.SELECT.getName().equals(stringCommand)) {
-                cs.send(stringCommand);
+                cs.send(stringCommand, args);
             } else if (ETypeCommand.EXIT.getName().equals(stringCommand)) {
                 running = false;
 

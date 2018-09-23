@@ -7,5 +7,17 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Dictionary {
 
-    ConcurrentHashMap<Long, byte[]> data;
+    private ConcurrentHashMap<Long, byte[]> data;
+
+    public Dictionary(ConcurrentHashMap<Long, byte[]> data) {
+        this.data = data;
+    }
+
+    public ConcurrentHashMap<Long, byte[]> getData() {
+        return data;
+    }
+
+    public void setData(ConcurrentHashMap<Long, byte[]> data) {
+        this.data = data;
+    }
 }

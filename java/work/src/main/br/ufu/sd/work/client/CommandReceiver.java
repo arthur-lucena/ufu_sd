@@ -37,6 +37,9 @@ public class CommandReceiver implements Runnable {
                         System.out.println("Conectado!");
                     } else {
                         System.out.println(messageCommand.getTypeCommand().getName() + " executado!");
+                        if (messageCommand.getResponse() != null) {
+                            System.out.println(messageCommand.getResponse());
+                        }
                     }
                 }
             } catch (IOException e) {

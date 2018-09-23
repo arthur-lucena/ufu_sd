@@ -13,6 +13,7 @@ public class MessageCommand implements Serializable {
     private int idClient;
     private LocalDateTime timeStamp;
     private boolean executed;
+    private String response;
 
     public MessageCommand() {
 
@@ -28,13 +29,14 @@ public class MessageCommand implements Serializable {
     }
 
     public MessageCommand(ETypeCommand typeCommand, ICommand command,
-                          String[] args, int idClient, LocalDateTime timeStamp, boolean executed) {
+                          String[] args, int idClient, LocalDateTime timeStamp, boolean executed, String response) {
         this.typeCommand = typeCommand;
         this.command = command;
         this.args = args;
         this.idClient = idClient;
         this.timeStamp = timeStamp;
         this.executed = executed;
+        this.response = response;
     }
 
     public ICommand getCommand() {
@@ -84,4 +86,8 @@ public class MessageCommand implements Serializable {
     public void setExecuted(boolean executed) {
         this.executed = executed;
     }
-}
+
+    public void setResponse( String response ) { this.response = response;}
+
+    public String getResponse() { return response; }
+};

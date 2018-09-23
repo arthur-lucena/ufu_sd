@@ -1,5 +1,6 @@
 package br.ufu.sd.work.server;
 
+import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.util.MessageCommand;
 
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class Server {
@@ -17,6 +19,7 @@ public class Server {
     private Socket clientSocket;
     private ObjectInputStream inFromClient;
     private ObjectOutputStream outToClient;
+    private Dictionary dictionary = new Dictionary(new ConcurrentHashMap<>());
 
     public static void main(String[] args) {
         Server server = new Server();
@@ -28,7 +31,7 @@ public class Server {
             queue = new ArrayBlockingQueue<>(1000000);
             serverSocket = new ServerSocket(port);
 
-            CommandQueueConsumption runnable = new CommandQueueConsumption(queue);
+            CommandQueueConsumption runnable = new CommandQueueConsumption(queue, dictionary);
             Thread t = new Thread(runnable);
             t.start();
 

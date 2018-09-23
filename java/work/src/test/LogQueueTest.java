@@ -36,8 +36,8 @@ public class LogQueueTest {
     @Test
     public void should_consume_from_log_queue_and_write_on_log_file() throws InterruptedException {
 
-        logQueue.add(new MessageCommand(ETypeCommand.INSERT, new Insert(), insert_args, 100, LocalDateTime.now(), false));
-        logQueue.add(new MessageCommand(ETypeCommand.UPDATE, new Insert(), update_args, 101, LocalDateTime.now(), false));
+        logQueue.add(new MessageCommand(ETypeCommand.INSERT, new Insert(), insert_args, 100, LocalDateTime.now(), false, null));
+        logQueue.add(new MessageCommand(ETypeCommand.UPDATE, new Insert(), update_args, 101, LocalDateTime.now(), false, null));
 
         Thread t2 = new Thread(logQueueConsumption);
         t2.start();
