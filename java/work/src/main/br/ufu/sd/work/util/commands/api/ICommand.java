@@ -7,5 +7,5 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 public interface ICommand extends Serializable {
-    void run(OutputStreamCommand osc, Dictionary dictionary, Long insertID);
+    void run(OutputStreamCommand osc, Dictionary dictionary);
 }

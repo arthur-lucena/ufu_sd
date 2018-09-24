@@ -8,26 +8,25 @@ import java.io.ObjectOutputStream;
 import java.util.Arrays;
 
 public class Update implements ICommand {
-    Integer count = 0;
 
     @Override
-    public void run(OutputStreamCommand osc, Dictionary dictionary, Long insertID) {
-        String[] args = osc.getMessageCommand().getArgs();
-        String oldValue = args[0];
-        String newValue = args[1];
+    public void run(OutputStreamCommand osc, Dictionary dictionary) {
+        System.out.println("executing update command for id: " + osc.getMessageCommand().getObjectId());
 
-        for(Long key  : dictionary.getData().keySet()){
-            if(Arrays.equals(oldValue.getBytes(),dictionary.getData().get(key))) {
-
-                dictionary.getData().replace(key, newValue.getBytes());
-                count = count + 1;
-                System.out.println("update realizado");
-
+        String args = osc.getMessageCommand().getArgs()[0];
+        Integer updated = 0;
+        Long objectId = osc.getMessageCommand().getObjectId();
+        for(Long key : dictionary.getData().keySet()){
+            if(key.equals(objectId)) {
+                dictionary.getData().put(key, args.getBytes());
+                updated = updated + 1;
+                System.out.println("object with Id: " + objectId + " updated");
             }
         }
 
-        if(count == 0){
-            osc.getMessageCommand().setResponse("Dado não foi encontrado.");
+        if(updated == 0){
+            System.out.println("object with Id: " + objectId + " not found");
+            osc.getMessageCommand().setResponse("not found");
         }
     }
 }

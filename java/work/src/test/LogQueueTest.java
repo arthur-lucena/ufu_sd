@@ -11,6 +11,7 @@ import org.junit.Test;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -28,6 +29,7 @@ public class LogQueueTest {
     @Before
     public void setup() {
         logQueue = new ArrayBlockingQueue<>(10);
+        deleteFile();
         logManager = new LogManager(filePath);
         logManager.createFile();
         logQueueConsumption = new LogQueueConsumption(logQueue, logManager);
@@ -36,17 +38,17 @@ public class LogQueueTest {
     @Test
     public void should_consume_from_log_queue_and_write_on_log_file() throws InterruptedException {
 
-        logQueue.add(new MessageCommand(ETypeCommand.INSERT, new Insert(), insert_args, 100, LocalDateTime.now(), false, null));
-        logQueue.add(new MessageCommand(ETypeCommand.UPDATE, new Insert(), update_args, 101, LocalDateTime.now(), false, null));
+        logQueue.add(new MessageCommand(ETypeCommand.INSERT, new Insert(), insert_args, 1L, 100, LocalDateTime.now(), false, null));
+        logQueue.add(new MessageCommand(ETypeCommand.UPDATE, new Insert(), update_args, 1L, 101, LocalDateTime.now(), false, null));
 
         Thread t2 = new Thread(logQueueConsumption);
         t2.start();
 
         Thread.sleep(500);
-        List<Metadata> data = logManager.read();
+        LinkedHashMap<Long, Metadata> data = logManager.read();
 
         Assert.assertTrue(logQueue.isEmpty());
-        Assert.assertEquals(2, data.size());
+        Assert.assertEquals(1, data.size());
 
         deleteFile();
     }
@@ -54,7 +56,9 @@ public class LogQueueTest {
 
     private void deleteFile() {
         try {
-            Files.delete(Paths.get(filePath));
+            if (Files.exists(Paths.get(filePath))) {
+                Files.delete(Paths.get(filePath));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

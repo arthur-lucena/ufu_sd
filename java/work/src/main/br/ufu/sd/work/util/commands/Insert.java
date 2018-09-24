@@ -10,11 +10,11 @@ import java.io.ObjectOutputStream;
 public class Insert implements ICommand {
 
     @Override
-    public void run(OutputStreamCommand osc, Dictionary dictionary, Long insertID) {
+    public void run(OutputStreamCommand osc, Dictionary dictionary) {
         String[] args = osc.getMessageCommand().getArgs();
-        String formattedInsert = String.join(",",args);
+        String formattedInsert = String.join(",", args);
         System.out.println("executando commando de insert com os argumentos" + args);
-        dictionary.getData().put(insertID, formattedInsert.getBytes());
+        dictionary.getData().put(osc.getMessageCommand().getObjectId(), formattedInsert.getBytes());
         System.out.println("inserção realizada" + args);
     }
 }
