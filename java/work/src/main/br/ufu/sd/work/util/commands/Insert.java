@@ -16,5 +16,7 @@ public class Insert implements ICommand {
         System.out.println("executando commando de insert com os argumentos" + args);
         dictionary.getData().put(osc.getMessageCommand().getObjectId(), formattedInsert.getBytes());
         System.out.println("inserção realizada" + args);
+        osc.getMessageCommand().setResponse("Insert realizado!");
+
     }
 }
