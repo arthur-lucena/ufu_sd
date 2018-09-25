@@ -19,10 +19,11 @@ private Dictionary dictionary;
 private LogManager logManager;
 private Long insertID = 0L;
 
-    public CommandQueueConsumption(BlockingQueue<OutputStreamCommand> queue, Dictionary dictionary) {
+    public CommandQueueConsumption(BlockingQueue<OutputStreamCommand> queue, Dictionary dictionary,
+                                   LogManager logManager) {
         this.queue = queue;
         this.dictionary = dictionary;
-        this.logManager = new LogManager("src/main/br/ufu/sd/work/log/log.txt");
+        this.logManager = logManager;
     }
 
     public void terminate() {
@@ -62,6 +63,10 @@ private Long insertID = 0L;
                 e.printStackTrace();
             }
         }
+    }
+
+    public void adjustCurrentId(Long insertId) {
+        this.insertID = insertId;
     }
 
     private void createIdIfNeeded(OutputStreamCommand osc) {

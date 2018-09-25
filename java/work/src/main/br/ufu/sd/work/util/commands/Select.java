@@ -1,12 +1,16 @@
 package br.ufu.sd.work.util.commands;
 
 import br.ufu.sd.work.model.Dictionary;
+import br.ufu.sd.work.model.Metadata;
 import br.ufu.sd.work.server.OutputStreamCommand;
 import br.ufu.sd.work.util.commands.api.ICommand;
+import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+
+import static org.apache.commons.lang3.SerializationUtils.deserialize;
 
 public class Select implements ICommand {
     String response;
@@ -14,27 +18,23 @@ public class Select implements ICommand {
 
     @Override
     public void run(OutputStreamCommand osc, Dictionary dictionary) {
-        String[] args = osc.getMessageCommand().getArgs();
-        System.out.println("executando commando de select com os argumentos" + args);
-        String formattedInsert = String.join(",", args);
+        System.out.println("executing delete command for id: " + osc.getMessageCommand().getObjectId());
 
-        for (Long key : dictionary.getData().keySet()) {
-            if (Arrays.equals(formattedInsert.getBytes(), dictionary.getData().get(key))) {
-                try {
-                    String responseValue = new String(dictionary.getData().get(key), "UTF-8");
-                    response = "KEY: " + key + " VALUE: " + responseValue;
-                } catch (UnsupportedEncodingException e) {
-                    System.out.println(e);
-                }
+        Integer found = 0;
+        Long objectId = osc.getMessageCommand().getObjectId();
+        for(Long key : dictionary.getData().keySet()){
+            if(key.equals(objectId)) {
 
-                count = count + 1;
-                osc.getMessageCommand().setResponse(response);
-                System.out.println("select realizado");
+                Metadata foundObject = (Metadata) deserialize(dictionary.getData().get(key));
+                found = found + 1;
+                System.out.println("object with Id: " + objectId + " found");
+                osc.getMessageCommand().setResponse("object with Id: " + objectId + " found: " + foundObject.toString());
             }
         }
 
-        if(count == 0){
-            osc.getMessageCommand().setResponse("Não foi encontrado resposta.");
+        if(found == 0){
+            System.out.println("object with Id: " + objectId + " not found");
+            osc.getMessageCommand().setResponse("not found");
         }
     }
 }

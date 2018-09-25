@@ -2,6 +2,7 @@ package br.ufu.sd.work.model;
 
 import br.ufu.sd.work.util.MessageCommand;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +15,7 @@ import static br.ufu.sd.work.model.ETypeCommand.UPDATE;
 /**
  * Created by ismaley on 19/09/18.
  */
-public class Metadata {
+public class Metadata implements Serializable {
 
     private Long id;
     private String message;

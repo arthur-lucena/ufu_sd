@@ -1,16 +1,22 @@
 package br.ufu.sd.work.server;
 
+import br.ufu.sd.work.log.LogManager;
 import br.ufu.sd.work.model.Dictionary;
+import br.ufu.sd.work.model.Metadata;
 import br.ufu.sd.work.util.MessageCommand;
+import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static org.apache.commons.lang3.SerializationUtils.serialize;
 
 
 public class Server {
@@ -20,6 +26,7 @@ public class Server {
     private ObjectInputStream inFromClient;
     private ObjectOutputStream outToClient;
     private Dictionary dictionary = new Dictionary(new ConcurrentHashMap<>());
+    private LogManager logManager = new LogManager("src/main/br/ufu/sd/work/log/log.txt");
 
     public static void main(String[] args) {
         Server server = new Server();
@@ -31,7 +38,12 @@ public class Server {
             queue = new ArrayBlockingQueue<>(1000000);
             serverSocket = new ServerSocket(port);
 
-            CommandQueueConsumption runnable = new CommandQueueConsumption(queue, dictionary);
+            CommandQueueConsumption runnable = new CommandQueueConsumption(queue, dictionary, logManager);
+
+            createLogFileIfNeeded();
+            recreateDictionaryIfNeeded(runnable);
+
+
             Thread t = new Thread(runnable);
             t.start();
 
@@ -57,4 +69,30 @@ public class Server {
             }
         }
     }
+
+
+    public LogManager getLogManager() {
+        return logManager;
+    }
+
+    public Dictionary getDictionary() {
+        return dictionary;
+    }
+
+    private void createLogFileIfNeeded() {
+        logManager.createFile();
+    }
+
+    private void recreateDictionaryIfNeeded(CommandQueueConsumption runnable) {
+        if (dictionary.getData().isEmpty()) {
+            LinkedHashMap<Long, Metadata> loggedData = logManager.read();
+            if(!loggedData.isEmpty()) {
+                loggedData.forEach((k, v) -> dictionary.getData().put(k, serialize(v)));
+                List<Long> ids = new ArrayList<>(loggedData.keySet());
+                Collections.reverse(ids);
+                runnable.adjustCurrentId(ids.get(0));
+            }
+        }
+    }
+
 }
