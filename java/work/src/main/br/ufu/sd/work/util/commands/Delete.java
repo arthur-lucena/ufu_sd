@@ -19,6 +19,7 @@ public class Delete implements ICommand {
                 dictionary.getData().remove(key);
                 deleted = deleted + 1;
                 System.out.println("objected with Id: " + objectId + " deleted");
+                osc.getMessageCommand().setResponse("objected with Id: " + objectId + " deleted");
             }
         }
 
