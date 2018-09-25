@@ -52,7 +52,7 @@ public class LogQueueConsumption implements Runnable {
 
     private void awaitNewMessages() {
         try {
-            Thread.sleep(5000);
+            Thread.sleep(1000);
             System.out.println("nenhum comando de log enfileirado");
         } catch (InterruptedException e) {
             e.printStackTrace();

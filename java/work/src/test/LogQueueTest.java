@@ -20,7 +20,8 @@ public class LogQueueTest {
 
     private String filePath = "src/test/log.txt";
     private String[] insert_args = {"test_data"};
-    private String[] update_args = {"updated_data"};
+    private String[] update_args = {"1", "updated_data"};
+    private String[] delete_args = {"1"};
 
     BlockingQueue<MessageCommand> logQueue;
     LogManager logManager;
@@ -40,6 +41,7 @@ public class LogQueueTest {
 
         logQueue.add(new MessageCommand(ETypeCommand.INSERT, new Insert(), insert_args, 1L, 100, LocalDateTime.now(), false, null));
         logQueue.add(new MessageCommand(ETypeCommand.UPDATE, new Insert(), update_args, 1L, 101, LocalDateTime.now(), false, null));
+        logQueue.add(new MessageCommand(ETypeCommand.DELETE, new Insert(), update_args, 2L, 101, LocalDateTime.now(), false, null));
 
         Thread t2 = new Thread(logQueueConsumption);
         t2.start();

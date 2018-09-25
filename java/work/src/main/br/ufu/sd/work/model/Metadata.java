@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static br.ufu.sd.work.model.ETypeCommand.DELETE;
 import static br.ufu.sd.work.model.ETypeCommand.INSERT;
 import static br.ufu.sd.work.model.ETypeCommand.UPDATE;
 
@@ -111,7 +112,12 @@ public class Metadata implements Serializable {
         }
 
         if(UPDATE.equals(messageCommand.getTypeCommand())) {
-            return new Metadata(messageCommand.getObjectId(), messageCommand.getArgs()[0], null,
+            return new Metadata(messageCommand.getObjectId(), messageCommand.getArgs()[1], null,
+                    null, String.valueOf(messageCommand.getIdClient()), messageCommand.getTimeStamp());
+        }
+
+        if(DELETE.equals(messageCommand.getTypeCommand())) {
+            return new Metadata(messageCommand.getObjectId(), null, null,
                     null, String.valueOf(messageCommand.getIdClient()), messageCommand.getTimeStamp());
         }
 
