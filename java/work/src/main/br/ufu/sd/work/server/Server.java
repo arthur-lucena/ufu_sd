@@ -4,14 +4,16 @@ import br.ufu.sd.work.log.LogManager;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.Metadata;
 import br.ufu.sd.work.util.MessageCommand;
-import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
