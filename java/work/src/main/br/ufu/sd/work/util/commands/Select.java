@@ -13,7 +13,7 @@ public class Select implements ICommand {
     Integer count = 0;
 
     @Override
-    public void run(OutputStreamCommand osc, Dictionary dictionary, Long insertID) {
+    public void run(OutputStreamCommand osc, Dictionary dictionary) {
         String[] args = osc.getMessageCommand().getArgs();
         System.out.println("executando commando de select com os argumentos" + args);
         String formattedInsert = String.join(",", args);

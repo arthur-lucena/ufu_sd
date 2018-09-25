@@ -16,13 +16,18 @@ import static br.ufu.sd.work.model.ETypeCommand.UPDATE;
  */
 public class Metadata {
 
+    private Long id;
     private String message;
     private String createdBy;
     private LocalDateTime createdAt;
     private String updatedBy;
     private LocalDateTime updatedAt;
 
-    public Metadata(String message, String createdBy, LocalDateTime createdAt, String updatedBy, LocalDateTime updatedAt) {
+    public Metadata() {
+    }
+
+    public Metadata(Long id, String message, String createdBy, LocalDateTime createdAt, String updatedBy, LocalDateTime updatedAt) {
+        this.id = id;
         this.message = message;
         this.createdAt = createdAt;
         this.createdBy = createdBy;
@@ -50,8 +55,37 @@ public class Metadata {
         return updatedBy;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     public String toString() {
-        return "message: " + message + ", " +
+        return  "id: " + id + ", " +
+                "message: " + message + ", " +
                 "createdBy: " + createdBy + ", " +
                 "createdAt: " + createdAt + ", " +
                 "updatedBy: " + updatedBy + ", " +
@@ -61,11 +95,26 @@ public class Metadata {
     public static Metadata fromLogString(String metadataLog) {
         List<String> data = Arrays.asList(metadataLog.split(","));
         return new Metadata(
-                Optional.ofNullable(data.get(0)).orElse(null),
+                Long.valueOf(data.get(0)),
                 Optional.ofNullable(data.get(1)).orElse(null),
-                Optional.ofNullable(data.get(2)).map(Metadata::resolveDate).orElse(null),
-                Optional.ofNullable(data.get(3)).orElse(null),
-                Optional.ofNullable(data.get(4)).map(Metadata::resolveDate).orElse(null));
+                Optional.ofNullable(data.get(2)).orElse(null),
+                Optional.ofNullable(data.get(3)).map(Metadata::resolveDate).orElse(null),
+                Optional.ofNullable(data.get(4)).orElse(null),
+                Optional.ofNullable(data.get(5)).map(Metadata::resolveDate).orElse(null));
+    }
+
+    public static Metadata fromCommand(MessageCommand messageCommand) {
+        if(INSERT.equals(messageCommand.getTypeCommand())) {
+            return new Metadata(messageCommand.getObjectId(), messageCommand.getArgs()[0], String.valueOf(messageCommand.getIdClient()),
+                    messageCommand.getTimeStamp(), String.valueOf(messageCommand.getIdClient()), messageCommand.getTimeStamp());
+        }
+
+        if(UPDATE.equals(messageCommand.getTypeCommand())) {
+            return new Metadata(messageCommand.getObjectId(), messageCommand.getArgs()[0], null,
+                    null, String.valueOf(messageCommand.getIdClient()), messageCommand.getTimeStamp());
+        }
+
+        else return null;
     }
 
     private static LocalDateTime resolveDate(String date) {
@@ -73,19 +122,5 @@ public class Metadata {
             return null;
         }
         return LocalDateTime.parse(date);
-    }
-
-    public static Metadata fromCommand(MessageCommand messageCommand) {
-        if(INSERT.equals(messageCommand.getTypeCommand())) {
-            return new Metadata(messageCommand.getArgs()[0], String.valueOf(messageCommand.getIdClient()),
-                    messageCommand.getTimeStamp(), null, null);
-        }
-
-        if(UPDATE.equals(messageCommand.getTypeCommand())) {
-            return new Metadata(messageCommand.getArgs()[0], null,
-                    null, String.valueOf(messageCommand.getIdClient()), messageCommand.getTimeStamp());
-        }
-
-        else return null;
     }
 }

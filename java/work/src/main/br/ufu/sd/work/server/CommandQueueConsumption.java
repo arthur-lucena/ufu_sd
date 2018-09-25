@@ -2,6 +2,7 @@ package br.ufu.sd.work.server;
 
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.log.LogManager;
+import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.util.MessageCommand;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -16,10 +17,7 @@ private OutputStreamCommand osc;
 private volatile boolean running = true;
 private Dictionary dictionary;
 private LogManager logManager;
-
-
-
-
+private Long insertID = 0L;
 
     public CommandQueueConsumption(BlockingQueue<OutputStreamCommand> queue, Dictionary dictionary) {
         this.queue = queue;
@@ -57,11 +55,19 @@ private LogManager logManager;
 
             try {
                 osc = queue.take();
+                createIdIfNeeded(osc);
                 executionQueue.add(osc);
-                //logQueue.add(new MessageCommand(osc.getMessageCommand()));
+                logQueue.add(new MessageCommand(osc.getMessageCommand()));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void createIdIfNeeded(OutputStreamCommand osc) {
+        if(osc.getMessageCommand().getTypeCommand().equals(ETypeCommand.INSERT)) {
+            this.insertID = insertID + 1;
+            osc.getMessageCommand().setObjectId(this.insertID);
         }
     }
 }

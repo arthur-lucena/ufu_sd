@@ -10,6 +10,7 @@ public class MessageCommand implements Serializable {
     private ETypeCommand typeCommand;
     private ICommand command;
     private String[] args;
+    private Long objectId;
     private int idClient;
     private LocalDateTime timeStamp;
     private boolean executed;
@@ -24,15 +25,17 @@ public class MessageCommand implements Serializable {
         this.command = messageCommand.getCommand();
         this.args = messageCommand.getArgs();
         this.idClient = messageCommand.getIdClient();
+        this.objectId = messageCommand.getObjectId();
         this.timeStamp = messageCommand.getTimeStamp();
         this.executed = messageCommand.getExecuted();
     }
 
     public MessageCommand(ETypeCommand typeCommand, ICommand command,
-                          String[] args, int idClient, LocalDateTime timeStamp, boolean executed, String response) {
+                          String[] args, Long objectId, int idClient, LocalDateTime timeStamp, boolean executed, String response) {
         this.typeCommand = typeCommand;
         this.command = command;
         this.args = args;
+        this.objectId = objectId;
         this.idClient = idClient;
         this.timeStamp = timeStamp;
         this.executed = executed;
@@ -90,4 +93,12 @@ public class MessageCommand implements Serializable {
     public void setResponse( String response ) { this.response = response;}
 
     public String getResponse() { return response; }
-};
+
+    public Long getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(Long objectId) {
+        this.objectId = objectId;
+    }
+}

@@ -6,6 +6,7 @@ import br.ufu.sd.work.util.MessageCommand;
 
 import java.util.concurrent.BlockingQueue;
 
+import static br.ufu.sd.work.model.ETypeCommand.DELETE;
 import static br.ufu.sd.work.model.ETypeCommand.INSERT;
 import static br.ufu.sd.work.model.ETypeCommand.UPDATE;
 
@@ -35,7 +36,7 @@ public class LogQueueConsumption implements Runnable {
             consume();
             if(isLoggable(messageCommand)) {
                 System.out.println("writing new: " + messageCommand.getTypeCommand().name() + " entry on log with data: " + messageCommand.getArgs()[0]);
-                logManager.append(Metadata.fromCommand(messageCommand));
+                logManager.append(Metadata.fromCommand(messageCommand), messageCommand.getTypeCommand());
             }
         }
     }
@@ -60,10 +61,11 @@ public class LogQueueConsumption implements Runnable {
 
 
     private boolean isLoggable(MessageCommand messageCommand) {
-        return messageCommand != null && isInsertOrUpdateCommand(messageCommand);
+        return messageCommand != null && isInsertOrUpdateOrDeleteCommand(messageCommand);
     }
 
-    private boolean isInsertOrUpdateCommand(MessageCommand messageCommand) {
-        return INSERT.equals(messageCommand.getTypeCommand()) || UPDATE.equals(messageCommand.getTypeCommand());
+    private boolean isInsertOrUpdateOrDeleteCommand(MessageCommand messageCommand) {
+        return INSERT.equals(messageCommand.getTypeCommand()) || UPDATE.equals(messageCommand.getTypeCommand()) ||
+                DELETE.equals(messageCommand.getTypeCommand());
     }
 }
