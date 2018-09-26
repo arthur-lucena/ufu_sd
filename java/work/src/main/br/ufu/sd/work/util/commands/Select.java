@@ -18,7 +18,7 @@ public class Select implements ICommand {
 
     @Override
     public void run(OutputStreamCommand osc, Dictionary dictionary) {
-        System.out.println("executing delete command for id: " + osc.getMessageCommand().getObjectId());
+        System.out.println("executing select command for id: " + osc.getMessageCommand().getObjectId());
 
         Integer found = 0;
         Long objectId = osc.getMessageCommand().getObjectId();
