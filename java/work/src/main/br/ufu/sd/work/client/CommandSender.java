@@ -23,9 +23,7 @@ public class CommandSender {
         try {
             ETypeCommand commandType = ETypeCommand.valueOf(commandString.toUpperCase());
             MessageCommand messageCommand = new MessageCommand();
-            if(mustSetId(commandType)) {
-                messageCommand.setObjectId(Long.valueOf(args[0]));
-            }
+            messageCommand.setObjectId(Long.valueOf(args[0]));
             messageCommand.setTypeCommand(commandType);
             messageCommand.setArgs(args);
             messageCommand.setTimeStamp(LocalDateTime.now());
@@ -34,10 +32,5 @@ public class CommandSender {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private boolean mustSetId(ETypeCommand commandType) {
-        return ETypeCommand.SELECT.equals(commandType) || UPDATE.equals(commandType) ||
-                ETypeCommand.DELETE.equals(commandType);
     }
 }

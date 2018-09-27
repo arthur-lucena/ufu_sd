@@ -11,11 +11,24 @@ public class Insert implements ICommand {
 
     @Override
     public void run(OutputStreamCommand osc, Dictionary dictionary) {
+        Integer duplicate = 0;
         String[] args = osc.getMessageCommand().getArgs();
-        System.out.println("executando commando de insert com os argumentos" + args);
-        Metadata metadata = fromCommand(osc.getMessageCommand());
-        dictionary.getData().put(osc.getMessageCommand().getObjectId(), serialize(metadata));
-        System.out.println("inserção realizada" + metadata);
-        osc.getMessageCommand().setResponse("inserção realizada: " + metadata);
+        Long objectId = osc.getMessageCommand().getObjectId();
+        for(Long key : dictionary.getData().keySet()){
+            if(key.equals(objectId)) {
+                duplicate = duplicate + 1;
+            }
+        }
+
+        if(duplicate == 0) {
+            System.out.println("executando commando de insert com os argumentos" + args);
+            Metadata metadata = fromCommand(osc.getMessageCommand());
+            dictionary.getData().put(osc.getMessageCommand().getObjectId(), serialize(metadata));
+            System.out.println("inserção realizada" + metadata);
+            osc.getMessageCommand().setResponse("inserção realizada: " + metadata);
+        } else {
+            System.out.println("object with Id: " + objectId + " not created");
+            osc.getMessageCommand().setResponse("Id existing");
+        }
     }
 }

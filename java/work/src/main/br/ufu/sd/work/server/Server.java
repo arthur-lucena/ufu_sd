@@ -92,7 +92,6 @@ public class Server {
                 loggedData.forEach((k, v) -> dictionary.getData().put(k, serialize(v)));
                 List<Long> ids = new ArrayList<>(loggedData.keySet());
                 Collections.reverse(ids);
-                runnable.adjustCurrentId(ids.get(0));
             }
         }
     }

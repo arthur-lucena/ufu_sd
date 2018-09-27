@@ -17,7 +17,6 @@ private OutputStreamCommand osc;
 private volatile boolean running = true;
 private Dictionary dictionary;
 private LogManager logManager;
-private Long insertID = 0L;
 
     public CommandQueueConsumption(BlockingQueue<OutputStreamCommand> queue, Dictionary dictionary,
                                    LogManager logManager) {
@@ -56,23 +55,11 @@ private Long insertID = 0L;
 
             try {
                 osc = queue.take();
-                createIdIfNeeded(osc);
                 executionQueue.add(osc);
                 logQueue.add(new MessageCommand(osc.getMessageCommand()));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    public void adjustCurrentId(Long insertId) {
-        this.insertID = insertId;
-    }
-
-    private void createIdIfNeeded(OutputStreamCommand osc) {
-        if(osc.getMessageCommand().getTypeCommand().equals(ETypeCommand.INSERT)) {
-            this.insertID = insertID + 1;
-            osc.getMessageCommand().setObjectId(this.insertID);
         }
     }
 }
