@@ -33,7 +33,8 @@ public class ServerTest {
 			ObjectInputStream inFromServer = new ObjectInputStream(clientSocket.getInputStream());
 			MessageCommand messageCommandInsert = new MessageCommand();
 			messageCommandInsert.setTypeCommand(ETypeCommand.INSERT);
-			messageCommandInsert.setArgs(new String[] {"mama"});
+			messageCommandInsert.setObjectId((long) 1);
+			messageCommandInsert.setArgs(new String[] {"1","mama"});
 			outToServer.writeObject(messageCommandInsert);
 
 			Object objectReceiver = inFromServer.readObject();
@@ -96,18 +97,19 @@ public class ServerTest {
 		ObjectInputStream inFromServer = new ObjectInputStream(clientSocket.getInputStream());
 		MessageCommand messageCommandInsert = new MessageCommand();
 		messageCommandInsert.setTypeCommand(ETypeCommand.INSERT);
-		messageCommandInsert.setArgs(new String[] {"mama"});
+		messageCommandInsert.setObjectId((long) 2);
+		messageCommandInsert.setArgs(new String[] {"2","karina"});
 		outToServer.writeObject(messageCommandInsert);
 
 		Object objectReceiver = inFromServer.readObject();
 		Object objectReceiver1 = inFromServer.readObject();
 		Assert.assertEquals(((MessageCommand) objectReceiver1).getTypeCommand(), ETypeCommand.INSERT);
-		Assert.assertEquals("inserção realizada: id: 1, message: mama, createdBy: 0, createdAt: null, updatedBy: 0, updatedAt: null", ((MessageCommand) objectReceiver1).getResponse());
+		Assert.assertEquals("inserção realizada: id: 2, message: karina, createdBy: 0, createdAt: null, updatedBy: 0, updatedAt: null", ((MessageCommand) objectReceiver1).getResponse());
 
 		MessageCommand messageCommandSelect = new MessageCommand();
 		messageCommandSelect.setTypeCommand(ETypeCommand.SELECT);
-		messageCommandSelect.setObjectId((long) 2);
-		messageCommandSelect.setArgs(new String[] {"2"});
+		messageCommandSelect.setObjectId((long) 3);
+		messageCommandSelect.setArgs(new String[] {"3"});
 		outToServer.writeObject(messageCommandSelect);
 
 		objectReceiver1 = inFromServer.readObject();
@@ -116,8 +118,8 @@ public class ServerTest {
 
 		MessageCommand messageCommandUpdate = new MessageCommand();
 		messageCommandUpdate.setTypeCommand(ETypeCommand.UPDATE);
-		messageCommandUpdate.setObjectId((long) 2);
-		messageCommandUpdate.setArgs(new String[] {"2","meme"});
+		messageCommandUpdate.setObjectId((long) 3);
+		messageCommandUpdate.setArgs(new String[] {"3","meme"});
 		outToServer.writeObject(messageCommandUpdate);
 
 		objectReceiver1 = inFromServer.readObject();
@@ -126,33 +128,34 @@ public class ServerTest {
 
 		MessageCommand messageCommandInsertTwo = new MessageCommand();
 		messageCommandInsertTwo.setTypeCommand(ETypeCommand.INSERT);
-		messageCommandInsertTwo.setArgs(new String[] {"meme"});
+		messageCommandInsertTwo.setObjectId((long) 3);
+		messageCommandInsertTwo.setArgs(new String[] {"3","meme"});
 		outToServer.writeObject(messageCommandInsertTwo);
 
 		objectReceiver1 = inFromServer.readObject();
 		Assert.assertEquals(((MessageCommand) objectReceiver1).getTypeCommand(), ETypeCommand.INSERT);
-		Assert.assertEquals("inserção realizada: id: 2, message: meme, createdBy: 0, createdAt: null, updatedBy: 0, updatedAt: null", ((MessageCommand) objectReceiver1).getResponse());
+		Assert.assertEquals("inserção realizada: id: 3, message: meme, createdBy: 0, createdAt: null, updatedBy: 0, updatedAt: null", ((MessageCommand) objectReceiver1).getResponse());
 
 		MessageCommand messageCommandSelectTwo = new MessageCommand();
 		messageCommandSelectTwo.setTypeCommand(ETypeCommand.SELECT);
-		messageCommandSelectTwo.setObjectId((long) 2);
-		messageCommandSelectTwo.setArgs(new String[] {"2"});
+		messageCommandSelectTwo.setObjectId((long) 3);
+		messageCommandSelectTwo.setArgs(new String[] {"3"});
 		outToServer.writeObject(messageCommandSelectTwo);
 
 		objectReceiver1 = inFromServer.readObject();
 		Assert.assertEquals(((MessageCommand) objectReceiver1).getTypeCommand(), ETypeCommand.SELECT);
-		Assert.assertEquals("object with Id: 2 found: id: 2, message: meme, createdBy: 0, createdAt: null, updatedBy: 0, updatedAt: null",  ((MessageCommand) objectReceiver1).getResponse());
+		Assert.assertEquals("object with Id: 3 found: id: 3, message: meme, createdBy: 0, createdAt: null, updatedBy: 0, updatedAt: null",  ((MessageCommand) objectReceiver1).getResponse());
 
 
 		MessageCommand messageCommandDelete = new MessageCommand();
 		messageCommandDelete.setTypeCommand(ETypeCommand.DELETE);
-		messageCommandDelete.setObjectId((long) 2);
-		messageCommandDelete.setArgs(new String[] {"2"});
+		messageCommandDelete.setObjectId((long) 3);
+		messageCommandDelete.setArgs(new String[] {"3"});
 		outToServer.writeObject(messageCommandDelete);
 
 		objectReceiver1 = inFromServer.readObject();
 		Assert.assertEquals(((MessageCommand) objectReceiver1).getTypeCommand(), ETypeCommand.DELETE);
-		Assert.assertEquals("objected with Id: 2 deleted",  ((MessageCommand) objectReceiver1).getResponse());
+		Assert.assertEquals("objected with Id: 3 deleted",  ((MessageCommand) objectReceiver1).getResponse());
 	}
 
 

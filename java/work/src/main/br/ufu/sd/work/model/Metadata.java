@@ -107,7 +107,7 @@ public class Metadata implements Serializable {
 
     public static Metadata fromCommand(MessageCommand messageCommand) {
         if(INSERT.equals(messageCommand.getTypeCommand())) {
-            return new Metadata(messageCommand.getObjectId(), messageCommand.getArgs()[0], String.valueOf(messageCommand.getIdClient()),
+            return new Metadata(messageCommand.getObjectId(), messageCommand.getArgs()[1], String.valueOf(messageCommand.getIdClient()),
                     messageCommand.getTimeStamp(), String.valueOf(messageCommand.getIdClient()), messageCommand.getTimeStamp());
         }
 
