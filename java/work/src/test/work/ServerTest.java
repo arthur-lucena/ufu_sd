@@ -34,7 +34,7 @@ public class ServerTest {
 			MessageCommand messageCommandInsert = new MessageCommand();
 			messageCommandInsert.setTypeCommand(ETypeCommand.INSERT);
 			messageCommandInsert.setObjectId((long) 1);
-			messageCommandInsert.setArgs(new String[] {"1","mama"});
+			messageCommandInsert.setArgs(new String[] {"mama"});
 			outToServer.writeObject(messageCommandInsert);
 
 			Object objectReceiver = inFromServer.readObject();
@@ -45,7 +45,6 @@ public class ServerTest {
 			MessageCommand messageCommandSelect = new MessageCommand();
 			messageCommandSelect.setTypeCommand(ETypeCommand.SELECT);
 			messageCommandSelect.setObjectId((long) 1);
-			messageCommandSelect.setArgs(new String[] {"1"});
 
 			outToServer.writeObject(messageCommandSelect);
 
@@ -56,7 +55,7 @@ public class ServerTest {
 			MessageCommand messageCommandUpdate = new MessageCommand();
 			messageCommandUpdate.setTypeCommand(ETypeCommand.UPDATE);
 			messageCommandUpdate.setObjectId((long) 1);
-			messageCommandUpdate.setArgs(new String[] {"1","meme"});
+			messageCommandUpdate.setArgs(new String[] {"meme"});
 			outToServer.writeObject(messageCommandUpdate);
 
 			objectReceiver1 = inFromServer.readObject();
@@ -66,7 +65,6 @@ public class ServerTest {
 			MessageCommand messageCommandSelectTwo = new MessageCommand();
 			messageCommandSelectTwo.setTypeCommand(ETypeCommand.SELECT);
 			messageCommandSelectTwo.setObjectId((long) 1);
-			messageCommandSelectTwo.setArgs(new String[] {"1"});
 			outToServer.writeObject(messageCommandSelectTwo);
 
 			objectReceiver1 = inFromServer.readObject();
@@ -98,7 +96,7 @@ public class ServerTest {
 		MessageCommand messageCommandInsert = new MessageCommand();
 		messageCommandInsert.setTypeCommand(ETypeCommand.INSERT);
 		messageCommandInsert.setObjectId((long) 2);
-		messageCommandInsert.setArgs(new String[] {"2","karina"});
+		messageCommandInsert.setArgs(new String[] {"karina"});
 		outToServer.writeObject(messageCommandInsert);
 
 		Object objectReceiver = inFromServer.readObject();
@@ -119,7 +117,7 @@ public class ServerTest {
 		MessageCommand messageCommandUpdate = new MessageCommand();
 		messageCommandUpdate.setTypeCommand(ETypeCommand.UPDATE);
 		messageCommandUpdate.setObjectId((long) 3);
-		messageCommandUpdate.setArgs(new String[] {"3","meme"});
+		messageCommandUpdate.setArgs(new String[] {"meme"});
 		outToServer.writeObject(messageCommandUpdate);
 
 		objectReceiver1 = inFromServer.readObject();
@@ -129,7 +127,7 @@ public class ServerTest {
 		MessageCommand messageCommandInsertTwo = new MessageCommand();
 		messageCommandInsertTwo.setTypeCommand(ETypeCommand.INSERT);
 		messageCommandInsertTwo.setObjectId((long) 3);
-		messageCommandInsertTwo.setArgs(new String[] {"3","meme"});
+		messageCommandInsertTwo.setArgs(new String[] {"meme"});
 		outToServer.writeObject(messageCommandInsertTwo);
 
 		objectReceiver1 = inFromServer.readObject();
@@ -139,7 +137,6 @@ public class ServerTest {
 		MessageCommand messageCommandSelectTwo = new MessageCommand();
 		messageCommandSelectTwo.setTypeCommand(ETypeCommand.SELECT);
 		messageCommandSelectTwo.setObjectId((long) 3);
-		messageCommandSelectTwo.setArgs(new String[] {"3"});
 		outToServer.writeObject(messageCommandSelectTwo);
 
 		objectReceiver1 = inFromServer.readObject();
@@ -150,7 +147,6 @@ public class ServerTest {
 		MessageCommand messageCommandDelete = new MessageCommand();
 		messageCommandDelete.setTypeCommand(ETypeCommand.DELETE);
 		messageCommandDelete.setObjectId((long) 3);
-		messageCommandDelete.setArgs(new String[] {"3"});
 		outToServer.writeObject(messageCommandDelete);
 
 		objectReceiver1 = inFromServer.readObject();
