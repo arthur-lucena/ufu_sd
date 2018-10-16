@@ -29,25 +29,25 @@
  - [x] 1 thread consumindo de F3 aplicando o comando no banco de dados.
 
 ***Gravação dos comandos em um arquivo de log***
- - [ ] mantendo o arquivo aberto durante a execução do programa
- - [ ] adicionando comandos sempre ao fim do arquivo
- - [ ] somente se o comando altera a base de dados (Reads são descartados)
+ - [x] mantendo o arquivo aberto durante a execução do programa
+ - [x] adicionando comandos sempre ao fim do arquivo
+ - [x] somente se o comando altera a base de dados (Reads são descartados)
 
 ***Execução dos comando***
- - [ ] contra o mapa(?)
- - [ ] emitindo mensages de sucesso (create/update/delete)
- - [ ] respondendo com informação solicitada (read)
- - [ ] emitindo erros quando adequado (create/update/delete/read)
- - [ ] na ordem em que os comandos foram enfileirados em F3
+ - [x] contra o mapa(?)
+ - [x] emitindo mensages de sucesso (create/update/delete)
+ - [x] respondendo com informação solicitada (read)
+ - [x] emitindo erros quando adequado (create/update/delete/read)
+ - [x] na ordem em que os comandos foram enfileirados em F3
 
 **Tolerância a falhas**
 Como o mapa é mantido em memória, no caso de falhas, todo o banco apagado. Para recuperá-lo
 
- - [ ] Na reinicialização do processo 
- - [ ] abra o arquivo de log
- - [ ] e processe-o na sequência em que foi escrito
- - [ ] reexecutando todas as operações gravadas 
- - [ ] antes de aceitar novas requisições de clientes.
+ - [x] Na reinicialização do processo 
+ - [x] abra o arquivo de log
+ - [x] e processe-o na sequência em que foi escrito
+ - [x] reexecutando todas as operações gravadas 
+ - [x] antes de aceitar novas requisições de clientes.
 
 **
 
