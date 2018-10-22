@@ -7,12 +7,12 @@ Em época de Big Data, um banco de dados com apenas um servidor é uma nulidade.
 **Roteamento** 
 De acordo com a especificação da entrega anterior, cada requisição é colocada em uma fila F1, de onde é re-enfileirada nas filas F2 e F3. 
 
- - Para esta entrega, antes de re-enfileirar a mensagem, o servidor
-   deverá analisar se é realmente responsabilidade deste servidor.
-
+- Para esta entrega, antes de re-enfileirar a mensagem, o servidor deverá analisar se é realmente responsabilidade deste servidor.
 - Caso o seja, a requisição é re-enfileirada em F2 e F3. Caso contrário, será colocada em uma fila F4. 
 - Um thread retira de F4 e invoca, consultando uma tabela de roteamento, o nó responsável pela requisição para que a processe ou que pelo menos esteja mais próximo que o mesmo. 
 - O servidor primeiro contactado pelo cliente é o responsável por enviar a resposta para o cliente. 
+
+(verificar se o id é de responsabilidade do servidor, se sim seguir o fluxo normal, caso contrário jogar na fila de roteamento e repassar ao servidor adequado)
 
 **Particionamento** 
 O particionamento da responsabilidade sobre os dados seguirá o esquema de anel lógico definido pelo Chord. 
@@ -20,7 +20,7 @@ O particionamento da responsabilidade sobre os dados seguirá o esquema de anel 
 - Cada servidor é identificado por um número de m bits. 
 - O primeiro nó a entrar no sistema recebe necessariamente o identificador 2m − 1
 - O nó seguinte recebe identificador menor 2m/n que o anterior. 
-- Seja uma sequência de nós com identificadores X < Y < Z. O nó Y é responsável pelos dados com chaves na faixa (X, Y]. 
+- Seja uma sequência de nós com identificadores X < Y < Z. O nó Y é responsável pelos dados com chaves na faixa (X, Y].
 
 **Comunicação** 
 - Toda comunicação deve ser agora feira usando gRPC. Cada operação é realizada via uma função diferente (i.e., há uma função para C, outra para R, ...). 
