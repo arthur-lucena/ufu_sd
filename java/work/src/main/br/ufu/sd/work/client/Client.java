@@ -33,7 +33,6 @@ public class Client {
             System.out.println("digite um comando: (insert | update | delete | select) <argumento1:argumento2:argumentoN> - exit : para sair");
             String allCommand = s.nextLine();
 
-            // TODO adicionar argumentos futuramente
             String[] allCommandArray = allCommand.split(" ");
             String stringCommand = allCommandArray[0];
             String[] args = allCommandArray[1].split(":");
