@@ -6,9 +6,7 @@ import br.ufu.sd.work.util.MessageCommand;
 
 import java.util.concurrent.BlockingQueue;
 
-import static br.ufu.sd.work.model.ETypeCommand.DELETE;
-import static br.ufu.sd.work.model.ETypeCommand.INSERT;
-import static br.ufu.sd.work.model.ETypeCommand.UPDATE;
+import static br.ufu.sd.work.model.ETypeCommand.*;
 
 public class LogQueueConsumption implements Runnable {
 

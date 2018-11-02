@@ -7,11 +7,8 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static br.ufu.sd.work.model.ETypeCommand.DELETE;
-import static br.ufu.sd.work.model.ETypeCommand.INSERT;
-import static br.ufu.sd.work.model.ETypeCommand.UPDATE;
+import static br.ufu.sd.work.model.ETypeCommand.*;
 
 /**
  * Created by ismaley on 19/09/18.

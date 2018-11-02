@@ -4,11 +4,6 @@ import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.Metadata;
 import br.ufu.sd.work.server.OutputStreamCommand;
 import br.ufu.sd.work.util.commands.api.ICommand;
-import org.apache.commons.lang3.SerializationUtils;
-
-import java.io.ObjectOutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
 
 import static org.apache.commons.lang3.SerializationUtils.deserialize;
 
