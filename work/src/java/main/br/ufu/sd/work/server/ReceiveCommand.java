@@ -1,6 +1,5 @@
 package br.ufu.sd.work.server;
 
-import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.util.MessageCommand;
 import br.ufu.sd.work.util.commands.Delete;
 import br.ufu.sd.work.util.commands.Insert;

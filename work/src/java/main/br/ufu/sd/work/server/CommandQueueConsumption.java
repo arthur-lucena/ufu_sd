@@ -1,8 +1,7 @@
 package br.ufu.sd.work.server;
 
-import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.log.LogManager;
-import br.ufu.sd.work.model.ETypeCommand;
+import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.util.MessageCommand;
 
 import java.util.concurrent.ArrayBlockingQueue;

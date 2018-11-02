@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import static br.ufu.sd.work.model.ETypeCommand.UPDATE;
 import static java.lang.Thread.currentThread;
 
 public class CommandSender {

@@ -1,11 +1,13 @@
 plugins {
     id 'java'
+    id 'idea'
 }
 
-group 'br.ufu.sd'
+group 'br.ufu.sd.work'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
@@ -15,18 +17,16 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.1'
 }
-group 'br.ufu.sd'
-version '1.0-SNAPSHOT'
-
-sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile 'junit:junit:4.12'
-    compile 'junit:junit:4.12'
-    compile 'junit:junit:4.12'
+idea {
+    module {
+        sourceDirs += file('src/java/main')
+        testSourceDirs += file('src/java/test')
+        
+        jdkName = '1.8'
+    }
 }
