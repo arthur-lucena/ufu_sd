@@ -23,11 +23,11 @@ public class RecoverMapTest {
     @Test
     public void dictionary_recover_test() throws IOException, ClassNotFoundException, InterruptedException {
 
-        Server server = new Server();
+        Server server = new Server("application.properties");
         List<String> responseLog = new ArrayList<>();
         TestClient client = new TestClient(responseLog);
 
-        Thread serverThread = new Thread(() -> server.start(61666));
+        Thread serverThread = new Thread(() -> server.start());
         serverThread.start();
         Thread.sleep(500);
 
@@ -35,7 +35,7 @@ public class RecoverMapTest {
         serverThread.interrupt();
         Thread.sleep(500);
 
-        Thread serverThread2 = new Thread(() -> server.start(61666));
+        Thread serverThread2 = new Thread(() -> server.start());
         serverThread2.start();
         Thread.sleep(500);
 
