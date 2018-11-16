@@ -4,7 +4,6 @@ import br.ufu.sd.work.log.LogManager;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.Metadata;
 import br.ufu.sd.work.util.MessageCommand;
-import sun.rmi.runtime.Log;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
