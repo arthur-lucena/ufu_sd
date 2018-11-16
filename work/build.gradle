@@ -24,8 +24,8 @@ repositories {
 
 idea {
     module {
-        sourceDirs += file('src/java/main')
-        testSourceDirs += file('src/java/test')
+        sourceDirs += file('src/main')
+        testSourceDirs += file('src/test')
         
         jdkName = '1.8'
     }

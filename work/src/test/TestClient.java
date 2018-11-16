@@ -1,4 +1,3 @@
-import br.ufu.sd.work.client.CommandReceiver;
 import br.ufu.sd.work.client.CommandSender;
 import br.ufu.sd.work.util.MessageCommand;
 

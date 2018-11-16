@@ -4,16 +4,14 @@ import br.ufu.sd.work.log.LogManager;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.Metadata;
 import br.ufu.sd.work.util.MessageCommand;
+import sun.rmi.runtime.Log;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,18 +25,29 @@ public class Server {
     private Socket clientSocket;
     private ObjectInputStream inFromClient;
     private ObjectOutputStream outToClient;
+    private Integer serverPort;
+    private String logFilePath;
+    private String startKeyRange;
+    private String endKeyRange;
     private Dictionary dictionary = new Dictionary(new ConcurrentHashMap<>());
-    private LogManager logManager = new LogManager("src/main/br/ufu/sd/work/log/log.txt");
+    private LogManager logManager;
+
+
 
     public static void main(String[] args) {
-        Server server = new Server();
-        server.start(61666);
+        Server server = new Server("configuration.properties");
+        server.start();
     }
 
-    public void start(int port) {
+    public Server(String configurationFileName) {
+        configure(configurationFileName);
+        this.logManager = new LogManager(logFilePath);
+    }
+
+    public void start() {
         try {
             queue = new ArrayBlockingQueue<>(1000000);
-            serverSocket = new ServerSocket(port);
+            serverSocket = new ServerSocket(serverPort);
 
             CommandQueueConsumption runnable = new CommandQueueConsumption(queue, dictionary, logManager);
 
@@ -72,7 +81,6 @@ public class Server {
         }
     }
 
-
     public LogManager getLogManager() {
         return logManager;
     }
@@ -94,6 +102,15 @@ public class Server {
                 Collections.reverse(ids);
             }
         }
+    }
+
+    private void configure(String configurationFileName) {
+        Configuration configuration = new Configuration(configurationFileName);
+        Properties props = configuration.getProp();
+        logFilePath = props.getProperty("server.log.file.path");
+        startKeyRange = props.getProperty("server.key.range").split("-")[0];
+        endKeyRange =  props.getProperty("server.key.range").split("-")[1];
+        serverPort = Integer.valueOf(props.getProperty("server.port"));
     }
 
 }

@@ -2,7 +2,6 @@ import br.ufu.sd.work.util.MessageCommand;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 public class TestCommandReceiver implements Runnable {

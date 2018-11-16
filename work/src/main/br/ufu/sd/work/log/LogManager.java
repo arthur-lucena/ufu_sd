@@ -20,6 +20,8 @@ import static java.util.stream.Collectors.toList;
 public class LogManager {
 
     private Path filePath;
+    private int currentLogFile = 0;
+    private int currentSnapshotFile = 0;
 
     public LogManager(String path) {
         this.filePath = Paths.get(path);
@@ -54,6 +56,14 @@ public class LogManager {
             return mergeInformation(metadataList, removedItems);
         }
         return new LinkedHashMap<>();
+    }
+
+    public void createSnapshot() {
+        //verify if current log file exists
+        //read current log file
+        //create snapshot file
+        //update current snapshot and log
+        System.out.println("creating snapshot file");
     }
 
     private List<String> getLines(List<String> loggedOperations) {
