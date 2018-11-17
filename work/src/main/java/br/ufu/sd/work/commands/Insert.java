@@ -26,16 +26,8 @@ public class Insert implements ICommand<InsertResponse> {
     @Override
     public void exec(StreamObserver<InsertResponse> so, Dictionary dictionary) {
         Metadata metadata = genMetadata(request);
-        boolean duplicate = false;
 
-        for (Long key : dictionary.getData().keySet()) {
-            if (key.equals(metadata.getId())) {
-                duplicate = true;
-                break;
-            }
-        }
-
-        if (!duplicate) {
+        if (!dictionary.getData().containsKey(metadata.getId())) {
             dictionary.getData().put(metadata.getId(), serialize(metadata));
             logger.info("insert with " + metadata);
             so.onNext(InsertResponse.newBuilder().setResponse("inserção realizada: " + metadata).build());
