@@ -57,10 +57,10 @@ public class Server {
 
         logger.info("Server running on port :  " + serverPort);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                System.err.println("*** shutting down the server when the JVM shut down");
-                Server.this.stop();
-                System.err.println("*** server shut down");
-            }
+            System.err.println("*** shutting down the server when the JVM shut down");
+            Server.this.stop();
+            System.err.println("*** server shut down");
+        }
         ));
     }
 

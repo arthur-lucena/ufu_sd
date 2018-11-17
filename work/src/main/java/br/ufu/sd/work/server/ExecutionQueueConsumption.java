@@ -2,7 +2,6 @@ package br.ufu.sd.work.server;
 
 import br.ufu.sd.work.model.Dictionary;
 
-import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 
 public class ExecutionQueueConsumption implements Runnable {

@@ -13,10 +13,6 @@ public enum ETypeCommand {
         this.name = name;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public static ETypeCommand fromString(String s) {
         for (ETypeCommand b : ETypeCommand.values()) {
             if (b.name.equalsIgnoreCase(s)) {
@@ -25,5 +21,9 @@ public enum ETypeCommand {
         }
 
         return null;
+    }
+
+    public String getName() {
+        return name;
     }
 }

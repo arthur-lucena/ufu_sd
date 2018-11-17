@@ -1,7 +1,7 @@
 package br.ufu.sd.work.client;
 
-import br.ufu.sd.work.grpc.request.ExecuteInsert;
 import br.ufu.sd.work.InsertRequest;
+import br.ufu.sd.work.grpc.request.ExecuteInsert;
 import br.ufu.sd.work.model.ETypeCommand;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -33,10 +33,21 @@ public class Client {
             String allCommand = s.nextLine();
 
             String[] allCommandArray = allCommand.split(" ");
+
+            if (allCommandArray.length != 2) {
+                logger.warning("invalid command");
+                continue;
+            }
+
             String stringCommand = allCommandArray[0];
             String[] args = allCommandArray[1].split(":");
 
             ETypeCommand command = ETypeCommand.fromString(stringCommand);
+
+            if (command == null) {
+                logger.warning("invalid command");
+                continue;
+            }
 
             switch (command) {
                 case INSERT:
@@ -73,5 +84,4 @@ public class Client {
 
         logger.info("exiting... =D");
     }
-
 }

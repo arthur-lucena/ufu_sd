@@ -6,5 +6,6 @@ import io.grpc.stub.StreamObserver;
 
 public interface ICommand<T> {
     void exec(StreamObserver<T> so, Dictionary dictionary);
+
     void log(LogManager logManager);
 }
