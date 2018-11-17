@@ -9,6 +9,7 @@ public class LogQueueConsumption implements Runnable {
 
     private BlockingQueue<ICommand> logQueue;
     private LogManager logManager;
+    private ICommand command;
     private volatile boolean running = true;
 
     public LogQueueConsumption(BlockingQueue<ICommand> logQueue, LogManager logManager) {
@@ -34,7 +35,13 @@ public class LogQueueConsumption implements Runnable {
 
     private void consumeCommand() {
         try {
-            logQueue.take().log(logManager);
+            command = logQueue.take();
+
+            if (command.isExecuted()) {
+                command.log(logManager);
+            } else {
+                logQueue.add(command);
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -42,7 +49,7 @@ public class LogQueueConsumption implements Runnable {
 
     private void waitNewCommand() {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(2500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
