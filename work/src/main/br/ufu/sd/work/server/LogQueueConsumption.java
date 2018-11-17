@@ -34,7 +34,7 @@ public class LogQueueConsumption implements Runnable {
             consume();
             if(isLoggable(messageCommand)) {
                 System.out.println("writing new: " + messageCommand.getTypeCommand().name() + " entry on log with data: " + messageCommand.getArgs()[0]);
-                logManager.append(Metadata.fromCommand(messageCommand), messageCommand.getTypeCommand());
+                logManager.appendLog(Metadata.fromCommand(messageCommand), messageCommand.getTypeCommand());
             }
         }
     }

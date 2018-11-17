@@ -41,8 +41,8 @@ public class LoggerManagerTest {
         Metadata metadata = new Metadata(1L , message, createdBy, createdAt, createdBy, updatedAt);
         LogManager logManager = new LogManager(filePath);
         logManager.createFile();
-        logManager.append(metadata, ETypeCommand.INSERT);
-        LinkedHashMap<Long, Metadata> metadataMap = logManager.read();
+        logManager.appendLog(metadata, ETypeCommand.INSERT);
+        LinkedHashMap<Long, Metadata> metadataMap = logManager.recoverInformation();
         Assert.assertEquals(1, metadataMap.size());
         Assert.assertEquals(message, metadataMap.get(1L).getMessage());
         Assert.assertEquals(createdBy, metadataMap.get(1L).getCreatedBy());
@@ -65,14 +65,14 @@ public class LoggerManagerTest {
 
         LogManager logManager = new LogManager(filePath);
         logManager.createFile();
-        logManager.append(metadata, ETypeCommand.INSERT);
-        logManager.append(metadata2, ETypeCommand.INSERT);
-        logManager.append(metadata1, ETypeCommand.UPDATE);
-        logManager.append(metadata3, ETypeCommand.DELETE);
-        logManager.append(metadata4, ETypeCommand.INSERT);
-        logManager.append(metadata5, ETypeCommand.UPDATE);
+        logManager.appendLog(metadata, ETypeCommand.INSERT);
+        logManager.appendLog(metadata2, ETypeCommand.INSERT);
+        logManager.appendLog(metadata1, ETypeCommand.UPDATE);
+        logManager.appendLog(metadata3, ETypeCommand.DELETE);
+        logManager.appendLog(metadata4, ETypeCommand.INSERT);
+        logManager.appendLog(metadata5, ETypeCommand.UPDATE);
 
-        LinkedHashMap<Long, Metadata> metadataMap = logManager.read();
+        LinkedHashMap<Long, Metadata> metadataMap = logManager.recoverInformation();
         Assert.assertEquals(2, metadataMap.size());
         Assert.assertEquals(message2, metadataMap.get(1L).getMessage());
         Assert.assertEquals(null, metadataMap.get(2L));

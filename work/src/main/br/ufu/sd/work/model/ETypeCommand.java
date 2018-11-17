@@ -5,7 +5,8 @@ public enum ETypeCommand {
     UPDATE("update"),
     DELETE("delete"),
     SELECT("select"),
-    EXIT("exit");
+    EXIT("exit"),
+    SNAPSHOT("snap");
 
     private String name;
 

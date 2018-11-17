@@ -46,7 +46,7 @@ public class LogQueueTest {
         t2.start();
 
         Thread.sleep(500);
-        LinkedHashMap<Long, Metadata> data = logManager.read();
+        LinkedHashMap<Long, Metadata> data = logManager.recoverInformation();
 
         Assert.assertTrue(logQueue.isEmpty());
         Assert.assertEquals(1, data.size());
