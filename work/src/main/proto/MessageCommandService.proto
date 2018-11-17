@@ -1,0 +1,30 @@
+syntax = "proto3";
+option java_multliple_files = true;
+package br.ufu.sd.work;
+
+message MessageCommandRequest {
+    enum ETypeCommand {
+        INSERT = 0;
+        UPDATE = 1;
+        DELETE = 2;
+        SELECT = 3;
+        EXIT = 4;
+    }
+
+    string firstName = 1;
+    string lastName = 2;
+    ETypeCommand typeCommand = 3;
+    repeated string args = 4;
+    int64 objectId = 5;
+    int32 idClient = 6;
+    int64 timeStamp = 7;
+    bool executed = 8;
+}
+
+message MessageCommandResponse {
+    string response = 1;
+}
+
+service MessageCommandService {
+    rpc executeCommand(MessageCommandRequest) returns (MessageCommandResponse);
+}

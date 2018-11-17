@@ -1,7 +1,5 @@
-plugins {
-    id 'java'
-    id 'idea'
-}
+apply plugin: 'java'
+apply plugin: 'idea'
 
 group 'br.ufu.sd.work'
 version '1.0-SNAPSHOT'
@@ -24,8 +22,8 @@ repositories {
 
 idea {
     module {
-        sourceDirs += file('src/main')
-        testSourceDirs += file('src/test')
+        sourceDirs += file('src/main/java')
+        testSourceDirs += file('src/test/java')
         
         jdkName = '1.8'
     }
