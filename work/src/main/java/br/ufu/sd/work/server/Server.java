@@ -1,5 +1,6 @@
 package br.ufu.sd.work.server;
 
+import br.ufu.sd.work.grpc.service.ServiceDelete;
 import br.ufu.sd.work.grpc.service.ServiceInsert;
 import br.ufu.sd.work.grpc.service.ServiceSelect;
 import br.ufu.sd.work.log.LogManager;
@@ -54,6 +55,7 @@ public class Server {
         server = ServerBuilder.forPort(serverPort)
                 .addService(new ServiceInsert(queueOne))
                 .addService(new ServiceSelect(queueOne))
+                .addService(new ServiceDelete(queueOne))
                 .build()
                 .start();
 

@@ -20,6 +20,7 @@ public class Insert implements ICommand<InsertResponse> {
     private InsertRequest request;
     private volatile boolean executed = false;
     private volatile boolean executedWithSucess = false;
+    private volatile Metadata metadata;
 
     public Insert(InsertRequest request) {
         this.request = request;
@@ -27,7 +28,7 @@ public class Insert implements ICommand<InsertResponse> {
 
     @Override
     public void exec(StreamObserver<InsertResponse> so, Dictionary dictionary) {
-        Metadata metadata = genMetadata(request);
+        metadata = genMetadata(request);
 
         if (!dictionary.getData().containsKey(metadata.getId())) {
             dictionary.getData().put(metadata.getId(), serialize(metadata));
@@ -46,7 +47,6 @@ public class Insert implements ICommand<InsertResponse> {
     @Override
     public void log(LogManager logManager) {
         if (executedWithSucess) {
-            Metadata metadata = genMetadata(request);
             logger.info("logging with " + metadata);
             logManager.append(metadata, ETypeCommand.INSERT);
         }

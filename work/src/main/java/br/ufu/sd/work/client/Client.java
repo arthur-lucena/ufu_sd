@@ -1,7 +1,9 @@
 package br.ufu.sd.work.client;
 
+import br.ufu.sd.work.DeleteRequest;
 import br.ufu.sd.work.InsertRequest;
 import br.ufu.sd.work.SelectRequest;
+import br.ufu.sd.work.grpc.request.ExecuteDelete;
 import br.ufu.sd.work.grpc.request.ExecuteInsert;
 import br.ufu.sd.work.grpc.request.ExecuteSelect;
 import br.ufu.sd.work.model.ETypeCommand;
@@ -65,6 +67,13 @@ public class Client {
                 case UPDATE:
                     break;
                 case DELETE:
+                    DeleteRequest dr = DeleteRequest.newBuilder()
+                            .setId(Long.valueOf(args[0]))
+                            .setIdClient("1")
+                            .build();
+                    ExecuteDelete ed = new ExecuteDelete(dr, channel, null);
+                    Thread td = new Thread(ed);
+                    td.start();
                     break;
                 case SELECT:
                     SelectRequest sr = SelectRequest.newBuilder()
