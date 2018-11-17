@@ -1,7 +1,9 @@
 package br.ufu.sd.work.client;
 
 import br.ufu.sd.work.InsertRequest;
+import br.ufu.sd.work.SelectRequest;
 import br.ufu.sd.work.grpc.request.ExecuteInsert;
+import br.ufu.sd.work.grpc.request.ExecuteSelect;
 import br.ufu.sd.work.model.ETypeCommand;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -57,14 +59,20 @@ public class Client {
                             .setIdClient("1")
                             .build();
                     ExecuteInsert er = new ExecuteInsert(ir, channel, null);
-                    Thread t = new Thread(er);
-                    t.start();
+                    Thread ti = new Thread(er);
+                    ti.start();
                     break;
                 case UPDATE:
                     break;
                 case DELETE:
                     break;
                 case SELECT:
+                    SelectRequest sr = SelectRequest.newBuilder()
+                            .setId(Long.valueOf(args[0]))
+                            .build();
+                    ExecuteSelect es = new ExecuteSelect(sr, channel, null);
+                    Thread ts = new Thread(es);
+                    ts.start();
                     break;
                 case EXIT:
                     running = false;

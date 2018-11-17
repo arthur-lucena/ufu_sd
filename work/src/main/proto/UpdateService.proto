@@ -1,0 +1,17 @@
+syntax = "proto3";
+option java_multiple_files = true;
+package br.ufu.sd.work;
+
+message UpdateRequest {
+    int64 id = 1;
+    string value = 2;
+    string idClient = 3;
+}
+
+message UpdateResponse {
+    string response = 1;
+}
+
+service UpdateService {
+    rpc update (UpdateRequest) returns (UpdateResponse);
+}
