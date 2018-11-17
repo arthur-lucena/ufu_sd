@@ -75,7 +75,7 @@ idea {
         sourceDirs += file('build/generated/source/proto/main/java')
 
         testSourceDirs += file('src/test/java')
-        
+
         jdkName = '1.8'
     }
 }

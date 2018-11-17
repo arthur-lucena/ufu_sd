@@ -1,14 +1,10 @@
 package br.ufu.sd.work.model;
 
-import br.ufu.sd.work.util.MessageCommand;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
-import static br.ufu.sd.work.model.ETypeCommand.*;
 
 /**
  * Created by ismaley on 19/09/18.
@@ -34,63 +30,6 @@ public class Metadata implements Serializable {
         this.updatedBy = updatedBy;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String toString() {
-        return  "id: " + id + ", " +
-                "message: " + message + ", " +
-                "createdBy: " + createdBy + ", " +
-                "createdAt: " + createdAt + ", " +
-                "updatedBy: " + updatedBy + ", " +
-                "updatedAt: " + updatedAt;
-    }
-
     public static Metadata fromLogString(String metadataLog) {
         List<String> data = Arrays.asList(metadataLog.split(","));
         return new Metadata(
@@ -102,29 +41,67 @@ public class Metadata implements Serializable {
                 Optional.ofNullable(data.get(5)).map(Metadata::resolveDate).orElse(null));
     }
 
-    public static Metadata fromCommand(MessageCommand messageCommand) {
-        if(INSERT.equals(messageCommand.getTypeCommand())) {
-            return new Metadata(messageCommand.getObjectId(), messageCommand.getArgs()[0], String.valueOf(messageCommand.getIdClient()),
-                    messageCommand.getTimeStamp(), String.valueOf(messageCommand.getIdClient()), messageCommand.getTimeStamp());
-        }
-
-        if(UPDATE.equals(messageCommand.getTypeCommand())) {
-            return new Metadata(messageCommand.getObjectId(), messageCommand.getArgs()[0], null,
-                    null, String.valueOf(messageCommand.getIdClient()), messageCommand.getTimeStamp());
-        }
-
-        if(DELETE.equals(messageCommand.getTypeCommand())) {
-            return new Metadata(messageCommand.getObjectId(), null, null,
-                    null, String.valueOf(messageCommand.getIdClient()), messageCommand.getTimeStamp());
-        }
-
-        else return null;
-    }
-
     private static LocalDateTime resolveDate(String date) {
-        if(date.equals("null")) {
+        if (date.equals("null")) {
             return null;
         }
         return LocalDateTime.parse(date);
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String toString() {
+        return "id: " + id + ", " +
+                "message: " + message + ", " +
+                "createdBy: " + createdBy + ", " +
+                "createdAt: " + createdAt + ", " +
+                "updatedBy: " + updatedBy + ", " +
+                "updatedAt: " + updatedAt;
     }
 }

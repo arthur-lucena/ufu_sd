@@ -38,7 +38,7 @@ public class LoggerManagerTest {
     @Test
     public void should_log_metadata() {
 
-        Metadata metadata = new Metadata(1L , message, createdBy, createdAt, createdBy, updatedAt);
+        Metadata metadata = new Metadata(1L, message, createdBy, createdAt, createdBy, updatedAt);
         LogManager logManager = new LogManager(filePath);
         logManager.createFile();
         logManager.append(metadata, ETypeCommand.INSERT);
@@ -56,12 +56,12 @@ public class LoggerManagerTest {
     @Test
     public void should_retrieve_updated_info_from_log() {
 
-        Metadata metadata = new Metadata(1L , message, createdBy, createdAt, createdBy, updatedAt);
-        Metadata metadata1 = new Metadata(1L , message1, null, null, updatedBy, updatedAt.plusSeconds(1));
-        Metadata metadata2 = new Metadata(2L , message, createdBy, createdAt.plusSeconds(2), createdBy, updatedAt.plusSeconds(2));
-        Metadata metadata3 = new Metadata(2L , null, null, null, updatedBy, updatedAt.plusSeconds(3));
-        Metadata metadata4 = new Metadata(3L , message, createdBy, createdAt.plusSeconds(4), createdBy, updatedAt.plusSeconds(4));
-        Metadata metadata5 = new Metadata(1L , message2, createdBy, createdAt.plusSeconds(4), createdBy, updatedAt.plusSeconds(4));
+        Metadata metadata = new Metadata(1L, message, createdBy, createdAt, createdBy, updatedAt);
+        Metadata metadata1 = new Metadata(1L, message1, null, null, updatedBy, updatedAt.plusSeconds(1));
+        Metadata metadata2 = new Metadata(2L, message, createdBy, createdAt.plusSeconds(2), createdBy, updatedAt.plusSeconds(2));
+        Metadata metadata3 = new Metadata(2L, null, null, null, updatedBy, updatedAt.plusSeconds(3));
+        Metadata metadata4 = new Metadata(3L, message, createdBy, createdAt.plusSeconds(4), createdBy, updatedAt.plusSeconds(4));
+        Metadata metadata5 = new Metadata(1L, message2, createdBy, createdAt.plusSeconds(4), createdBy, updatedAt.plusSeconds(4));
 
         LogManager logManager = new LogManager(filePath);
         logManager.createFile();
@@ -83,11 +83,11 @@ public class LoggerManagerTest {
 
     private void deleteFile() {
         try {
-            if(Files.exists(Paths.get(filePath))) {
+            if (Files.exists(Paths.get(filePath))) {
                 Files.delete(Paths.get(filePath));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
- }
+}

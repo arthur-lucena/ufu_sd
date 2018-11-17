@@ -22,7 +22,7 @@ public class Configuration {
     private void configure(String fileName) {
         try {
             input = Configuration.class.getClassLoader().getResourceAsStream(fileName);
-            if(input==null){
+            if (input == null) {
                 System.out.println("Sorry, unable to find " + fileName);
                 return;
             }
@@ -31,8 +31,8 @@ public class Configuration {
 
         } catch (IOException ex) {
             ex.printStackTrace();
-        } finally{
-            if(input!=null){
+        } finally {
+            if (input != null) {
                 try {
                     input.close();
                 } catch (IOException e) {
@@ -41,7 +41,6 @@ public class Configuration {
             }
         }
     }
-
 
 
 }

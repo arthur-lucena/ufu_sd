@@ -1,88 +1,77 @@
 package br.ufu.sd.work.client;
 
+import br.ufu.sd.work.grpc.request.ExecuteInsert;
+import br.ufu.sd.work.InsertRequest;
 import br.ufu.sd.work.model.ETypeCommand;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 public class Client {
     private static final String IP = "127.0.0.1";
     private static final int PORT = 61666;
-    private Socket clientSocket;
-    private ObjectOutputStream outToServer;
-    private ObjectInputStream inFromServer;
+
+    private static final Logger logger = Logger.getLogger(Client.class.getName());
+
+    private ManagedChannel channel;
 
     public static void main(String[] args) {
         new Client().start();
     }
 
     public void start() {
+        channel = ManagedChannelBuilder.forAddress(IP, PORT)
+                .usePlaintext().build();
+
         Scanner s = new Scanner(System.in);
-        createConnection();
         boolean running = true;
 
-        CommandSender cs = new CommandSender(outToServer);
-        CommandReceiver runnable = new CommandReceiver(inFromServer);
-        Thread commandReceiverThread = new Thread(runnable);
-        commandReceiverThread.start();
-
         while (running) {
-            System.out.println("digite um comando: (insert | update | delete | select) <argumento1:argumento2:argumentoN> - exit : para sair");
+            System.out.println("type a command: (insert <id:value> | update <id:value> | delete <id> | select <id>) - exit : to exit");
             String allCommand = s.nextLine();
 
             String[] allCommandArray = allCommand.split(" ");
             String stringCommand = allCommandArray[0];
+            String[] args = allCommandArray[1].split(":");
 
+            ETypeCommand command = ETypeCommand.fromString(stringCommand);
 
-            if (ETypeCommand.INSERT.getName().equals(stringCommand) ||
-                    ETypeCommand.UPDATE.getName().equals(stringCommand) ||
-                    ETypeCommand.DELETE.getName().equals(stringCommand) ||
-                    ETypeCommand.SELECT.getName().equals(stringCommand)) {
-                String[] args = allCommandArray[1].split(":");
+            switch (command) {
+                case INSERT:
+                    InsertRequest ir = InsertRequest.newBuilder()
+                            .setId(Long.valueOf(args[0]))
+                            .setValue(args[1])
+                            .setIdClient("1")
+                            .build();
+                    ExecuteInsert er = new ExecuteInsert(ir, channel, null);
+                    Thread t = new Thread(er);
+                    t.start();
+                    break;
+                case UPDATE:
+                    break;
+                case DELETE:
+                    break;
+                case SELECT:
+                    break;
+                case EXIT:
+                    running = false;
 
-                cs.send(stringCommand, args);
-            } else if (ETypeCommand.EXIT.getName().equals(stringCommand)) {
-                running = false;
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                runnable.terminate();
-
-                try {
-                    commandReceiverThread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    inFromServer.close();
-                    outToServer.close();
-                    clientSocket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else{
-                System.out.println("commando invalido");
+                    break;
+                default:
+                    logger.warning("invalid command");
+                    break;
             }
         }
 
-        System.out.println("saindo... =D");
+        logger.info("exiting... =D");
     }
 
-    private void createConnection() {
-        try {
-            clientSocket = new Socket(IP, PORT);
-            outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
-            inFromServer = new ObjectInputStream(clientSocket.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

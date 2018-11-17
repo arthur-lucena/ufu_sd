@@ -1,82 +1,78 @@
 package br.ufu.sd.work.server;
 
+import br.ufu.sd.work.grpc.service.ServiceInsert;
 import br.ufu.sd.work.log.LogManager;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.Metadata;
-import br.ufu.sd.work.util.MessageCommand;
+import io.grpc.ServerBuilder;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import static org.apache.commons.lang3.SerializationUtils.serialize;
 
 
 public class Server {
-    private BlockingQueue<OutputStreamCommand> queue;
-    private ServerSocket serverSocket;
-    private Socket clientSocket;
-    private ObjectInputStream inFromClient;
-    private ObjectOutputStream outToClient;
-    private Integer serverPort;
+    private static final Logger logger = Logger.getLogger(Server.class.getName());
+    private BlockingQueue<ResponseCommand> queueOne;
+
     private String logFilePath;
-    private String startKeyRange;
-    private String endKeyRange;
     private Dictionary dictionary = new Dictionary(new ConcurrentHashMap<>());
     private LogManager logManager;
 
+    private io.grpc.Server server;
+    private Integer serverPort;
 
-
-    public static void main(String[] args) {
-        Server server = new Server("configuration.properties");
-        server.start();
-    }
 
     public Server(String configurationFileName) {
         configure(configurationFileName);
         this.logManager = new LogManager(logFilePath);
     }
 
-    public void start() {
-        try {
-            queue = new ArrayBlockingQueue<>(1000000);
-            serverSocket = new ServerSocket(serverPort);
+    public static void main(String[] args) throws IOException, InterruptedException {
+        Server server = new Server("configuration.properties");
+        server.start();
+        server.blockUntilShutdown();
+    }
 
-            CommandQueueConsumption runnable = new CommandQueueConsumption(queue, dictionary, logManager);
+    public void start() throws IOException {
+        queueOne = new ArrayBlockingQueue<>(1000000);
 
-            createLogFileIfNeeded();
-            recreateDictionaryIfNeeded(runnable);
+        QueueOneConsumption queueOneConsumption = new QueueOneConsumption(queueOne, dictionary, logManager);
 
+        createLogFileIfNeeded();
+        recreateDictionaryIfNeeded();
 
-            Thread t = new Thread(runnable);
-            t.start();
+        Thread threadStarter = new Thread(queueOneConsumption);
+        threadStarter.start();
 
-            while (true) {
-                clientSocket = serverSocket.accept();
+        server = ServerBuilder.forPort(serverPort)
+                .addService(new ServiceInsert(queueOne))
+                .build()
+                .start();
 
-                System.out.println(clientSocket);
-
-                outToClient = new ObjectOutputStream(clientSocket.getOutputStream());
-                inFromClient = new ObjectInputStream(clientSocket.getInputStream());
-
-                outToClient.writeObject(new MessageCommand());
-
-                new Thread(new ReceiveCommand(inFromClient, outToClient, queue)).start();
+        logger.info("Server running on port :  " + serverPort);
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                System.err.println("*** shutting down the server when the JVM shut down");
+                Server.this.stop();
+                System.err.println("*** server shut down");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                serverSocket.close();
-            } catch (IOException e1) {
+        ));
+    }
 
-            }
+    public void blockUntilShutdown() throws InterruptedException {
+        if (server != null) {
+            server.awaitTermination();
+        }
+    }
+
+    private void stop() {
+        if (server != null) {
+            server.shutdown();
         }
     }
 
@@ -92,10 +88,10 @@ public class Server {
         logManager.createFile();
     }
 
-    private void recreateDictionaryIfNeeded(CommandQueueConsumption runnable) {
+    private void recreateDictionaryIfNeeded() {
         if (dictionary.getData().isEmpty()) {
             LinkedHashMap<Long, Metadata> loggedData = logManager.read();
-            if(!loggedData.isEmpty()) {
+            if (!loggedData.isEmpty()) {
                 loggedData.forEach((k, v) -> dictionary.getData().put(k, serialize(v)));
                 List<Long> ids = new ArrayList<>(loggedData.keySet());
                 Collections.reverse(ids);
@@ -107,8 +103,6 @@ public class Server {
         Configuration configuration = new Configuration(configurationFileName);
         Properties props = configuration.getProp();
         logFilePath = props.getProperty("server.log.file.path");
-        startKeyRange = props.getProperty("server.key.range").split("-")[0];
-        endKeyRange =  props.getProperty("server.key.range").split("-")[1];
         serverPort = Integer.valueOf(props.getProperty("server.port"));
     }
 
