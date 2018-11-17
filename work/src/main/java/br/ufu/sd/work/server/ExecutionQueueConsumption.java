@@ -2,17 +2,16 @@ package br.ufu.sd.work.server;
 
 import br.ufu.sd.work.model.Dictionary;
 
-import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 
 public class ExecutionQueueConsumption implements Runnable {
 
-    private BlockingQueue<OutputStreamCommand> executionQueue;
-    private OutputStreamCommand osc;
+    private BlockingQueue<ResponseCommand> executionQueue;
+    private ResponseCommand responseCommand;
     private volatile boolean running = true;
     private Dictionary dictionary;
 
-    public ExecutionQueueConsumption(BlockingQueue<OutputStreamCommand> executionQueue, Dictionary dictionary) {
+    public ExecutionQueueConsumption(BlockingQueue<ResponseCommand> executionQueue, Dictionary dictionary) {
         this.executionQueue = executionQueue;
         this.dictionary = dictionary;
     }
@@ -25,24 +24,28 @@ public class ExecutionQueueConsumption implements Runnable {
     public void run() {
         while (running) {
             if (executionQueue.isEmpty()) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                waitNewCommand();
                 continue;
             }
 
-            try {
-                osc = executionQueue.take();
-                osc.getMessageCommand().getCommand().run(this.osc, this.dictionary);
-                osc.getMessageCommand().setExecuted(true);
-                osc.getOutputClient().writeObject(osc.getMessageCommand());
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            consumeCommand();
+        }
+    }
+
+    private void consumeCommand() {
+        try {
+            responseCommand = executionQueue.take();
+            responseCommand.command.exec(responseCommand.getStreamObserver(), dictionary);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void waitNewCommand() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

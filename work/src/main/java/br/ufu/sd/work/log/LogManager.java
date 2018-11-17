@@ -28,7 +28,7 @@ public class LogManager {
     }
 
     public void createFile() {
-        if(!Files.exists(filePath)) {
+        if (!Files.exists(filePath)) {
             try {
                 Files.createFile(filePath);
             } catch (Exception e) {
@@ -50,9 +50,9 @@ public class LogManager {
         List<Long> removedItems = new ArrayList<>();
         loggedOperations = getLines(loggedOperations);
 
-        if(!loggedOperations.isEmpty()) {
+        if (!loggedOperations.isEmpty()) {
             List<Metadata> metadataList = loggedOperations.stream().map(Metadata::fromLogString).collect(toList());
-             loggedOperations.forEach(s -> findRemovedObjects(s, removedItems));
+            loggedOperations.forEach(s -> findRemovedObjects(s, removedItems));
             return mergeInformation(metadataList, removedItems);
         }
         return new LinkedHashMap<>();
@@ -99,7 +99,7 @@ public class LogManager {
 
     private void findRemovedObjects(String loggedOperations, List<Long> removedIds) {
         List<String> log = Arrays.asList(loggedOperations.split(","));
-        if(DELETE.name().equals(log.get(6))) {
+        if (DELETE.name().equals(log.get(6))) {
             removedIds.add(Long.valueOf(log.get(0)));
         }
     }
@@ -119,10 +119,10 @@ public class LogManager {
     }
 
     private void findCreationInfo(Metadata m, Metadata current) {
-        if(m.getCreatedAt() != null) {
+        if (m.getCreatedAt() != null) {
             current.setCreatedAt(m.getCreatedAt());
         }
-        if(m.getCreatedBy() != null) {
+        if (m.getCreatedBy() != null) {
             current.setCreatedBy(m.getCreatedBy());
         }
     }
