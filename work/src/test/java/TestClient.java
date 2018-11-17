@@ -1,5 +1,3 @@
-import br.ufu.sd.work.client.CommandSender;
-import br.ufu.sd.work.util.MessageCommand;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -17,7 +15,7 @@ public class TestClient {
     private Socket clientSocket;
     private ObjectOutputStream outToServer;
     private ObjectInputStream inFromServer;
-    private CommandSender sender;
+//    private CommandSender sender;
     private TestCommandReceiver receiver;
     private List<String> responseLog;
 
@@ -25,37 +23,37 @@ public class TestClient {
         this.responseLog = responseLog;
     }
 
-    public void start() {
-        createConnection();
-
-        sender = new CommandSender(outToServer);
-        receiver = new TestCommandReceiver(inFromServer, responseLog);
-        Thread commandReceiverThread = new Thread(receiver);
-        commandReceiverThread.start();
-    }
-
-    public void sendCommand(MessageCommand command) throws IOException, ClassNotFoundException {
-        sender.send(command.getTypeCommand().getName(), command.getArgs());
-    }
-
-    public void stop() {
-        receiver.terminate();
-        try {
-            inFromServer.close();
-            outToServer.close();
-            clientSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void createConnection() {
-        try {
-            clientSocket = new Socket(IP, PORT);
-            outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
-            inFromServer = new ObjectInputStream(clientSocket.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    public void start() {
+//        createConnection();
+//
+//        sender = new CommandSender(outToServer);
+//        receiver = new TestCommandReceiver(inFromServer, responseLog);
+//        Thread commandReceiverThread = new Thread(receiver);
+//        commandReceiverThread.start();
+//    }
+//
+//    public void sendCommand(MessageCommand command) throws IOException, ClassNotFoundException {
+//        sender.send(command.getTypeCommand().getName(), command.getArgs());
+//    }
+//
+//    public void stop() {
+//        receiver.terminate();
+//        try {
+//            inFromServer.close();
+//            outToServer.close();
+//            clientSocket.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    private void createConnection() {
+//        try {
+//            clientSocket = new Socket(IP, PORT);
+//            outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
+//            inFromServer = new ObjectInputStream(clientSocket.getInputStream());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }
