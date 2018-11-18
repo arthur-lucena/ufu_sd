@@ -47,7 +47,7 @@ public class Insert implements ICommand<InsertResponse> {
     @Override
     public void log(LogManager logManager) {
         if (executedWithSucess) {
-            logger.info("logging with " + metadata);
+            logger.info("logging INSERT with " + metadata);
             logManager.append(metadata, ETypeCommand.INSERT);
         }
     }
