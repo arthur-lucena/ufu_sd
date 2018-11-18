@@ -46,4 +46,9 @@ public class Select implements ICommand<SelectResponse> {
     public void log(LogManager logManager) {
         logger.info("select dont log in file");
     }
+
+    @Override
+    public boolean isExecuted() {
+        return true;
+    }
 }

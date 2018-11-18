@@ -8,4 +8,6 @@ public interface ICommand<T> {
     void exec(StreamObserver<T> so, Dictionary dictionary);
 
     void log(LogManager logManager);
+
+    boolean isExecuted();
 }
