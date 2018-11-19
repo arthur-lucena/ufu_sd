@@ -35,7 +35,7 @@ public class LoggerManagerTest {
     @Test
     public void should_create_log_file() {
         LogManager logManager = new LogManager(filePath, filePath, serverId);
-        logManager.createFile();
+        logManager.createLogFile();
 
         Assert.assertTrue(Files.exists(Paths.get(filePath+expectedLogFileName)));
     }
@@ -45,7 +45,7 @@ public class LoggerManagerTest {
 
         Metadata metadata = new Metadata(1L, message, createdBy, createdAt, createdBy, updatedAt);
         LogManager logManager = new LogManager(filePath, filePath, serverId);
-        logManager.createFile();
+        logManager.createLogFile();
         logManager.appendLog(metadata, ETypeCommand.INSERT);
         LinkedHashMap<Long, Metadata> metadataMap = logManager.recoverInformation();
         Assert.assertEquals(1, metadataMap.size());
@@ -68,7 +68,7 @@ public class LoggerManagerTest {
         Metadata metadata5 = new Metadata(1L, message2, createdBy, createdAt.plusSeconds(4), createdBy, updatedAt.plusSeconds(4));
 
         LogManager logManager = new LogManager(filePath, filePath, serverId);
-        logManager.createFile();
+        logManager.createLogFile();
         logManager.appendLog(metadata, ETypeCommand.INSERT);
         logManager.appendLog(metadata2, ETypeCommand.INSERT);
         logManager.appendLog(metadata1, ETypeCommand.UPDATE);
@@ -88,7 +88,7 @@ public class LoggerManagerTest {
     public void should_create_snapshot_file() {
         Metadata metadata = new Metadata(1L, message, createdBy, createdAt, createdBy, updatedAt);
         LogManager logManager = new LogManager(filePath, filePath, serverId);
-        logManager.createFile();
+        logManager.createLogFile();
         logManager.appendLog(metadata, ETypeCommand.INSERT);
 
         logManager.snapshot();
@@ -111,7 +111,7 @@ public class LoggerManagerTest {
         Metadata metadata6 = new Metadata(3L, message2, createdBy, createdAt.plusSeconds(4), createdBy, updatedAt.plusSeconds(4));
 
         LogManager logManager = new LogManager(filePath, filePath, serverId);
-        logManager.createFile();
+        logManager.createLogFile();
         logManager.appendLog(metadata, ETypeCommand.INSERT);
         logManager.appendLog(metadata2, ETypeCommand.INSERT);
         logManager.appendLog(metadata1, ETypeCommand.UPDATE);

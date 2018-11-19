@@ -2,6 +2,7 @@ package br.ufu.sd.work.log;
 
 import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.model.Metadata;
+import br.ufu.sd.work.server.Server;
 import com.google.common.collect.ImmutableMap;
 
 import java.io.IOException;
@@ -11,6 +12,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -32,21 +34,25 @@ public class LogManager {
     private int currentSnapshotFileNumber;
     private final String log = "log";
     private final String snapshot = "snapshot";
+    private static final Logger logger = Logger.getLogger(Server.class.getName());
 
     public LogManager(String logFileLocation, String snapshotFileLocation, Integer serverId) {
         this.logFileLocation = logFileLocation;
         this.snapshotFileLocation = snapshotFileLocation;
         this.serverId = serverId;
+        this.currentLogFileNumber = getCurrentFileNumber(logFileLocation, serverId, log);
+        this.currentSnapshotFileNumber = getCurrentFileNumber(logFileLocation, serverId, snapshot);
     }
     
     public ImmutableMap<String, Integer> getCurrentCount() {
         return ImmutableMap.of(log, currentLogFileNumber, snapshot, currentSnapshotFileNumber);
     }
 
-    public void createFile() {
+    public void createLogFile() {
         if(!Files.exists(currentLogFilePath())) {
             try {
                 Files.createFile(currentLogFilePath());
+                deleteOldFileIfNeeded(logFileLocation, log, currentLogFileNumber - 3);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -95,13 +101,13 @@ public class LogManager {
 
     public void snapshot() {
         if(Files.exists(currentLogFilePath())) {
+            logger.info("creating new snapshot file: " + currentSnapshotFilePath().toString());
             createSnapshot();
             currentSnapshotFileNumber++;
+            deleteOldFileIfNeeded(logFileLocation, snapshot, currentLogFileNumber - 3);
             currentLogFileNumber++;
-            createFile();
-            //delete old log and snapshot files
+            createLogFile();
         }
-        System.out.println("creating snapshot file");
     }
 
     private void appendSnapshotInformation(Metadata metadata, ETypeCommand commandType) {
@@ -190,6 +196,18 @@ public class LogManager {
     //use on all filePath calls
     private String resolveCurrentPath(String filePath, String fileType, int current) {
         return String.format("%s[server-%s]%s-%s.%s", filePath, serverId, fileType, current, "txt");
+    }
+
+    private void deleteOldFileIfNeeded(String fileLocation, String fileType, int fileNumber) {
+        Path fileTobeDeleted = Paths.get(resolveCurrentPath(fileLocation, fileType, fileNumber));
+        if(Files.exists(fileTobeDeleted)) {
+            logger.info("deleting old " + fileType + "file: " + fileTobeDeleted.toString());
+            try {
+                Files.delete(fileTobeDeleted);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 

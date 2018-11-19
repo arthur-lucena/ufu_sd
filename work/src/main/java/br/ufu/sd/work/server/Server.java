@@ -87,7 +87,7 @@ public class Server {
     }
 
     private void createLogFileIfNeeded() {
-        logManager.createFile();
+        logManager.createLogFile();
     }
 
     private void recreateDictionaryIfNeeded() {
