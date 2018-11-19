@@ -6,16 +6,20 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 public class LoggerManagerTest {
 
     private String filePath = "src/test/";
     private String expectedLogFileName = "[server-1]log-0.txt";
-    private String nextLogFileName = "[server-1]log-1.txt";
     private String expectedSnapFileName = "[server-1]snapshot-0.txt";
     private Integer serverId = 1;
     private String message = "hello you";
@@ -29,12 +33,12 @@ public class LoggerManagerTest {
     @After
     @Before
     public void clean() {
-        deleteTestFiles();
+        deleteTestFiles(filePath);
     }
 
     @Test
     public void should_create_log_file() {
-        LogManager logManager = new LogManager(filePath, filePath, serverId);
+        LogManager logManager = new LogManager(filePath, serverId);
         logManager.createLogFile();
 
         Assert.assertTrue(Files.exists(Paths.get(filePath+expectedLogFileName)));
@@ -44,7 +48,7 @@ public class LoggerManagerTest {
     public void should_log_metadata() {
 
         Metadata metadata = new Metadata(1L, message, createdBy, createdAt, createdBy, updatedAt);
-        LogManager logManager = new LogManager(filePath, filePath, serverId);
+        LogManager logManager = new LogManager(filePath, serverId);
         logManager.createLogFile();
         logManager.appendLog(metadata, ETypeCommand.INSERT);
         LinkedHashMap<Long, Metadata> metadataMap = logManager.recoverInformation();
@@ -67,7 +71,7 @@ public class LoggerManagerTest {
         Metadata metadata4 = new Metadata(3L, message, createdBy, createdAt.plusSeconds(4), createdBy, updatedAt.plusSeconds(4));
         Metadata metadata5 = new Metadata(1L, message2, createdBy, createdAt.plusSeconds(4), createdBy, updatedAt.plusSeconds(4));
 
-        LogManager logManager = new LogManager(filePath, filePath, serverId);
+        LogManager logManager = new LogManager(filePath, serverId);
         logManager.createLogFile();
         logManager.appendLog(metadata, ETypeCommand.INSERT);
         logManager.appendLog(metadata2, ETypeCommand.INSERT);
@@ -87,7 +91,7 @@ public class LoggerManagerTest {
     @Test
     public void should_create_snapshot_file() {
         Metadata metadata = new Metadata(1L, message, createdBy, createdAt, createdBy, updatedAt);
-        LogManager logManager = new LogManager(filePath, filePath, serverId);
+        LogManager logManager = new LogManager(filePath, serverId);
         logManager.createLogFile();
         logManager.appendLog(metadata, ETypeCommand.INSERT);
 
@@ -109,8 +113,9 @@ public class LoggerManagerTest {
         Metadata metadata4 = new Metadata(3L, message, createdBy, createdAt.plusSeconds(4), createdBy, updatedAt.plusSeconds(4));
         Metadata metadata5 = new Metadata(1L, message2, createdBy, createdAt.plusSeconds(4), createdBy, updatedAt.plusSeconds(4));
         Metadata metadata6 = new Metadata(3L, message2, createdBy, createdAt.plusSeconds(4), createdBy, updatedAt.plusSeconds(4));
+        Metadata metadata7 = new Metadata(4L, message, createdBy, createdAt.plusSeconds(4), createdBy, updatedAt.plusSeconds(4));
 
-        LogManager logManager = new LogManager(filePath, filePath, serverId);
+        LogManager logManager = new LogManager(filePath, serverId);
         logManager.createLogFile();
         logManager.appendLog(metadata, ETypeCommand.INSERT);
         logManager.appendLog(metadata2, ETypeCommand.INSERT);
@@ -122,26 +127,34 @@ public class LoggerManagerTest {
         logManager.snapshot();
 
         logManager.appendLog(metadata6, ETypeCommand.UPDATE);
+        logManager.appendLog(metadata7, ETypeCommand.INSERT);
+
+        logManager.snapshot();
 
         LinkedHashMap<Long, Metadata> metadataMap = logManager.recoverInformation();
-        Assert.assertEquals(2, metadataMap.size());
+        Assert.assertEquals(3, metadataMap.size());
         Assert.assertEquals(message2, metadataMap.get(1L).getMessage());
         Assert.assertEquals(null, metadataMap.get(2L));
         Assert.assertEquals(message2, metadataMap.get(3L).getMessage());
+        Assert.assertEquals(message, metadataMap.get(4L).getMessage());
 
     }
 
-    private void deleteTestFiles() {
-        deleteFile(expectedLogFileName);
-        deleteFile(expectedSnapFileName);
-        deleteFile(nextLogFileName);
-    }
-
-    private void deleteFile(String fileName) {
+    private void deleteTestFiles(String filePath) {
         try {
-            if (Files.exists(Paths.get(filePath+fileName))) {
-                Files.delete(Paths.get(filePath+fileName));
-            }
+            List<Path> files = Files.list(Paths.get(filePath))
+                    .filter(s -> s.toString().endsWith(".txt"))
+                    .collect(toList());
+
+            files.forEach(f -> {
+                if(Files.exists(f)) {
+                    try {
+                        Files.delete(f);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
