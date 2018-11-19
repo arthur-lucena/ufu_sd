@@ -47,7 +47,7 @@ public class Delete implements ICommand<DeleteResponse> {
         if (executedWithSucess) {
             Metadata metadata = genMetadata(request);
             logger.info("logging DELETE with " + metadata);
-            logManager.append(metadata, ETypeCommand.DELETE);
+            logManager.appendLog(metadata, ETypeCommand.DELETE);
         }
     }
 
