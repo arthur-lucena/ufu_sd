@@ -12,6 +12,6 @@ public class SnapshotTask extends TimerTask {
 
     @Override
     public void run() {
-        logManager.createSnapshot();
+        logManager.snapshot();
     }
 }

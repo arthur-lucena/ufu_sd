@@ -1,5 +1,4 @@
 import br.ufu.sd.work.model.ETypeCommand;
-import br.ufu.sd.work.util.MessageCommand;
 import org.junit.Assert;
 import org.junit.Test;
 

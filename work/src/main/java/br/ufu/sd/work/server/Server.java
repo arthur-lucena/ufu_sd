@@ -24,6 +24,10 @@ public class Server {
     private BlockingQueue<ResponseCommand> queueOne;
 
     private String logFilePath;
+    private String snapshotFilePath;
+    private Integer serverId;
+    private String startKeyRange;
+    private String endKeyRange;
     private Dictionary dictionary = new Dictionary(new ConcurrentHashMap<>());
     private LogManager logManager;
 
@@ -33,7 +37,7 @@ public class Server {
 
     public Server(String configurationFileName) {
         configure(configurationFileName);
-        this.logManager = new LogManager(logFilePath);
+        this.logManager = new LogManager(logFilePath, snapshotFilePath, serverId);
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -82,22 +86,14 @@ public class Server {
         }
     }
 
-    public LogManager getLogManager() {
-        return logManager;
-    }
-
-    public Dictionary getDictionary() {
-        return dictionary;
-    }
-
     private void createLogFileIfNeeded() {
-        logManager.createFile();
+        logManager.createLogFile();
     }
 
     private void recreateDictionaryIfNeeded() {
         if (dictionary.getData().isEmpty()) {
-            LinkedHashMap<Long, Metadata> loggedData = logManager.read();
-            if (!loggedData.isEmpty()) {
+            LinkedHashMap<Long, Metadata> loggedData = logManager.recoverInformation();
+            if(!loggedData.isEmpty()) {
                 loggedData.forEach((k, v) -> dictionary.getData().put(k, serialize(v)));
                 List<Long> ids = new ArrayList<>(loggedData.keySet());
                 Collections.reverse(ids);
@@ -109,7 +105,11 @@ public class Server {
         Configuration configuration = new Configuration(configurationFileName);
         Properties props = configuration.getProp();
         logFilePath = props.getProperty("server.log.file.path");
+        logFilePath = props.getProperty("server.log.snapshot.file.path");
+        startKeyRange = props.getProperty("server.key.range").split("-")[0];
+        endKeyRange =  props.getProperty("server.key.range").split("-")[1];
         serverPort = Integer.valueOf(props.getProperty("server.port"));
+        serverId = Integer.valueOf(props.getProperty("server.id"));
     }
 
 }

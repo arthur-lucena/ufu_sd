@@ -2,16 +2,23 @@ package br.ufu.sd.work.log;
 
 import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.model.Metadata;
+import br.ufu.sd.work.server.Server;
+import com.google.common.collect.ImmutableMap;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static br.ufu.sd.work.model.ETypeCommand.DELETE;
+import static br.ufu.sd.work.model.ETypeCommand.SNAPSHOT;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -19,25 +26,95 @@ import static java.util.stream.Collectors.toList;
  */
 public class LogManager {
 
-    private Path filePath;
-    private int currentLogFile = 0;
-    private int currentSnapshotFile = 0;
+    private String logFileLocation;
+    //TODO: usar mesmo location pra log e snapshot
+    private String snapshotFileLocation;
+    private Integer serverId;
+    private int currentLogFileNumber;
+    private int currentSnapshotFileNumber;
+    private final String log = "log";
+    private final String snapshot = "snapshot";
+    private static final Logger logger = Logger.getLogger(Server.class.getName());
 
-    public LogManager(String path) {
-        this.filePath = Paths.get(path);
+    public LogManager(String logFileLocation, String snapshotFileLocation, Integer serverId) {
+        this.logFileLocation = logFileLocation;
+        this.snapshotFileLocation = snapshotFileLocation;
+        this.serverId = serverId;
+        this.currentLogFileNumber = getCurrentFileNumber(logFileLocation, serverId, log);
+        this.currentSnapshotFileNumber = getCurrentFileNumber(logFileLocation, serverId, snapshot);
+    }
+    
+    public ImmutableMap<String, Integer> getCurrentCount() {
+        return ImmutableMap.of(log, currentLogFileNumber, snapshot, currentSnapshotFileNumber);
     }
 
-    public void createFile() {
-        if (!Files.exists(filePath)) {
+    public void createLogFile() {
+        if(!Files.exists(currentLogFilePath())) {
             try {
-                Files.createFile(filePath);
+                Files.createFile(currentLogFilePath());
+                deleteOldFileIfNeeded(logFileLocation, log, currentLogFileNumber - 3);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void append(Metadata metadata, ETypeCommand commandType) {
+    public void appendLog(Metadata metadata, ETypeCommand commandType) {
+        appendInformation(metadata, commandType, currentLogFilePath());
+    }
+
+    public LinkedHashMap<Long, Metadata> recoverInformation() {
+        currentLogFileNumber = getCurrentFileNumber(logFileLocation, serverId, log);
+        currentSnapshotFileNumber = getCurrentFileNumber(logFileLocation, serverId, snapshot);
+
+        LinkedHashMap<Long, Metadata> itemsFromLog = recoverLogInformation(currentLogFilePath());
+        LinkedHashMap<Long, Metadata> itemsFromSnapShot = recoverSnapShotInformation(currentSnapshotFilePath());
+        itemsFromSnapShot.putAll(itemsFromLog);
+        return itemsFromSnapShot;
+    }
+
+    private LinkedHashMap<Long, Metadata> recoverSnapShotInformation(Path filepath) {
+        LinkedHashMap<Long, Metadata> objects = new LinkedHashMap<>();
+        List<String> snapshotedObjects = new ArrayList<>();
+        snapshotedObjects = getLines(snapshotedObjects, filepath);
+
+        if(!snapshotedObjects.isEmpty()) {
+            List<Metadata> metadataList = snapshotedObjects.stream().map(Metadata::fromLogString).collect(toList());
+            metadataList.forEach(s -> objects.put(s.getId(), s));
+            return objects;
+        }
+        return objects;
+    }
+
+    private LinkedHashMap<Long, Metadata> recoverLogInformation(Path filePath) {
+        List<String> loggedOperations = new ArrayList<>();
+        List<Long> removedItems = new ArrayList<>();
+        loggedOperations = getLines(loggedOperations, filePath);
+
+        if(!loggedOperations.isEmpty()) {
+            List<Metadata> metadataList = loggedOperations.stream().map(Metadata::fromLogString).collect(toList());
+             loggedOperations.forEach(s -> findRemovedObjects(s, removedItems));
+            return mergeInformation(metadataList, removedItems);
+        }
+        return new LinkedHashMap<>();
+    }
+
+    public void snapshot() {
+        if(Files.exists(currentLogFilePath())) {
+            logger.info("creating new snapshot file: " + currentSnapshotFilePath().toString());
+            createSnapshot();
+            currentSnapshotFileNumber++;
+            deleteOldFileIfNeeded(logFileLocation, snapshot, currentLogFileNumber - 3);
+            currentLogFileNumber++;
+            createLogFile();
+        }
+    }
+
+    private void appendSnapshotInformation(Metadata metadata, ETypeCommand commandType) {
+        appendInformation(metadata, commandType, currentSnapshotFilePath());
+    }
+
+    private void appendInformation(Metadata metadata, ETypeCommand commandType, Path filePath) {
         try {
             Files.write(filePath, getMetadataAsWritableString(metadata, commandType).getBytes(), StandardOpenOption.APPEND);
         } catch (Exception e) {
@@ -45,37 +122,18 @@ public class LogManager {
         }
     }
 
-    public LinkedHashMap<Long, Metadata> read() {
-        List<String> loggedOperations = new ArrayList<>();
-        List<Long> removedItems = new ArrayList<>();
-        loggedOperations = getLines(loggedOperations);
-
-        if (!loggedOperations.isEmpty()) {
-            List<Metadata> metadataList = loggedOperations.stream().map(Metadata::fromLogString).collect(toList());
-            loggedOperations.forEach(s -> findRemovedObjects(s, removedItems));
-            return mergeInformation(metadataList, removedItems);
+    private List<String> getLines(List<String> loggedOperations, Path filePath) {
+        if(Files.exists(filePath)) {
+            try {
+                loggedOperations = Files.readAllLines(filePath);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return loggedOperations;
         }
-        return new LinkedHashMap<>();
+        System.out.println("file with path: " + filePath.toString() + " requested to recover information does not exist");
+        return new ArrayList<>();
     }
-
-    public void createSnapshot() {
-        //verify if current log file exists
-        //read current log file
-        //create snapshot file
-        //update current snapshot and log
-        System.out.println("creating snapshot file");
-    }
-
-    private List<String> getLines(List<String> loggedOperations) {
-        try {
-            loggedOperations = Files.readAllLines(filePath);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return loggedOperations;
-    }
-
 
     private String getMetadataAsWritableString(Metadata metadata, ETypeCommand commandType) {
         return String.format("%s,%s,%s,%s,%s,%s,%s\n",
@@ -99,7 +157,7 @@ public class LogManager {
 
     private void findRemovedObjects(String loggedOperations, List<Long> removedIds) {
         List<String> log = Arrays.asList(loggedOperations.split(","));
-        if (DELETE.name().equals(log.get(6))) {
+        if(DELETE.name().equals(log.get(6))) {
             removedIds.add(Long.valueOf(log.get(0)));
         }
     }
@@ -119,11 +177,76 @@ public class LogManager {
     }
 
     private void findCreationInfo(Metadata m, Metadata current) {
-        if (m.getCreatedAt() != null) {
+        if(m.getCreatedAt() != null) {
             current.setCreatedAt(m.getCreatedAt());
         }
-        if (m.getCreatedBy() != null) {
+        if(m.getCreatedBy() != null) {
             current.setCreatedBy(m.getCreatedBy());
         }
     }
+
+    private Path currentSnapshotFilePath() {
+        return Paths.get(resolveCurrentPath(snapshotFileLocation, "snapshot", currentSnapshotFileNumber));
+    }
+
+    private Path currentLogFilePath() {
+        return Paths.get(resolveCurrentPath(logFileLocation, "log", currentLogFileNumber));
+    }
+
+    //use on all filePath calls
+    private String resolveCurrentPath(String filePath, String fileType, int current) {
+        return String.format("%s[server-%s]%s-%s.%s", filePath, serverId, fileType, current, "txt");
+    }
+
+    private void deleteOldFileIfNeeded(String fileLocation, String fileType, int fileNumber) {
+        Path fileTobeDeleted = Paths.get(resolveCurrentPath(fileLocation, fileType, fileNumber));
+        if(Files.exists(fileTobeDeleted)) {
+            logger.info("deleting old " + fileType + "file: " + fileTobeDeleted.toString());
+            try {
+                Files.delete(fileTobeDeleted);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    private Integer getCurrentFileNumber(String fileLocation, Integer serverId, String fileType) {
+        List<Path> files = new ArrayList<>();
+        try {
+            files = Files.list(Paths.get(fileLocation))
+                    .filter(s -> s.toString().endsWith(".txt"))
+                    .filter(s -> s.toString().contains(fileType))
+                    .collect(toList());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(!files.isEmpty()) {
+            List<Integer> fileNumbers = files.stream().map(s -> getCurrent(logFileLocation, serverId, fileType, s.toString())).collect(toList());
+            return Collections.max(fileNumbers);
+        }
+        return 0;
+    }
+
+    private Integer getCurrent(String fileLocation, Integer serverId, String fileType, String filePath) {
+        Matcher m = Pattern.compile(String.format("%s\\[server-%s]%s-(\\d+)\\.txt", fileLocation, serverId, fileType)).matcher(filePath);
+        if(m.matches())
+        {
+            return Integer.valueOf(m.group(1));
+        }
+        return 0;
+    }
+
+    private void createSnapshot() {
+        Path currentSnapshotFileName = currentSnapshotFilePath();
+        try {
+            Files.createFile(currentSnapshotFileName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        LinkedHashMap<Long, Metadata> currentState = recoverLogInformation(currentLogFilePath());
+        currentState.forEach((k,v) -> appendSnapshotInformation(v, SNAPSHOT));
+    }
+
 }

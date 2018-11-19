@@ -58,7 +58,7 @@ public class Update implements ICommand<UpdateResponse> {
     public void log(LogManager logManager) {
         if (executedWithSucess) {
             logger.info("logging UPDATE with " + metadata);
-            logManager.append(metadata, ETypeCommand.UPDATE);
+            logManager.appendLog(metadata, ETypeCommand.UPDATE);
         }
     }
 
