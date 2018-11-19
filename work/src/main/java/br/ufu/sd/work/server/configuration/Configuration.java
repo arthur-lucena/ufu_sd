@@ -1,4 +1,4 @@
-package br.ufu.sd.work.server;
+package br.ufu.sd.work.server.configuration;
 
 import java.io.IOException;
 import java.io.InputStream;

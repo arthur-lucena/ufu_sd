@@ -4,10 +4,14 @@ import br.ufu.sd.work.grpc.service.ServiceDelete;
 import br.ufu.sd.work.grpc.service.ServiceInsert;
 import br.ufu.sd.work.grpc.service.ServiceSelect;
 import br.ufu.sd.work.grpc.service.ServiceUpdate;
-import br.ufu.sd.work.log.LogManager;
-import br.ufu.sd.work.log.SnapshotScheduler;
+import br.ufu.sd.work.server.chord.Chord;
+import br.ufu.sd.work.server.configuration.Configuration;
+import br.ufu.sd.work.server.log.LogManager;
+import br.ufu.sd.work.server.log.SnapshotScheduler;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.Metadata;
+import br.ufu.sd.work.server.queue.QueueOneConsumption;
+import br.ufu.sd.work.server.queue.util.ResponseCommand;
 import io.grpc.ServerBuilder;
 
 import java.io.IOException;
@@ -42,6 +46,7 @@ public class Server {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
+//        new Chord().calcChord();
         Server server = new Server("configuration.properties");
         server.start();
         server.blockUntilShutdown();

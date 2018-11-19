@@ -1,4 +1,4 @@
-package br.ufu.sd.work.server;
+package br.ufu.sd.work.server.queue.util;
 
 import br.ufu.sd.work.commands.api.ICommand;
 import io.grpc.stub.StreamObserver;

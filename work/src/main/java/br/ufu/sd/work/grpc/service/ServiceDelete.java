@@ -4,7 +4,7 @@ import br.ufu.sd.work.DeleteRequest;
 import br.ufu.sd.work.DeleteResponse;
 import br.ufu.sd.work.DeleteServiceGrpc;
 import br.ufu.sd.work.commands.Delete;
-import br.ufu.sd.work.server.ResponseCommand;
+import br.ufu.sd.work.server.queue.util.ResponseCommand;
 import io.grpc.stub.StreamObserver;
 
 import java.util.concurrent.BlockingQueue;
