@@ -4,12 +4,15 @@ import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.model.Metadata;
 import com.google.common.collect.ImmutableMap;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static br.ufu.sd.work.model.ETypeCommand.DELETE;
@@ -22,6 +25,7 @@ import static java.util.stream.Collectors.toList;
 public class LogManager {
 
     private String logFileLocation;
+    //TODO: usar mesmo location pra log e snapshot
     private String snapshotFileLocation;
     private Integer serverId;
     private int currentLogFileNumber;
@@ -54,8 +58,11 @@ public class LogManager {
     }
 
     public LinkedHashMap<Long, Metadata> recoverInformation() {
+        currentLogFileNumber = getCurrentFileNumber(logFileLocation, serverId, log);
+        currentSnapshotFileNumber = getCurrentFileNumber(logFileLocation, serverId, snapshot);
+
         LinkedHashMap<Long, Metadata> itemsFromLog = recoverLogInformation(currentLogFilePath());
-        LinkedHashMap<Long, Metadata> itemsFromSnapShot = recoverSnapShotInformation(latestSnapshotFilePath());
+        LinkedHashMap<Long, Metadata> itemsFromSnapShot = recoverSnapShotInformation(currentSnapshotFilePath());
         itemsFromSnapShot.putAll(itemsFromLog);
         return itemsFromSnapShot;
     }
@@ -172,10 +179,6 @@ public class LogManager {
         }
     }
 
-    private Path latestSnapshotFilePath() {
-        return Paths.get(resolveCurrentPath(snapshotFileLocation, "snapshot", currentSnapshotFileNumber - 1));
-    }
-
     private Path currentSnapshotFilePath() {
         return Paths.get(resolveCurrentPath(snapshotFileLocation, "snapshot", currentSnapshotFileNumber));
     }
@@ -187,6 +190,34 @@ public class LogManager {
     //use on all filePath calls
     private String resolveCurrentPath(String filePath, String fileType, int current) {
         return String.format("%s[server-%s]%s-%s.%s", filePath, serverId, fileType, current, "txt");
+    }
+
+
+    private Integer getCurrentFileNumber(String fileLocation, Integer serverId, String fileType) {
+        List<Path> files = new ArrayList<>();
+        try {
+            files = Files.list(Paths.get(fileLocation))
+                    .filter(s -> s.toString().endsWith(".txt"))
+                    .filter(s -> s.toString().contains(fileType))
+                    .collect(toList());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(!files.isEmpty()) {
+            List<Integer> fileNumbers = files.stream().map(s -> getCurrent(logFileLocation, serverId, fileType, s.toString())).collect(toList());
+            return Collections.max(fileNumbers);
+        }
+        return 0;
+    }
+
+    private Integer getCurrent(String fileLocation, Integer serverId, String fileType, String filePath) {
+        Matcher m = Pattern.compile(String.format("%s\\[server-%s]%s-(\\d+)\\.txt", fileLocation, serverId, fileType)).matcher(filePath);
+        if(m.matches())
+        {
+            return Integer.valueOf(m.group(1));
+        }
+        return 0;
     }
 
     private void createSnapshot() {

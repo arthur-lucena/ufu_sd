@@ -1,6 +1,7 @@
 import br.ufu.sd.work.log.LogManager;
 import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.model.Metadata;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,8 +26,9 @@ public class LoggerManagerTest {
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now().plusMinutes(1);
 
+    @After
     @Before
-    public void setUp() {
+    public void clean() {
         deleteTestFiles();
     }
 
