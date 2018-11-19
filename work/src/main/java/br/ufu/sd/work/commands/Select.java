@@ -1,38 +1,54 @@
 package br.ufu.sd.work.commands;
 
+import br.ufu.sd.work.InsertRequest;
+import br.ufu.sd.work.InsertResponse;
+import br.ufu.sd.work.SelectRequest;
+import br.ufu.sd.work.SelectResponse;
 import br.ufu.sd.work.commands.api.ICommand;
 import br.ufu.sd.work.log.LogManager;
 import br.ufu.sd.work.model.Dictionary;
+import br.ufu.sd.work.model.Metadata;
 import io.grpc.stub.StreamObserver;
 
-public class Select implements ICommand {
-    String response;
-    Integer count = 0;
+import java.time.LocalDateTime;
+import java.util.logging.Logger;
+
+import static org.apache.commons.lang3.SerializationUtils.deserialize;
+import static org.apache.commons.lang3.SerializationUtils.serialize;
+
+public class Select implements ICommand<SelectResponse> {
+    private static final Logger logger = Logger.getLogger(Select.class.getName());
+
+    private SelectRequest request;
+
+    public Select(SelectRequest request) {
+        this.request = request;
+    }
 
     @Override
-    public void exec(StreamObserver so, Dictionary dictionary) {
-//        System.out.println("executing select command for id: " + osc.getMessageCommand().getObjectId());
-//
-//        Integer found = 0;
-//        Long objectId = osc.getMessageCommand().getObjectId();
-//        for (Long key : dictionary.getData().keySet()) {
-//            if (key.equals(objectId)) {
-//
-//                Metadata foundObject = (Metadata) deserialize(dictionary.getData().get(key));
-//                found = found + 1;
-//                System.out.println("object with Id: " + objectId + " found");
-//                osc.getMessageCommand().setStreamObserver("object with Id: " + objectId + " found: " + foundObject.toString());
-//            }
-//        }
-//
-//        if (found == 0) {
-//            System.out.println("object with Id: " + objectId + " not found");
-//            osc.getMessageCommand().setStreamObserver("not found");
-//        }
+    public void exec(StreamObserver<SelectResponse> so, Dictionary dictionary) {
+        byte[] metadataBytes = dictionary.getData().get(request.getId());
+
+        if (metadataBytes != null) {
+            Metadata metadata = deserialize(metadataBytes);
+
+            logger.info("object with Id: " + request.getId() + " found");
+            so.onNext(SelectResponse.newBuilder().setResponse("object with Id: " + request.getId() + " found: " + metadata.toString()).build());
+        } else {
+            logger.info("object with Id: " + request.getId() + " not found");
+            so.onNext(SelectResponse.newBuilder().setResponse("not found").build());
+        }
+
+        so.onCompleted();
     }
 
     @Override
     public void log(LogManager logManager) {
+        logger.info("select dont log in file");
+    }
 
+    @Override
+    public boolean isExecuted() {
+        return true;
     }
 }

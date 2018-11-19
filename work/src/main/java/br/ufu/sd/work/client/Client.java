@@ -1,7 +1,13 @@
 package br.ufu.sd.work.client;
 
+import br.ufu.sd.work.DeleteRequest;
 import br.ufu.sd.work.InsertRequest;
+import br.ufu.sd.work.SelectRequest;
+import br.ufu.sd.work.UpdateRequest;
+import br.ufu.sd.work.grpc.request.ExecuteDelete;
 import br.ufu.sd.work.grpc.request.ExecuteInsert;
+import br.ufu.sd.work.grpc.request.ExecuteSelect;
+import br.ufu.sd.work.grpc.request.ExecuteUpdate;
 import br.ufu.sd.work.model.ETypeCommand;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -56,15 +62,36 @@ public class Client {
                             .setValue(args[1])
                             .setIdClient("1")
                             .build();
-                    ExecuteInsert er = new ExecuteInsert(ir, channel, null);
-                    Thread t = new Thread(er);
-                    t.start();
+                    ExecuteInsert ei = new ExecuteInsert(ir, channel, null);
+                    Thread ti = new Thread(ei);
+                    ti.start();
                     break;
                 case UPDATE:
+                    UpdateRequest ur = UpdateRequest.newBuilder()
+                            .setId(Long.valueOf(args[0]))
+                            .setValue(args[1])
+                            .setIdClient("1")
+                            .build();
+                    ExecuteUpdate eu = new ExecuteUpdate(ur, channel, null);
+                    Thread tu = new Thread(eu);
+                    tu.start();
                     break;
                 case DELETE:
+                    DeleteRequest dr = DeleteRequest.newBuilder()
+                            .setId(Long.valueOf(args[0]))
+                            .setIdClient("1")
+                            .build();
+                    ExecuteDelete ed = new ExecuteDelete(dr, channel, null);
+                    Thread td = new Thread(ed);
+                    td.start();
                     break;
                 case SELECT:
+                    SelectRequest sr = SelectRequest.newBuilder()
+                            .setId(Long.valueOf(args[0]))
+                            .build();
+                    ExecuteSelect es = new ExecuteSelect(sr, channel, null);
+                    Thread ts = new Thread(es);
+                    ts.start();
                     break;
                 case EXIT:
                     running = false;
