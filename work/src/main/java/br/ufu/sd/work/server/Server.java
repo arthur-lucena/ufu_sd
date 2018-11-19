@@ -5,6 +5,7 @@ import br.ufu.sd.work.grpc.service.ServiceInsert;
 import br.ufu.sd.work.grpc.service.ServiceSelect;
 import br.ufu.sd.work.grpc.service.ServiceUpdate;
 import br.ufu.sd.work.log.LogManager;
+import br.ufu.sd.work.log.SnapshotScheduler;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.Metadata;
 import io.grpc.ServerBuilder;
@@ -24,7 +25,6 @@ public class Server {
     private BlockingQueue<ResponseCommand> queueOne;
 
     private String logFilePath;
-    private String snapshotFilePath;
     private Integer serverId;
     private String startKeyRange;
     private String endKeyRange;
@@ -33,11 +33,12 @@ public class Server {
 
     private io.grpc.Server server;
     private Integer serverPort;
+    private Integer snapshotTaskInterval;
 
 
     public Server(String configurationFileName) {
         configure(configurationFileName);
-        this.logManager = new LogManager(logFilePath, snapshotFilePath, serverId);
+        this.logManager = new LogManager(logFilePath, serverId);
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -53,6 +54,8 @@ public class Server {
 
         createLogFileIfNeeded();
         recreateDictionaryIfNeeded();
+        SnapshotScheduler scheduler = new SnapshotScheduler(logManager, (long) snapshotTaskInterval);
+        scheduler.scheduleTask();
 
         Thread threadStarter = new Thread(queueOneConsumption);
         threadStarter.start();
@@ -105,11 +108,11 @@ public class Server {
         Configuration configuration = new Configuration(configurationFileName);
         Properties props = configuration.getProp();
         logFilePath = props.getProperty("server.log.file.path");
-        logFilePath = props.getProperty("server.log.snapshot.file.path");
         startKeyRange = props.getProperty("server.key.range").split("-")[0];
         endKeyRange =  props.getProperty("server.key.range").split("-")[1];
         serverPort = Integer.valueOf(props.getProperty("server.port"));
         serverId = Integer.valueOf(props.getProperty("server.id"));
+        snapshotTaskInterval = Integer.valueOf(props.getProperty("server.log.snapshot.interval"));
     }
 
 }

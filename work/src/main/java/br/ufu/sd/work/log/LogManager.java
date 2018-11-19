@@ -28,7 +28,6 @@ public class LogManager {
 
     private String logFileLocation;
     //TODO: usar mesmo location pra log e snapshot
-    private String snapshotFileLocation;
     private Integer serverId;
     private int currentLogFileNumber;
     private int currentSnapshotFileNumber;
@@ -36,9 +35,8 @@ public class LogManager {
     private final String snapshot = "snapshot";
     private static final Logger logger = Logger.getLogger(Server.class.getName());
 
-    public LogManager(String logFileLocation, String snapshotFileLocation, Integer serverId) {
+    public LogManager(String logFileLocation, Integer serverId) {
         this.logFileLocation = logFileLocation;
-        this.snapshotFileLocation = snapshotFileLocation;
         this.serverId = serverId;
         this.currentLogFileNumber = getCurrentFileNumber(logFileLocation, serverId, log);
         this.currentSnapshotFileNumber = getCurrentFileNumber(logFileLocation, serverId, snapshot);
@@ -69,6 +67,7 @@ public class LogManager {
 
         LinkedHashMap<Long, Metadata> itemsFromLog = recoverLogInformation(currentLogFilePath());
         LinkedHashMap<Long, Metadata> itemsFromSnapShot = recoverSnapShotInformation(currentSnapshotFilePath());
+
         itemsFromSnapShot.putAll(itemsFromLog);
         return itemsFromSnapShot;
     }
@@ -185,8 +184,12 @@ public class LogManager {
         }
     }
 
+    private Path previousSnapshotFilePath() {
+        return Paths.get(resolveCurrentPath(logFileLocation, "snapshot", currentSnapshotFileNumber - 1));
+    }
+
     private Path currentSnapshotFilePath() {
-        return Paths.get(resolveCurrentPath(snapshotFileLocation, "snapshot", currentSnapshotFileNumber));
+        return Paths.get(resolveCurrentPath(logFileLocation, "snapshot", currentSnapshotFileNumber));
     }
 
     private Path currentLogFilePath() {
@@ -245,8 +248,10 @@ public class LogManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        LinkedHashMap<Long, Metadata> currentState = recoverLogInformation(currentLogFilePath());
-        currentState.forEach((k,v) -> appendSnapshotInformation(v, SNAPSHOT));
+        LinkedHashMap<Long, Metadata> currentLogState = recoverLogInformation(currentLogFilePath());
+        LinkedHashMap<Long, Metadata> previousSnapshotState = recoverSnapShotInformation(previousSnapshotFilePath());
+        previousSnapshotState.putAll(currentLogState);
+        previousSnapshotState.forEach((k,v) -> appendSnapshotInformation(v, SNAPSHOT));
     }
 
 }
