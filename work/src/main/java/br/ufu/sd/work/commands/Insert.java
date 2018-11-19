@@ -51,7 +51,7 @@ public class Insert implements ICommand<InsertResponse> {
     public void log(LogManager logManager) {
         Metadata metadata = genMetadata(request);
         logger.info("logging with " + metadata);
-        logManager.append(metadata, ETypeCommand.INSERT);
+        logManager.appendLog(metadata, ETypeCommand.INSERT);
     }
 
     private Metadata genMetadata(InsertRequest request) {

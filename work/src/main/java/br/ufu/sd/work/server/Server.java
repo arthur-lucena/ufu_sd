@@ -22,6 +22,7 @@ public class Server {
 
     private String logFilePath;
     private String snapshotFilePath;
+    private Integer serverId;
     private String startKeyRange;
     private String endKeyRange;
     private Dictionary dictionary = new Dictionary(new ConcurrentHashMap<>());
@@ -33,7 +34,7 @@ public class Server {
 
     public Server(String configurationFileName) {
         configure(configurationFileName);
-        this.logManager = new LogManager(logFilePath, snapshotFilePath);
+        this.logManager = new LogManager(logFilePath, snapshotFilePath, serverId);
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -102,6 +103,7 @@ public class Server {
         startKeyRange = props.getProperty("server.key.range").split("-")[0];
         endKeyRange =  props.getProperty("server.key.range").split("-")[1];
         serverPort = Integer.valueOf(props.getProperty("server.port"));
+        serverId = Integer.valueOf(props.getProperty("server.id"));
     }
 
 }
