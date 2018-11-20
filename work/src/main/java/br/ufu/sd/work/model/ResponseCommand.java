@@ -1,6 +1,6 @@
-package br.ufu.sd.work.server;
+package br.ufu.sd.work.model;
 
-import br.ufu.sd.work.commands.api.ICommand;
+import br.ufu.sd.work.server.commands.api.ICommand;
 import io.grpc.stub.StreamObserver;
 
 public class ResponseCommand {

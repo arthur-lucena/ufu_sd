@@ -1,4 +1,4 @@
-package br.ufu.sd.work.grpc.request;
+package br.ufu.sd.work.request;
 
 import br.ufu.sd.work.*;
 import io.grpc.ManagedChannel;

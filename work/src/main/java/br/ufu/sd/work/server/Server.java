@@ -1,13 +1,16 @@
 package br.ufu.sd.work.server;
 
-import br.ufu.sd.work.grpc.service.ServiceDelete;
-import br.ufu.sd.work.grpc.service.ServiceInsert;
-import br.ufu.sd.work.grpc.service.ServiceSelect;
-import br.ufu.sd.work.grpc.service.ServiceUpdate;
-import br.ufu.sd.work.log.LogManager;
-import br.ufu.sd.work.log.SnapshotScheduler;
+import br.ufu.sd.work.server.service.ServiceDelete;
+import br.ufu.sd.work.server.service.ServiceInsert;
+import br.ufu.sd.work.server.service.ServiceSelect;
+import br.ufu.sd.work.server.service.ServiceUpdate;
+import br.ufu.sd.work.server.log.LogManager;
+import br.ufu.sd.work.server.log.SnapshotScheduler;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.Metadata;
+import br.ufu.sd.work.server.configuration.Configuration;
+import br.ufu.sd.work.server.queue.QueueOneConsumption;
+import br.ufu.sd.work.model.ResponseCommand;
 import io.grpc.ServerBuilder;
 
 import java.io.IOException;

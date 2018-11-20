@@ -1,4 +1,4 @@
-import br.ufu.sd.work.log.LogManager;
+import br.ufu.sd.work.server.log.LogManager;
 import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.model.Metadata;
 import org.junit.After;

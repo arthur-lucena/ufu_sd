@@ -1,7 +1,7 @@
-package br.ufu.sd.work.server;
+package br.ufu.sd.work.server.queue;
 
-import br.ufu.sd.work.commands.api.ICommand;
-import br.ufu.sd.work.log.LogManager;
+import br.ufu.sd.work.server.commands.api.ICommand;
+import br.ufu.sd.work.server.log.LogManager;
 
 import java.util.concurrent.BlockingQueue;
 

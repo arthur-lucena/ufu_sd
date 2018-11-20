@@ -1,10 +1,10 @@
-package br.ufu.sd.work.grpc.service;
+package br.ufu.sd.work.server.service;
 
 import br.ufu.sd.work.InsertRequest;
 import br.ufu.sd.work.InsertResponse;
 import br.ufu.sd.work.InsertServiceGrpc;
-import br.ufu.sd.work.commands.Insert;
-import br.ufu.sd.work.server.ResponseCommand;
+import br.ufu.sd.work.server.commands.Insert;
+import br.ufu.sd.work.model.ResponseCommand;
 import io.grpc.stub.StreamObserver;
 
 import java.util.concurrent.BlockingQueue;
