@@ -1,9 +1,9 @@
 package br.ufu.sd.work.server;
 
-import br.ufu.sd.work.server.service.ServiceDelete;
-import br.ufu.sd.work.server.service.ServiceInsert;
-import br.ufu.sd.work.server.service.ServiceSelect;
-import br.ufu.sd.work.server.service.ServiceUpdate;
+import br.ufu.sd.work.server.chord.ChordConnector;
+import br.ufu.sd.work.server.chord.ChordException;
+import br.ufu.sd.work.server.chord.ChordNode;
+import br.ufu.sd.work.server.service.*;
 import br.ufu.sd.work.server.log.LogManager;
 import br.ufu.sd.work.server.log.SnapshotScheduler;
 import br.ufu.sd.work.model.Dictionary;
@@ -29,28 +29,34 @@ public class Server {
 
     private String logFilePath;
     private Integer serverId;
-    private String startKeyRange;
-    private String endKeyRange;
-    private Dictionary dictionary = new Dictionary(new ConcurrentHashMap<>());
+    private Dictionary dictionary;
     private LogManager logManager;
 
     private io.grpc.Server server;
     private Integer serverPort;
     private Integer snapshotTaskInterval;
 
+    private ChordNode node;
 
-    public Server(String configurationFileName) {
+    public Server(String configurationFileName) throws ChordException{
         configure(configurationFileName);
-        this.logManager = new LogManager(logFilePath, serverId);
+        connectionChord();
+
+        this.dictionary = new Dictionary(new ConcurrentHashMap<>());
+        this.logManager = new LogManager(logFilePath, node.getNodeId());
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, ChordException {
         Server server = new Server("configuration.properties");
         server.start();
         server.blockUntilShutdown();
     }
 
-    public void start() throws IOException {
+    private void connectionChord() throws ChordException {
+        this.node = new ChordConnector().connect();
+    }
+
+    private void start() throws IOException {
         queueOne = new ArrayBlockingQueue<>(1000000);
 
         QueueOneConsumption queueOneConsumption = new QueueOneConsumption(queueOne, dictionary, logManager);
@@ -63,15 +69,16 @@ public class Server {
         Thread threadStarter = new Thread(queueOneConsumption);
         threadStarter.start();
 
-        server = ServerBuilder.forPort(serverPort)
+        server = ServerBuilder.forPort(node.getPort())
                 .addService(new ServiceInsert(queueOne))
                 .addService(new ServiceSelect(queueOne))
                 .addService(new ServiceDelete(queueOne))
                 .addService(new ServiceUpdate(queueOne))
+                .addService(new ServiceChord(node))
                 .build()
                 .start();
 
-        logger.info("Server running on port :  " + serverPort);
+        logger.info("Server running on port :  " + node.getPort());
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.err.println("*** shutting down the server when the JVM shut down");
             Server.this.stop();
@@ -80,7 +87,7 @@ public class Server {
         ));
     }
 
-    public void blockUntilShutdown() throws InterruptedException {
+    private void blockUntilShutdown() throws InterruptedException {
         if (server != null) {
             server.awaitTermination();
         }
@@ -111,8 +118,6 @@ public class Server {
         Configuration configuration = new Configuration(configurationFileName);
         Properties props = configuration.getProp();
         logFilePath = props.getProperty("server.log.file.path");
-        startKeyRange = props.getProperty("server.key.range").split("-")[0];
-        endKeyRange =  props.getProperty("server.key.range").split("-")[1];
         serverPort = Integer.valueOf(props.getProperty("server.port"));
         serverId = Integer.valueOf(props.getProperty("server.id"));
         snapshotTaskInterval = Integer.valueOf(props.getProperty("server.log.snapshot.interval"));
