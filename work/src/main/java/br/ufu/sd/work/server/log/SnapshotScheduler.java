@@ -6,9 +6,9 @@ import java.util.TimerTask;
 public class SnapshotScheduler {
 
     private LogManager logManager;
-    private Long snapShotTaskInterval;
+    private long snapShotTaskInterval;
 
-    public SnapshotScheduler(LogManager logManager, Long snapShotTaskInterval) {
+    public SnapshotScheduler(LogManager logManager, long snapShotTaskInterval) {
         this.logManager = logManager;
         this.snapShotTaskInterval = snapShotTaskInterval;
     }

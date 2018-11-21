@@ -1,81 +1,74 @@
 package br.ufu.sd.work.server.chord;
 
+import br.ufu.sd.work.ChordNode;
 import br.ufu.sd.work.ChordRequest;
 import br.ufu.sd.work.ChordResponse;
 import br.ufu.sd.work.ChordServiceGrpc;
-import br.ufu.sd.work.request.ExecuteChord;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 
 public class ChordConnector {
 
-    private String ip = "127.0.0.1";
-    private int port = 51666;
-    private int jumpNextPort = 10;
-    private int numberOfNodes = 5;
-    private int numberBitsId = 32;
+    private String ip;
+    private int port;
+    private int jumpNextPort;
+    private long firstNode;
+    private long nextNodeSub;
 
-    private long firstNode = (long) Math.pow(2,numberBitsId) - 1;
-    private long nextNodeSub = (long) Math.pow(2, numberBitsId) / numberOfNodes;
+    public ChordConnector(String ip, int port, int jumpNextPort, int numberOfNodes, int numberBitsId) {
+        this.ip = ip;
+        this.port = port;
+        this.jumpNextPort = jumpNextPort;
 
-    public ChordNode connect() throws ChordException {
-        return tryConnectOnRing(port, firstNode);
+        this.firstNode = (long) Math.pow(2,numberBitsId) - 1;
+        this.nextNodeSub = (long) Math.pow(2, numberBitsId) / numberOfNodes;
     }
 
-    public ChordNode tryConnectOnRing(int port, long candidateNode) throws ChordException{
-        ManagedChannel channel = ManagedChannelBuilder.forAddress(ip, port)
+    public ChordNode connect() throws ChordException {
+        ChordNode node = ChordNode.newBuilder()
+                .setIp(ip)
+                .setPort(port)
+                .setNodeId(firstNode)
+                .setMaxId(firstNode)
+                .setMinId(firstNode - nextNodeSub)
+                .setFirstNode(true)
+                .build();
+
+        return tryConnectOnRing(node);
+    }
+
+    public ChordNode tryConnectOnRing(ChordNode candidateNode) throws ChordException{
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(candidateNode.getIp(), candidateNode.getPort())
                 .usePlaintext().build();
 
-        ChordServiceGrpc.ChordServiceBlockingStub  stub = ChordServiceGrpc.newBlockingStub(channel);
+        ChordServiceGrpc.ChordServiceBlockingStub stub = ChordServiceGrpc.newBlockingStub(channel);
         ChordResponse response = null;
 
         try {
-            response = stub.heyListen(ChordRequest.newBuilder().setId(candidateNode).build());
+            response = stub.heyListen(ChordRequest.newBuilder().setNode(candidateNode).build());
         } catch (StatusRuntimeException e) {}
 
         if (response == null) {
-            System.out.println("eu sou o novo nó " + candidateNode);
-            ChordNode node = new ChordNode();
-            node.setMaxId(candidateNode);
-            node.setPort(port);
-            return node;
+            System.out.println(candidateNode.toString());
+            return candidateNode;
         } else {
-            port = port + jumpNextPort;
-            candidateNode = candidateNode - nextNodeSub;
+            ChordNode newCandidateNode = ChordNode.newBuilder()
+                    .setIp(ip)
+                    .setPort(candidateNode.getPort() + jumpNextPort)
+                    .setNodeId(candidateNode.getNodeId() - nextNodeSub)
+                    .setMaxId(candidateNode.getMaxId() - nextNodeSub)
+                    .setMinId(candidateNode.getMinId() - nextNodeSub)
+                    .setNextNode(candidateNode)
+                    .setFirstNode(false)
+                    .setLastNode(candidateNode.getNodeId() - nextNodeSub - nextNodeSub == 0)
+                    .build();
 
-            if (candidateNode > 0) {
-                return tryConnectOnRing(port, candidateNode);
+            if (newCandidateNode.getNodeId() > 0) {
+                return tryConnectOnRing(newCandidateNode);
             } else {
                throw new ChordException("Chord Ring is full!!");
             }
         }
-    }
-
-    public static void main(String[] args) {
-        new ChordConnector().calculateServersBand(8, 5);
-    }
-
-    private static long[] calculateServersBand(int numberOfBits, int numberOfServers) {
-        long firstValue = (long) Math.pow(2,numberOfBits) - 1;
-        long miniusValue = (long) Math.pow(2,numberOfBits) / numberOfServers;
-
-        System.out.println("----" + miniusValue);
-
-        long[] serversBand = new long[10];
-        serversBand[numberOfServers - 1] = firstValue;
-        int count = numberOfServers - 2;
-        long nextValue = firstValue;
-
-        for(;count >= 0; count --) {
-            nextValue = nextValue - miniusValue;
-            serversBand[count] = nextValue;
-        }
-
-        for(int i = 0;i < 10; i ++) {
-            System.out.println(serversBand[i]);
-        }
-
-        return serversBand;
     }
 }
