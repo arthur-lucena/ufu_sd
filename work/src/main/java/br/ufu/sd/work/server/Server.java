@@ -1,16 +1,16 @@
 package br.ufu.sd.work.server;
 
-import br.ufu.sd.work.server.chord.ChordConnector;
-import br.ufu.sd.work.server.chord.ChordException;
-import br.ufu.sd.work.server.chord.ChordNode;
-import br.ufu.sd.work.server.service.*;
-import br.ufu.sd.work.server.log.LogManager;
-import br.ufu.sd.work.server.log.SnapshotScheduler;
+import br.ufu.sd.work.ChordNode;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.Metadata;
-import br.ufu.sd.work.server.configuration.Configuration;
-import br.ufu.sd.work.server.queue.QueueOneConsumption;
 import br.ufu.sd.work.model.ResponseCommand;
+import br.ufu.sd.work.server.chord.ChordConnector;
+import br.ufu.sd.work.server.chord.ChordException;
+import br.ufu.sd.work.server.configuration.Configuration;
+import br.ufu.sd.work.server.log.LogManager;
+import br.ufu.sd.work.server.log.SnapshotScheduler;
+import br.ufu.sd.work.server.queue.QueueOneConsumption;
+import br.ufu.sd.work.server.service.*;
 import io.grpc.ServerBuilder;
 
 import java.io.IOException;
@@ -25,16 +25,20 @@ import static org.apache.commons.lang3.SerializationUtils.serialize;
 
 public class Server {
     private static final Logger logger = Logger.getLogger(Server.class.getName());
-    private BlockingQueue<ResponseCommand> queueOne;
 
-    private String logFilePath;
-    private Integer serverId;
     private Dictionary dictionary;
     private LogManager logManager;
 
     private io.grpc.Server server;
-    private Integer serverPort;
-    private Integer snapshotTaskInterval;
+
+    private String logFilePath;
+    private long snapshotTaskInterval;
+
+    private String ip;
+    private int firstPort;
+    private int jumpNextPort;
+    private int numberOfNodes;
+    private int numberBitsId;
 
     private ChordNode node;
 
@@ -53,17 +57,18 @@ public class Server {
     }
 
     private void connectionChord() throws ChordException {
-        this.node = new ChordConnector().connect();
+        ChordConnector chordConnector = new ChordConnector(this.ip, this.firstPort, this.jumpNextPort, this.numberOfNodes, this.numberBitsId);
+        this.node = chordConnector.connect();
     }
 
     private void start() throws IOException {
-        queueOne = new ArrayBlockingQueue<>(1000000);
+        BlockingQueue<ResponseCommand> queueOne = new ArrayBlockingQueue<>(1000000);
 
         QueueOneConsumption queueOneConsumption = new QueueOneConsumption(queueOne, dictionary, logManager);
 
         createLogFileIfNeeded();
         recreateDictionaryIfNeeded();
-        SnapshotScheduler scheduler = new SnapshotScheduler(logManager, (long) snapshotTaskInterval);
+        SnapshotScheduler scheduler = new SnapshotScheduler(logManager, snapshotTaskInterval);
         scheduler.scheduleTask();
 
         Thread threadStarter = new Thread(queueOneConsumption);
@@ -117,10 +122,14 @@ public class Server {
     private void configure(String configurationFileName) {
         Configuration configuration = new Configuration(configurationFileName);
         Properties props = configuration.getProp();
-        logFilePath = props.getProperty("server.log.file.path");
-        serverPort = Integer.valueOf(props.getProperty("server.port"));
-        serverId = Integer.valueOf(props.getProperty("server.id"));
-        snapshotTaskInterval = Integer.valueOf(props.getProperty("server.log.snapshot.interval"));
+        this.ip = props.getProperty("server.chord-node.first-ip");
+        this.firstPort = Integer.valueOf(props.getProperty("server.chord-node.first-port"));
+        this.jumpNextPort = Integer.valueOf(props.getProperty("server.chord-node.jump-next-port"));
+        this.numberOfNodes = Integer.valueOf(props.getProperty("server.chord-node.number-of-nodes"));
+        this.numberBitsId = Integer.valueOf(props.getProperty("server.chord-node.number-of-bit-id"));
+
+        this.logFilePath = props.getProperty("server.log.file.path");
+        this.snapshotTaskInterval = Long.valueOf(props.getProperty("server.log.snapshot.interval"));
     }
 
 }

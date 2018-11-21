@@ -1,9 +1,9 @@
 package br.ufu.sd.work.server.service;
 
+import br.ufu.sd.work.ChordNode;
 import br.ufu.sd.work.ChordRequest;
 import br.ufu.sd.work.ChordResponse;
 import br.ufu.sd.work.ChordServiceGrpc;
-import br.ufu.sd.work.server.chord.ChordNode;
 import io.grpc.stub.StreamObserver;
 
 public class ServiceChord extends ChordServiceGrpc.ChordServiceImplBase {
@@ -16,8 +16,10 @@ public class ServiceChord extends ChordServiceGrpc.ChordServiceImplBase {
 
     @Override
     public void heyListen(ChordRequest request, StreamObserver<ChordResponse> responseObserver) {
-        System.out.println("alguem tentou entrar no anel " + request.getId());
-        responseObserver.onNext(ChordResponse.newBuilder().setId(node.getNodeId()).build());
+        if (node.getPreviousNode() == null) {
+            node = node.toBuilder().setPreviousNode(request.getNode()).build();
+        }
+        responseObserver.onNext(ChordResponse.newBuilder().setNode(node).build());
         responseObserver.onCompleted();
     }
 }

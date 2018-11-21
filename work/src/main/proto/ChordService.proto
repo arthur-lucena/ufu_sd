@@ -2,12 +2,24 @@ syntax = "proto3";
 option java_multiple_files = true;
 package br.ufu.sd.work;
 
+message ChordNode {
+    int64 nodeId = 1;
+    int64 minId = 2;
+    int64 maxId = 3;
+    string ip = 4;
+    int32 port = 5;
+    bool firstNode = 6;
+    bool lastNode = 8;
+    ChordNode nextNode = 9;
+    ChordNode previousNode = 10;
+}
+
 message ChordRequest {
-    int64 id = 1;
+    ChordNode node = 1;
 }
 
 message ChordResponse {
-    int64 id = 1;
+    ChordNode node = 1;
 }
 
 service ChordService {
