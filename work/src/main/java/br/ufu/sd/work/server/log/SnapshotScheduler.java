@@ -1,4 +1,4 @@
-package br.ufu.sd.work.log;
+package br.ufu.sd.work.server.log;
 
 import java.util.Timer;
 import java.util.TimerTask;

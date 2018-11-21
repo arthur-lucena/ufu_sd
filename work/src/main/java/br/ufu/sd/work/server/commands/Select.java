@@ -1,16 +1,13 @@
-package br.ufu.sd.work.commands;
+package br.ufu.sd.work.server.commands;
 
-import br.ufu.sd.work.InsertRequest;
-import br.ufu.sd.work.InsertResponse;
 import br.ufu.sd.work.SelectRequest;
 import br.ufu.sd.work.SelectResponse;
-import br.ufu.sd.work.commands.api.ICommand;
-import br.ufu.sd.work.log.LogManager;
+import br.ufu.sd.work.server.commands.api.ICommand;
+import br.ufu.sd.work.server.log.LogManager;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.Metadata;
 import io.grpc.stub.StreamObserver;
 
-import java.time.LocalDateTime;
 import java.util.logging.Logger;
 
 import static org.apache.commons.lang3.SerializationUtils.deserialize;

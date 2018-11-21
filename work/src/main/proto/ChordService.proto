@@ -1,0 +1,15 @@
+syntax = "proto3";
+option java_multiple_files = true;
+package br.ufu.sd.work;
+
+message ChordRequest {
+    int64 id = 1;
+}
+
+message ChordResponse {
+    int64 id = 1;
+}
+
+service ChordService {
+    rpc heyListen (ChordRequest) returns (ChordResponse);
+}

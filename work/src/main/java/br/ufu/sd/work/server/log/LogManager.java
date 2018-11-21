@@ -1,4 +1,4 @@
-package br.ufu.sd.work.log;
+package br.ufu.sd.work.server.log;
 
 import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.model.Metadata;
@@ -28,14 +28,14 @@ public class LogManager {
 
     private String logFileLocation;
     //TODO: usar mesmo location pra log e snapshot
-    private Integer serverId;
+    private long serverId;
     private int currentLogFileNumber;
     private int currentSnapshotFileNumber;
     private final String log = "log";
     private final String snapshot = "snapshot";
     private static final Logger logger = Logger.getLogger(Server.class.getName());
 
-    public LogManager(String logFileLocation, Integer serverId) {
+    public LogManager(String logFileLocation, long serverId) {
         this.logFileLocation = logFileLocation;
         this.serverId = serverId;
         this.currentLogFileNumber = getCurrentFileNumber(logFileLocation, serverId, log);
@@ -214,7 +214,7 @@ public class LogManager {
     }
 
 
-    private Integer getCurrentFileNumber(String fileLocation, Integer serverId, String fileType) {
+    private Integer getCurrentFileNumber(String fileLocation, long serverId, String fileType) {
         List<Path> files = new ArrayList<>();
         try {
             files = Files.list(Paths.get(fileLocation))
@@ -232,7 +232,7 @@ public class LogManager {
         return 0;
     }
 
-    private Integer getCurrent(String fileLocation, Integer serverId, String fileType, String filePath) {
+    private Integer getCurrent(String fileLocation, long serverId, String fileType, String filePath) {
         Matcher m = Pattern.compile(String.format("%s\\[server-%s]%s-(\\d+)\\.txt", fileLocation, serverId, fileType)).matcher(filePath);
         if(m.matches())
         {

@@ -1,4 +1,4 @@
-package br.ufu.sd.work.log;
+package br.ufu.sd.work.server.log;
 
 import br.ufu.sd.work.client.Client;
 
