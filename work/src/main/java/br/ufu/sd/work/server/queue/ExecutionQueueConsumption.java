@@ -36,7 +36,7 @@ public class ExecutionQueueConsumption implements Runnable {
     private void consumeCommand() {
         try {
             responseCommand = executionQueue.take();
-            responseCommand.command.exec(responseCommand.getStreamObserver(), dictionary);
+            responseCommand.getCommand().exec(responseCommand.getStreamObserver(), dictionary);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

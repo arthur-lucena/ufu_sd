@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 import static org.apache.commons.lang3.SerializationUtils.deserialize;
 import static org.apache.commons.lang3.SerializationUtils.serialize;
 
-public class Delete implements ICommand<DeleteResponse> {
+public class Delete implements ICommand<DeleteRequest, DeleteResponse> {
 
     private static final Logger logger = Logger.getLogger(Delete.class.getName());
 
@@ -47,13 +47,28 @@ public class Delete implements ICommand<DeleteResponse> {
         if (executedWithSucess) {
             Metadata metadata = genMetadata(request);
             logger.info("logging DELETE with " + metadata);
-            logManager.appendLog(metadata, ETypeCommand.DELETE);
+            logManager.appendLog(metadata, getTypeCommand());
         }
     }
 
     @Override
     public boolean isExecuted() {
         return executed;
+    }
+
+    @Override
+    public long getIdRequest() {
+        return request.getId();
+    }
+
+    @Override
+    public DeleteRequest getRequest() {
+        return request;
+    }
+
+    @Override
+    public ETypeCommand getTypeCommand() {
+        return ETypeCommand.DELETE;
     }
 
     private Metadata genMetadata(DeleteRequest request) {

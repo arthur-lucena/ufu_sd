@@ -1,9 +1,11 @@
 package br.ufu.sd.work.server.queue;
 
-import br.ufu.sd.work.server.commands.api.ICommand;
-import br.ufu.sd.work.server.log.LogManager;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.ResponseCommand;
+import br.ufu.sd.work.server.chord.ChordNode;
+import br.ufu.sd.work.server.chord.ChordNodeUtils;
+import br.ufu.sd.work.server.commands.api.ICommand;
+import br.ufu.sd.work.server.log.LogManager;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -16,18 +18,21 @@ public class QueueOneConsumption implements Runnable {
     private BlockingQueue<ResponseCommand> queueOne;
     private BlockingQueue<ICommand> logQueue;
     private BlockingQueue<ResponseCommand> executionQueue;
+    private BlockingQueue<ResponseCommand> repassQueue;
     private ResponseCommand responseCommand;
     private Dictionary dictionary;
     private LogManager logManager;
+    private ChordNode node;
 
     private volatile boolean running = true;
 
 
     public QueueOneConsumption(BlockingQueue<ResponseCommand> queueOne, Dictionary dictionary,
-                               LogManager logManager) {
+                               LogManager logManager, ChordNode node) {
         this.queueOne = queueOne;
         this.dictionary = dictionary;
         this.logManager = logManager;
+        this.node = node;
     }
 
     public void terminate() {
@@ -38,6 +43,7 @@ public class QueueOneConsumption implements Runnable {
     public void run() {
         executionQueue = new ArrayBlockingQueue<>(1000000);
         logQueue = new ArrayBlockingQueue<>(1000000);
+        repassQueue = new ArrayBlockingQueue<>(1000000);
 
         ExecutionQueueConsumption executionQueueConsumption = new ExecutionQueueConsumption(executionQueue, dictionary);
         Thread threadStarter1 = new Thread(executionQueueConsumption);
@@ -47,8 +53,12 @@ public class QueueOneConsumption implements Runnable {
         Thread threadStarter2 = new Thread(logQueueConsumption);
         threadStarter2.start();
 
+        RepassQueueConsumption repassQueueConsumption = new RepassQueueConsumption(repassQueue, node);
+        Thread threadStarter3 = new Thread(repassQueueConsumption);
+        threadStarter3.start();
+
         int counterSleep = 0;
-        int limitSleepLog = 5;
+        int limitSleepLog = 15;
 
         while (running) {
             if (queueOne.isEmpty()) {
@@ -72,10 +82,12 @@ public class QueueOneConsumption implements Runnable {
         try {
             responseCommand = queueOne.take();
 
-            // TODO here must be implemented redirection for F4, queue send to next server
-
-            executionQueue.add(responseCommand);
-            logQueue.add(responseCommand.getCommand());
+            if (ChordNodeUtils.isMyResponsibility(node, responseCommand.getCommand().getIdRequest())) {
+                executionQueue.add(responseCommand);
+                logQueue.add(responseCommand.getCommand());
+            } else {
+                repassQueue.add(responseCommand);
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

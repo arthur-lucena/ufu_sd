@@ -1,6 +1,11 @@
 syntax = "proto3";
 option java_multiple_files = true;
-package br.ufu.sd.work;
+package br.ufu.sd.work.server.chord;
+
+message ChannelNode {
+    string ip = 1;
+    int32 port = 2;
+}
 
 message ChordNode {
     int64 nodeId = 1;
@@ -10,18 +15,10 @@ message ChordNode {
     int32 port = 5;
     bool firstNode = 6;
     bool lastNode = 8;
-    ChordNode nextNode = 9;
-    ChordNode previousNode = 10;
-}
-
-message ChordRequest {
-    ChordNode node = 1;
-}
-
-message ChordResponse {
-    ChordNode node = 1;
+    ChannelNode nextNodeChannel = 9;
+    ChannelNode previousNodeChannel = 10;
 }
 
 service ChordService {
-    rpc heyListen (ChordRequest) returns (ChordResponse);
+    rpc heyListen (ChordNode) returns (ChannelNode);
 }

@@ -2,6 +2,7 @@ package br.ufu.sd.work.server.commands;
 
 import br.ufu.sd.work.SelectRequest;
 import br.ufu.sd.work.SelectResponse;
+import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.server.commands.api.ICommand;
 import br.ufu.sd.work.server.log.LogManager;
 import br.ufu.sd.work.model.Dictionary;
@@ -13,7 +14,7 @@ import java.util.logging.Logger;
 import static org.apache.commons.lang3.SerializationUtils.deserialize;
 import static org.apache.commons.lang3.SerializationUtils.serialize;
 
-public class Select implements ICommand<SelectResponse> {
+public class Select implements ICommand<SelectRequest, SelectResponse> {
     private static final Logger logger = Logger.getLogger(Select.class.getName());
 
     private SelectRequest request;
@@ -47,5 +48,20 @@ public class Select implements ICommand<SelectResponse> {
     @Override
     public boolean isExecuted() {
         return true;
+    }
+
+    @Override
+    public long getIdRequest() {
+        return request.getId();
+    }
+
+    @Override
+    public SelectRequest getRequest() {
+        return request;
+    }
+
+    @Override
+    public ETypeCommand getTypeCommand() {
+        return ETypeCommand.SELECT;
     }
 }

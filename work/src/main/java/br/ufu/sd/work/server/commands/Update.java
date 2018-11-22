@@ -1,5 +1,6 @@
 package br.ufu.sd.work.server.commands;
 
+import br.ufu.sd.work.SelectRequest;
 import br.ufu.sd.work.UpdateRequest;
 import br.ufu.sd.work.UpdateResponse;
 import br.ufu.sd.work.server.commands.api.ICommand;
@@ -15,7 +16,7 @@ import java.util.logging.Logger;
 import static org.apache.commons.lang3.SerializationUtils.deserialize;
 import static org.apache.commons.lang3.SerializationUtils.serialize;
 
-public class Update implements ICommand<UpdateResponse> {
+public class Update implements ICommand<UpdateRequest, UpdateResponse> {
     private static final Logger logger = Logger.getLogger(Update.class.getName());
 
     private UpdateRequest request;
@@ -56,12 +57,27 @@ public class Update implements ICommand<UpdateResponse> {
     public void log(LogManager logManager) {
         if (executedWithSucess) {
             logger.info("logging UPDATE with " + metadata);
-            logManager.appendLog(metadata, ETypeCommand.UPDATE);
+            logManager.appendLog(metadata, getTypeCommand());
         }
     }
 
     @Override
     public boolean isExecuted() {
         return executed;
+    }
+
+    @Override
+    public long getIdRequest() {
+        return request.getId();
+    }
+
+    @Override
+    public UpdateRequest getRequest() {
+        return request;
+    }
+
+    @Override
+    public ETypeCommand getTypeCommand() {
+        return ETypeCommand.UPDATE;
     }
 }

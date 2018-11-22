@@ -1,11 +1,8 @@
 package br.ufu.sd.work.server.chord;
 
-import br.ufu.sd.work.ChordNode;
-import br.ufu.sd.work.ChordRequest;
-import br.ufu.sd.work.ChordResponse;
-import br.ufu.sd.work.ChordServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 
 public class ChordConnector {
@@ -43,11 +40,21 @@ public class ChordConnector {
                 .usePlaintext().build();
 
         ChordServiceGrpc.ChordServiceBlockingStub stub = ChordServiceGrpc.newBlockingStub(channel);
-        ChordResponse response = null;
+        ChannelNode response = null;
 
         try {
-            response = stub.heyListen(ChordRequest.newBuilder().setNode(candidateNode).build());
-        } catch (StatusRuntimeException e) {}
+            response = stub.heyListen(candidateNode);
+        } catch (StatusRuntimeException e) {
+            // TODO diferenciar de nenhum serviço rodando na porta, de uma porta já ocupada
+            if (e.getStatus().getCode().equals(Status.Code.UNAVAILABLE)) {
+                System.out.println("não tem ngm");
+            }
+
+            if (e.getStatus().getCode().equals(Status.Code.ALREADY_EXISTS) || e.getStatus().getCode().equals(Status.Code.UNIMPLEMENTED)) {
+                System.out.println("ocupada outro serviço ou outro servidor grpc");
+            }
+
+        }
 
         if (response == null) {
             System.out.println(candidateNode.toString());
@@ -55,11 +62,11 @@ public class ChordConnector {
         } else {
             ChordNode newCandidateNode = ChordNode.newBuilder()
                     .setIp(ip)
-                    .setPort(candidateNode.getPort() + jumpNextPort)
+                    .setPort(candidateNode.getPort() + jumpNextPort) // TODO diferenciar de nenhum serviço rodando na porta, de uma porta já ocupada, se porta estiver ocupada só incrementar a porta
                     .setNodeId(candidateNode.getNodeId() - nextNodeSub)
                     .setMaxId(candidateNode.getMaxId() - nextNodeSub)
                     .setMinId(candidateNode.getMinId() - nextNodeSub)
-                    .setNextNode(candidateNode)
+                    .setNextNodeChannel(response)
                     .setFirstNode(false)
                     .setLastNode(candidateNode.getNodeId() - nextNodeSub - nextNodeSub == 0)
                     .build();
@@ -67,7 +74,7 @@ public class ChordConnector {
             if (newCandidateNode.getNodeId() > 0) {
                 return tryConnectOnRing(newCandidateNode);
             } else {
-               throw new ChordException("Chord Ring is full!!");
+                throw new ChordException("Chord Ring is full!!");
             }
         }
     }
