@@ -49,6 +49,7 @@ public class LogManager {
     public void createLogFile() {
         if(!Files.exists(currentLogFilePath())) {
             try {
+                createDir(logFileLocation);
                 Files.createFile(currentLogFilePath());
                 deleteOldFileIfNeeded(logFileLocation, log, currentLogFileNumber - 3);
             } catch (Exception e) {
@@ -257,6 +258,19 @@ public class LogManager {
         LinkedHashMap<Long, Metadata> previousSnapshotState = recoverSnapShotInformation(previousSnapshotFilePath());
         previousSnapshotState.putAll(currentLogState);
         previousSnapshotState.forEach((k,v) -> appendSnapshotInformation(v, SNAPSHOT));
+    }
+
+    private void createDir(String path) {
+        if(!Files.isDirectory(Paths.get(path))) {
+            logger.info("creating new directory to keep log and snapshot files");
+            try {
+                Files.createDirectory(Paths.get(path));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            logger.info("log and snapshot files directory already exists, skipping...");
+        }
     }
 
 }
