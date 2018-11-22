@@ -19,8 +19,8 @@ import static java.util.stream.Collectors.toList;
 public class LoggerManagerTest {
 
     private String filePath = "src/test/";
-    private String expectedLogFileName = "[server-1]log-0.txt";
-    private String expectedSnapFileName = "[server-1]snapshot-0.txt";
+    private String expectedLogFileName = "[server-1]log-0.log";
+    private String expectedSnapFileName = "[server-1]snapshot-0.log";
     private Integer serverId = 1;
     private String message = "hello you";
     private String message1 = "update you";
@@ -104,6 +104,18 @@ public class LoggerManagerTest {
     }
 
     @Test
+    public void should_not_create_snapshot_file_if_current_log_is_empty() {
+        LogManager logManager = new LogManager(filePath, serverId);
+        logManager.createLogFile();
+        logManager.snapshot();
+
+        Assert.assertEquals(0, (int) logManager.getCurrentCount().get("log"));
+        Assert.assertEquals(0, (int) logManager.getCurrentCount().get("snapshot"));
+        Assert.assertFalse(Files.exists(Paths.get(filePath+expectedSnapFileName)));
+
+    }
+
+    @Test
     public void should_retrieve_updated_info_from_log_and_snapshot() {
 
         Metadata metadata = new Metadata(1L, message, createdBy, createdAt, createdBy, updatedAt);
@@ -143,7 +155,7 @@ public class LoggerManagerTest {
     private void deleteTestFiles(String filePath) {
         try {
             List<Path> files = Files.list(Paths.get(filePath))
-                    .filter(s -> s.toString().endsWith(".txt"))
+                    .filter(s -> s.toString().endsWith(".log"))
                     .collect(toList());
 
             files.forEach(f -> {

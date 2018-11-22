@@ -101,11 +101,16 @@ public class LogManager {
     public void snapshot() {
         if(Files.exists(currentLogFilePath())) {
             logger.info("creating new snapshot file: " + currentSnapshotFilePath().toString());
-            createSnapshot();
-            currentSnapshotFileNumber++;
-            deleteOldFileIfNeeded(logFileLocation, snapshot, currentLogFileNumber - 3);
-            currentLogFileNumber++;
-            createLogFile();
+            LinkedHashMap<Long, Metadata> currentLogState = recoverLogInformation(currentLogFilePath());
+            if(!currentLogState.isEmpty()) {
+                createSnapshot(currentLogState);
+                currentSnapshotFileNumber++;
+                deleteOldFileIfNeeded(logFileLocation, snapshot, currentLogFileNumber - 3);
+                currentLogFileNumber++;
+                createLogFile();
+            } else {
+                logger.info("no snapshot creation needed, current log file is empty");
+            }
         }
     }
 
@@ -198,7 +203,7 @@ public class LogManager {
 
     //use on all filePath calls
     private String resolveCurrentPath(String filePath, String fileType, int current) {
-        return String.format("%s[server-%s]%s-%s.%s", filePath, serverId, fileType, current, "txt");
+        return String.format("%s[server-%s]%s-%s.%s", filePath, serverId, fileType, current, "log");
     }
 
     private void deleteOldFileIfNeeded(String fileLocation, String fileType, int fileNumber) {
@@ -218,7 +223,7 @@ public class LogManager {
         List<Path> files = new ArrayList<>();
         try {
             files = Files.list(Paths.get(fileLocation))
-                    .filter(s -> s.toString().endsWith(".txt"))
+                    .filter(s -> s.toString().endsWith(".log"))
                     .filter(s -> s.toString().contains(fileType))
                     .collect(toList());
 
@@ -233,7 +238,7 @@ public class LogManager {
     }
 
     private Integer getCurrent(String fileLocation, long serverId, String fileType, String filePath) {
-        Matcher m = Pattern.compile(String.format("%s\\[server-%s]%s-(\\d+)\\.txt", fileLocation, serverId, fileType)).matcher(filePath);
+        Matcher m = Pattern.compile(String.format("%s\\[server-%s]%s-(\\d+)\\.log", fileLocation, serverId, fileType)).matcher(filePath);
         if(m.matches())
         {
             return Integer.valueOf(m.group(1));
@@ -241,14 +246,14 @@ public class LogManager {
         return 0;
     }
 
-    private void createSnapshot() {
+    private void createSnapshot(LinkedHashMap<Long, Metadata> currentLogState) {
         Path currentSnapshotFileName = currentSnapshotFilePath();
         try {
             Files.createFile(currentSnapshotFileName);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        LinkedHashMap<Long, Metadata> currentLogState = recoverLogInformation(currentLogFilePath());
+
         LinkedHashMap<Long, Metadata> previousSnapshotState = recoverSnapShotInformation(previousSnapshotFilePath());
         previousSnapshotState.putAll(currentLogState);
         previousSnapshotState.forEach((k,v) -> appendSnapshotInformation(v, SNAPSHOT));
