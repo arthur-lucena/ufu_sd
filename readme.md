@@ -7,10 +7,10 @@ Em época de Big Data, um banco de dados com apenas um servidor é uma nulidade.
 **Roteamento** 
 De acordo com a especificação da entrega anterior, cada requisição é colocada em uma fila F1, de onde é re-enfileirada nas filas F2 e F3. 
 
-- [ ] Para esta entrega, antes de re-enfileirar a mensagem, o servidor deverá analisar se é realmente responsabilidade deste servidor.
-- [ ] Caso o seja, a requisição é re-enfileirada em F2 e F3. Caso contrário, será colocada em uma fila F4. 
-- [ ] Um thread retira de F4 e invoca, consultando uma tabela de roteamento, o nó responsável pela requisição para que a processe ou que pelo menos esteja mais próximo que o mesmo. 
-- [ ] O servidor primeiro contactado pelo cliente é o responsável por enviar a resposta para o cliente. 
+- [x] Para esta entrega, antes de re-enfileirar a mensagem, o servidor deverá analisar se é realmente responsabilidade deste servidor.
+- [x] Caso o seja, a requisição é re-enfileirada em F2 e F3. Caso contrário, será colocada em uma fila F4. 
+- [x] Um thread retira de F4 e invoca, consultando uma tabela de roteamento, o nó responsável pela requisição para que a processe ou que pelo menos esteja mais próximo que o mesmo. 
+- [x] O servidor primeiro contactado pelo cliente é o responsável por enviar a resposta para o cliente. 
 
 (verificar se o id é de responsabilidade do servidor, se sim seguir o fluxo normal, caso contrário jogar na fila de roteamento e repassar ao servidor adequado)
 
@@ -20,14 +20,14 @@ O particionamento da responsabilidade sobre os dados seguirá o esquema de anel 
 - [x] Cada servidor é identificado por um número de m bits. 
 - [x] O primeiro nó a entrar no sistema recebe necessariamente o identificador 2m − 1
 - [x] O nó seguinte recebe identificador menor 2m/n que o anterior. 
-- [ ] Seja uma sequência de nós com identificadores X < Y < Z. O nó Y é responsável pelos dados com chaves na faixa (X, Y].
+- [x] Seja uma sequência de nós com identificadores X < Y < Z. O nó Y é responsável pelos dados com chaves na faixa (X, Y].
 
 **Comunicação** 
 - [x] Toda comunicação deve ser agora feira usando gRPC. Cada operação é realizada via uma função diferente (i.e., há uma função para C, outra para R, ...). 
-- [ ] Servidores redirecionam requisições também usando gRPC, usando a mesma interface usada por clientes. 
+- [x] Servidores redirecionam requisições também usando gRPC, usando a mesma interface usada por clientes. 
 - [x] Toda requisição é executada assincronamente do ponto de vista de quem invoca a requisição. 
 - [ ] Uma requisição é redirecionada para o nó seguinte ou anterior, dependendo de qual o caminho mais curto até o nó responsável pelos dados. 
-- [ ] Múltiplos saltos podem ser necessários até que a requisição seja respondida.
+- [x] Múltiplos saltos podem ser necessários até que a requisição seja respondida.
 
 **Tratamento de falhas** 
 - [ ] Assuma que não haverão falhas permanentes ou envio de requisições enquanto algum nó estiver falho. 
