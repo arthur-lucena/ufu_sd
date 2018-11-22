@@ -34,14 +34,14 @@ O particionamento da responsabilidade sobre os dados seguirá o esquema de anel 
 - [ ] Nós podem ser reiniciados e, como na primeira entrega, devem ter seu estado recuperado pelo uso do log de operações e de snapshot do banco de dados.
 
 **Log + Snapshot** 
-- [ ] Para evitar que o log se torne grande demais, frequentemente serão feitos snapshots do estado atual do banco de dados. 
-- [ ] Um snapshot do banco captura o estado atual do mesmo, em arquivo, e portanto torna desnecessário o arquivo de logs contendo as operações anteriores ao snapshot.
+- [x] Para evitar que o log se torne grande demais, frequentemente serão feitos snapshots do estado atual do banco de dados. 
+- [x] Um snapshot do banco captura o estado atual do mesmo, em arquivo, e portanto torna desnecessário o arquivo de logs contendo as operações anteriores ao snapshot.
 
 **Snapshoting** 
-- [ ] A cada U segundos, o estado atual do banco será gravado em um arquivo nomeado snap.X, onde X é um contador de logs. Isto é, o primeiro snapshot será gravado como snap.1, o segundo como snap.2 e assim por diante. 
-- [ ] As operações executadas antes de um snapshot X serão gravadas e um arquivo de log.(X-1). O primeiro arquivo de logs será então o log.0. 
-- [ ] Uma vez iniciald o snapshot que cria snap.X, nenhuma nova operação será escrita em log.(X-1). Novas operações são escritas em log.X. 
-- [ ] Serão mantidos pelo sistema os últimos 3 arquivos de log e de snapshot. Isto é, se o último snapshot executado foi o décimo, então há no sistema os logs log.8, log.9. log.10 (sendo escrito), e os snapshots snap.8, snap.9, e snap.10.
+- [x] A cada U segundos, o estado atual do banco será gravado em um arquivo nomeado snap.X, onde X é um contador de logs. Isto é, o primeiro snapshot será gravado como snap.1, o segundo como snap.2 e assim por diante. 
+- [x] As operações executadas antes de um snapshot X serão gravadas e um arquivo de log.(X-1). O primeiro arquivo de logs será então o log.0. 
+- [x] Uma vez iniciald o snapshot que cria snap.X, nenhuma nova operação será escrita em log.(X-1). Novas operações são escritas em log.X. 
+- [x] Serão mantidos pelo sistema os últimos 3 arquivos de log e de snapshot. Isto é, se o último snapshot executado foi o décimo, então há no sistema os logs log.8, log.9. log.10 (sendo escrito), e os snapshots snap.8, snap.9, e snap.10.
 
  -----------------------------------------------
  
