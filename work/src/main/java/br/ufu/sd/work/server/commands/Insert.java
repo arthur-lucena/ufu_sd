@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 import static org.apache.commons.lang3.SerializationUtils.serialize;
 
-public class Insert implements ICommand<InsertResponse> {
+public class Insert implements ICommand<InsertRequest, InsertResponse> {
     private static final Logger logger = Logger.getLogger(Insert.class.getName());
 
     private InsertRequest request;
@@ -48,7 +48,7 @@ public class Insert implements ICommand<InsertResponse> {
     public void log(LogManager logManager) {
         if (executedWithSucess) {
             logger.info("logging INSERT with " + metadata);
-            logManager.appendLog(metadata, ETypeCommand.INSERT);
+            logManager.appendLog(metadata, getTypeCommand());
         }
     }
 
@@ -59,5 +59,20 @@ public class Insert implements ICommand<InsertResponse> {
     @Override
     public boolean isExecuted() {
         return executed;
+    }
+
+    @Override
+    public long getIdRequest() {
+        return request.getId();
+    }
+
+    @Override
+    public InsertRequest getRequest() {
+        return request;
+    }
+
+    @Override
+    public ETypeCommand getTypeCommand() {
+        return ETypeCommand.INSERT;
     }
 }

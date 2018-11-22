@@ -1,11 +1,11 @@
 package br.ufu.sd.work.server;
 
-import br.ufu.sd.work.ChordNode;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.Metadata;
 import br.ufu.sd.work.model.ResponseCommand;
 import br.ufu.sd.work.server.chord.ChordConnector;
 import br.ufu.sd.work.server.chord.ChordException;
+import br.ufu.sd.work.server.chord.ChordNode;
 import br.ufu.sd.work.server.configuration.Configuration;
 import br.ufu.sd.work.server.log.LogManager;
 import br.ufu.sd.work.server.log.SnapshotScheduler;
@@ -64,7 +64,7 @@ public class Server {
     private void start() throws IOException {
         BlockingQueue<ResponseCommand> queueOne = new ArrayBlockingQueue<>(1000000);
 
-        QueueOneConsumption queueOneConsumption = new QueueOneConsumption(queueOne, dictionary, logManager);
+        QueueOneConsumption queueOneConsumption = new QueueOneConsumption(queueOne, dictionary, logManager, node);
 
         createLogFileIfNeeded();
         recreateDictionaryIfNeeded();

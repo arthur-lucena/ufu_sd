@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 public class Client {
     private static final String IP = "127.0.0.1";
-    private static final int PORT = 61666;
+    private static final int PORT = 54666;
 
     private static final Logger logger = Logger.getLogger(Client.class.getName());
 

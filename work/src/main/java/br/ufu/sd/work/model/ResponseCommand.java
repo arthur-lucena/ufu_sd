@@ -4,8 +4,8 @@ import br.ufu.sd.work.server.commands.api.ICommand;
 import io.grpc.stub.StreamObserver;
 
 public class ResponseCommand {
-    public StreamObserver streamObserver;
-    public ICommand command;
+    private StreamObserver streamObserver;
+    private ICommand command;
 
     public ResponseCommand(StreamObserver streamObserver, ICommand command) {
         this.streamObserver = streamObserver;
@@ -16,15 +16,7 @@ public class ResponseCommand {
         return streamObserver;
     }
 
-    public void setStreamObserver(StreamObserver streamObserver) {
-        this.streamObserver = streamObserver;
-    }
-
     public ICommand getCommand() {
         return command;
-    }
-
-    public void setCommand(ICommand command) {
-        this.command = command;
     }
 }

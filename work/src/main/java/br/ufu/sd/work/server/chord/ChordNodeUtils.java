@@ -1,30 +1,37 @@
 package br.ufu.sd.work.server.chord;
 
-import br.ufu.sd.work.ChordNode;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
-public class ChordNodeUtils {
-    public boolean isMyResponsibility(ChordNode node, long id) {
+public abstract class ChordNodeUtils {
+    public static boolean isMyResponsibility(ChordNode node, long id) {
         return node.getMinId() < id && id <= node.getMaxId();
     }
 
-    public ManagedChannel getPossibleResponsibleChannel(ChordNode node, Long id) throws ChordException {
-        if (id > node.getMaxId() || id <= node.getMinId()) {
-            throw new ChordException("Invalid number, this number surpass MAX capacity");
+    public static ChannelNode toChannelNode(ChordNode node) {
+        return ChannelNode.newBuilder().setIp(node.getIp()).setPort(node.getPort()).build();
+    }
+
+    public static ManagedChannel getPossibleResponsibleChannel(ChordNode node, Long id) throws ChordException {
+        if (id > node.getMaxId()) {
+            throw new ChordException("Invalid ID, this ID surpass MAX capacity.");
         }
 
-        ChordNode possibleNode;
+        if (id <= 0) {
+            throw new ChordException("Invalid ID, can be Zero ou below.");
+        }
+
+        ChannelNode possibleChannelNode;
 
         if (id <= node.getMinId()) {
-            possibleNode = node.getPreviousNode();
+            possibleChannelNode = node.getPreviousNodeChannel();
         } else if (id > node.getMaxId()) {
-            possibleNode = node.getNextNode();
+            possibleChannelNode = node.getNextNodeChannel();
         } else {
-            possibleNode = node;
+            possibleChannelNode = toChannelNode(node);
         }
 
-        return ManagedChannelBuilder.forAddress(possibleNode.getIp(), possibleNode.getPort())
+        return ManagedChannelBuilder.forAddress(possibleChannelNode.getIp(), possibleChannelNode.getPort())
                 .usePlaintext().build();
     }
 }
