@@ -2,10 +2,10 @@ package br.ufu.sd.work.client;
 
 import br.ufu.sd.work.*;
 import br.ufu.sd.work.model.ETypeCommand;
-import br.ufu.sd.work.request.ExecuteDelete;
-import br.ufu.sd.work.request.ExecuteInsert;
-import br.ufu.sd.work.request.ExecuteSelect;
-import br.ufu.sd.work.request.ExecuteUpdate;
+import br.ufu.sd.work.client.request.ExecuteDelete;
+import br.ufu.sd.work.client.request.ExecuteInsert;
+import br.ufu.sd.work.client.request.ExecuteSelect;
+import br.ufu.sd.work.client.request.ExecuteUpdate;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 public class Client {
     private static final String IP = "127.0.0.1";
-    private static final int PORT = 54666;
+    private static final int PORT = 53666;
 
     private static final Logger logger = Logger.getLogger(Client.class.getName());
 
@@ -54,7 +54,6 @@ public class Client {
                 }
 
                 Thread thread = null;
-                Response response = null;
 
                 switch (command) {
                     case INSERT:
@@ -63,8 +62,7 @@ public class Client {
                                 .setValue(args[1])
                                 .setIdClient("1")
                                 .build();
-                        ExecuteInsert ei = new ExecuteInsert(ir, channel, response);
-                        thread = new Thread(ei);
+                        thread = new Thread(new ExecuteInsert(ir, channel));
                         break;
                     case UPDATE:
                         UpdateRequest ur = UpdateRequest.newBuilder()
@@ -72,23 +70,20 @@ public class Client {
                                 .setValue(args[1])
                                 .setIdClient("1")
                                 .build();
-                        ExecuteUpdate eu = new ExecuteUpdate(ur, channel, response);
-                        thread = new Thread(eu);
+                        thread = new Thread(new ExecuteUpdate(ur, channel));
                         break;
                     case DELETE:
                         DeleteRequest dr = DeleteRequest.newBuilder()
                                 .setId(Long.valueOf(args[0]))
                                 .setIdClient("1")
                                 .build();
-                        ExecuteDelete ed = new ExecuteDelete(dr, channel, response);
-                        thread = new Thread(ed);
+                        thread = new Thread(new ExecuteDelete(dr, channel));
                         break;
                     case SELECT:
                         SelectRequest sr = SelectRequest.newBuilder()
                                 .setId(Long.valueOf(args[0]))
                                 .build();
-                        ExecuteSelect es = new ExecuteSelect(sr, channel, response);
-                        thread = new Thread(es);
+                        thread = new Thread(new ExecuteSelect(sr, channel));
                         break;
                     case EXIT:
                         running = false;
@@ -106,9 +101,6 @@ public class Client {
                 }
 
                 thread.start();
-                thread.join();
-
-                System.out.println(response.getResponse());
             } catch (Exception e) {
                 e.printStackTrace();
             }

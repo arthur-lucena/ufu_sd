@@ -57,6 +57,8 @@ public class ChordConnector {
 
         }
 
+        channel.shutdown();
+
         if (response == null) {
             System.out.println(candidateNode.toString());
             return candidateNode;

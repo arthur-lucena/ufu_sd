@@ -1,7 +1,9 @@
 package br.ufu.sd.work.server.queue;
 
+import br.ufu.sd.work.Response;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.ResponseCommand;
+import br.ufu.sd.work.server.chord.ChordException;
 import br.ufu.sd.work.server.chord.ChordNode;
 import br.ufu.sd.work.server.chord.ChordNodeUtils;
 import br.ufu.sd.work.server.commands.api.ICommand;
@@ -53,8 +55,8 @@ public class QueueOneConsumption implements Runnable {
         Thread threadStarter2 = new Thread(logQueueConsumption);
         threadStarter2.start();
 
-        RepassQueueConsumption repassQueueConsumption = new RepassQueueConsumption(repassQueue, node);
-        Thread threadStarter3 = new Thread(repassQueueConsumption);
+        RedirectQueueConsumption redirectQueueConsumption = new RedirectQueueConsumption(repassQueue, node);
+        Thread threadStarter3 = new Thread(redirectQueueConsumption);
         threadStarter3.start();
 
         int counterSleep = 0;
@@ -88,6 +90,10 @@ public class QueueOneConsumption implements Runnable {
             } else {
                 repassQueue.add(responseCommand);
             }
+        } catch (ChordException e) {
+            logger.warning(e.getMessage());
+            responseCommand.getStreamObserver().onNext(Response.newBuilder().setResponse(e.getMessage()).build());
+            responseCommand.getStreamObserver().onCompleted();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
