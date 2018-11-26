@@ -5,7 +5,7 @@ import br.ufu.sd.work.model.Metadata;
 import br.ufu.sd.work.model.ResponseCommand;
 import br.ufu.sd.work.server.chord.ChordConnector;
 import br.ufu.sd.work.server.chord.ChordException;
-import br.ufu.sd.work.server.chord.ChordNode;
+import br.ufu.sd.work.server.chord.ChordNodeWrapper;
 import br.ufu.sd.work.server.configuration.Configuration;
 import br.ufu.sd.work.server.log.LogManager;
 import br.ufu.sd.work.server.log.SnapshotScheduler;
@@ -40,7 +40,7 @@ public class Server {
     private int numberOfNodes;
     private int numberBitsId;
 
-    private static volatile ChordNode node;
+    private static volatile ChordNodeWrapper node;
 
     public Server(String configurationFileName) throws ChordException {
         configure(configurationFileName);
@@ -58,7 +58,8 @@ public class Server {
 
     private void connectionChord() throws ChordException {
         ChordConnector chordConnector = new ChordConnector(this.ip, this.firstPort, this.jumpNextPort, this.numberOfNodes, this.numberBitsId);
-        this.node = chordConnector.connect();
+        this.node = new ChordNodeWrapper();
+        node.setByChordNode(chordConnector.connect());
     }
 
     private void start() throws IOException {

@@ -1,33 +1,27 @@
 package br.ufu.sd.work.server.service;
 
-import br.ufu.sd.work.server.Server;
-import br.ufu.sd.work.server.chord.ChannelNode;
-import br.ufu.sd.work.server.chord.ChordNode;
-import br.ufu.sd.work.server.chord.ChordNodeUtils;
-import br.ufu.sd.work.server.chord.ChordServiceGrpc;
+import br.ufu.sd.work.server.chord.*;
 import io.grpc.stub.StreamObserver;
 
 public class ServiceChord extends ChordServiceGrpc.ChordServiceImplBase {
 
-    private volatile ChordNode node;
+    private static volatile ChordNodeWrapper node;
 
-    public ServiceChord(ChordNode node) {
+    public ServiceChord(ChordNodeWrapper node) {
         this.node = node;
     }
 
     @Override
     public void heyListen(ChordNode request, StreamObserver<ChannelNode> responseObserver) {
-        responseObserver.onNext(ChordNodeUtils.toChannelNode(node));
+        responseObserver.onNext(ChordNodeUtils.toChannelNode(node.getChordNode()));
         responseObserver.onCompleted();
     }
 
     @Override
     public void setPrevious(ChannelNode request, StreamObserver<ChannelNode> responseObserver) {
-        node = ChordNode.getDefaultInstance().toBuilder().mergeFrom(node).setPreviousNodeChannel(request).build();
+        node.setPrevious(request);
 
-        System.out.println(node);
-
-        responseObserver.onNext(ChordNodeUtils.toChannelNode(node));
+        responseObserver.onNext(ChordNodeUtils.toChannelNode(node.getChordNode()));
         responseObserver.onCompleted();
     }
 }
