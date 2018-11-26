@@ -1,9 +1,11 @@
 package br.ufu.sd.work.server.queue;
 
+import br.ufu.sd.work.Response;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.ResponseCommand;
-import br.ufu.sd.work.server.chord.ChordNode;
+import br.ufu.sd.work.server.chord.ChordException;
 import br.ufu.sd.work.server.chord.ChordNodeUtils;
+import br.ufu.sd.work.server.chord.ChordNodeWrapper;
 import br.ufu.sd.work.server.commands.api.ICommand;
 import br.ufu.sd.work.server.log.LogManager;
 
@@ -18,17 +20,17 @@ public class QueueOneConsumption implements Runnable {
     private BlockingQueue<ResponseCommand> queueOne;
     private BlockingQueue<ICommand> logQueue;
     private BlockingQueue<ResponseCommand> executionQueue;
-    private BlockingQueue<ResponseCommand> repassQueue;
+    private BlockingQueue<ResponseCommand> redirectQueue;
     private ResponseCommand responseCommand;
     private Dictionary dictionary;
     private LogManager logManager;
-    private ChordNode node;
+    private static volatile ChordNodeWrapper node;
 
     private volatile boolean running = true;
 
 
     public QueueOneConsumption(BlockingQueue<ResponseCommand> queueOne, Dictionary dictionary,
-                               LogManager logManager, ChordNode node) {
+                               LogManager logManager, ChordNodeWrapper node) {
         this.queueOne = queueOne;
         this.dictionary = dictionary;
         this.logManager = logManager;
@@ -43,7 +45,7 @@ public class QueueOneConsumption implements Runnable {
     public void run() {
         executionQueue = new ArrayBlockingQueue<>(1000000);
         logQueue = new ArrayBlockingQueue<>(1000000);
-        repassQueue = new ArrayBlockingQueue<>(1000000);
+        redirectQueue = new ArrayBlockingQueue<>(1000000);
 
         ExecutionQueueConsumption executionQueueConsumption = new ExecutionQueueConsumption(executionQueue, dictionary);
         Thread threadStarter1 = new Thread(executionQueueConsumption);
@@ -53,8 +55,8 @@ public class QueueOneConsumption implements Runnable {
         Thread threadStarter2 = new Thread(logQueueConsumption);
         threadStarter2.start();
 
-        RepassQueueConsumption repassQueueConsumption = new RepassQueueConsumption(repassQueue, node);
-        Thread threadStarter3 = new Thread(repassQueueConsumption);
+        RedirectQueueConsumption redirectQueueConsumption = new RedirectQueueConsumption(redirectQueue, node);
+        Thread threadStarter3 = new Thread(redirectQueueConsumption);
         threadStarter3.start();
 
         int counterSleep = 0;
@@ -82,12 +84,16 @@ public class QueueOneConsumption implements Runnable {
         try {
             responseCommand = queueOne.take();
 
-            if (ChordNodeUtils.isMyResponsibility(node, responseCommand.getCommand().getIdRequest())) {
+            if (ChordNodeUtils.isMyResponsibility(node.getChordNode(), responseCommand.getCommand().getIdRequest())) {
                 executionQueue.add(responseCommand);
                 logQueue.add(responseCommand.getCommand());
             } else {
-                repassQueue.add(responseCommand);
+                redirectQueue.add(responseCommand);
             }
+        } catch (ChordException e) {
+            logger.warning(e.getMessage());
+            responseCommand.getStreamObserver().onNext(Response.newBuilder().setResponse(e.getMessage()).build());
+            responseCommand.getStreamObserver().onCompleted();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

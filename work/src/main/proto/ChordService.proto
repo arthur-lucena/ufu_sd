@@ -11,9 +11,10 @@ message ChordNode {
     int64 nodeId = 1;
     int64 minId = 2;
     int64 maxId = 3;
-    string ip = 4;
-    int32 port = 5;
-    bool firstNode = 6;
+    int64 maxChordId = 4;
+    string ip = 5;
+    int32 port = 6;
+    bool firstNode = 7;
     bool lastNode = 8;
     ChannelNode nextNodeChannel = 9;
     ChannelNode previousNodeChannel = 10;
@@ -21,4 +22,6 @@ message ChordNode {
 
 service ChordService {
     rpc heyListen (ChordNode) returns (ChannelNode);
+
+    rpc setPrevious (ChannelNode) returns (ChannelNode);
 }

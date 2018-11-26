@@ -1,0 +1,44 @@
+syntax = "proto3";
+option java_multiple_files = true;
+package br.ufu.sd.work;
+
+message Response {
+    string response = 1;
+}
+
+message SelectRequest {
+    int64 id = 1;
+}
+
+message InsertRequest {
+    int64 id = 1;
+    string value = 2;
+    string idClient = 3;
+}
+
+message UpdateRequest {
+    int64 id = 1;
+    string value = 2;
+    string idClient = 3;
+}
+
+message DeleteRequest {
+    int64 id = 1;
+    string idClient = 2;
+}
+
+service SelectService {
+    rpc select (SelectRequest) returns (Response);
+}
+
+service InsertService {
+    rpc insert (InsertRequest) returns (Response);
+}
+
+service UpdateService {
+    rpc update (UpdateRequest) returns (Response);
+}
+
+service DeleteService {
+    rpc delete (DeleteRequest) returns (Response);
+}

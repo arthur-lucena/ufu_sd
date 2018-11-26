@@ -5,7 +5,7 @@ import br.ufu.sd.work.model.Metadata;
 import br.ufu.sd.work.model.ResponseCommand;
 import br.ufu.sd.work.server.chord.ChordConnector;
 import br.ufu.sd.work.server.chord.ChordException;
-import br.ufu.sd.work.server.chord.ChordNode;
+import br.ufu.sd.work.server.chord.ChordNodeWrapper;
 import br.ufu.sd.work.server.configuration.Configuration;
 import br.ufu.sd.work.server.log.LogManager;
 import br.ufu.sd.work.server.log.SnapshotScheduler;
@@ -40,9 +40,9 @@ public class Server {
     private int numberOfNodes;
     private int numberBitsId;
 
-    private ChordNode node;
+    private static volatile ChordNodeWrapper node;
 
-    public Server(String configurationFileName) throws ChordException{
+    public Server(String configurationFileName) throws ChordException {
         configure(configurationFileName);
         connectionChord();
 
@@ -58,7 +58,8 @@ public class Server {
 
     private void connectionChord() throws ChordException {
         ChordConnector chordConnector = new ChordConnector(this.ip, this.firstPort, this.jumpNextPort, this.numberOfNodes, this.numberBitsId);
-        this.node = chordConnector.connect();
+        this.node = new ChordNodeWrapper();
+        node.setByChordNode(chordConnector.connect());
     }
 
     private void start() throws IOException {
@@ -111,7 +112,7 @@ public class Server {
     private void recreateDictionaryIfNeeded() {
         if (dictionary.getData().isEmpty()) {
             LinkedHashMap<Long, Metadata> loggedData = logManager.recoverInformation();
-            if(!loggedData.isEmpty()) {
+            if (!loggedData.isEmpty()) {
                 loggedData.forEach((k, v) -> dictionary.getData().put(k, serialize(v)));
                 List<Long> ids = new ArrayList<>(loggedData.keySet());
                 Collections.reverse(ids);
@@ -131,5 +132,4 @@ public class Server {
         this.logFilePath = props.getProperty("server.log.file.path");
         this.snapshotTaskInterval = Long.valueOf(props.getProperty("server.log.snapshot.interval"));
     }
-
 }

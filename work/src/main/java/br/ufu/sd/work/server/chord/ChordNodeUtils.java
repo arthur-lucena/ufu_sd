@@ -4,16 +4,8 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
 public abstract class ChordNodeUtils {
-    public static boolean isMyResponsibility(ChordNode node, long id) {
-        return node.getMinId() < id && id <= node.getMaxId();
-    }
-
-    public static ChannelNode toChannelNode(ChordNode node) {
-        return ChannelNode.newBuilder().setIp(node.getIp()).setPort(node.getPort()).build();
-    }
-
-    public static ManagedChannel getPossibleResponsibleChannel(ChordNode node, Long id) throws ChordException {
-        if (id > node.getMaxId()) {
+    public static boolean isMyResponsibility(ChordNode node, long id) throws ChordException {
+        if (id > node.getMaxChordId()) {
             throw new ChordException("Invalid ID, this ID surpass MAX capacity.");
         }
 
@@ -21,6 +13,14 @@ public abstract class ChordNodeUtils {
             throw new ChordException("Invalid ID, can be Zero ou below.");
         }
 
+        return node.getMinId() < id && id <= node.getMaxId();
+    }
+
+    public static ChannelNode toChannelNode(ChordNode node) {
+        return ChannelNode.newBuilder().setIp(node.getIp()).setPort(node.getPort()).build();
+    }
+
+    public static ManagedChannel getPossibleResponsibleChannel(ChordNode node, Long id) {
         ChannelNode possibleChannelNode;
 
         if (id <= node.getMinId()) {

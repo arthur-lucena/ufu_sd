@@ -41,13 +41,13 @@ public class LogManager {
         this.currentLogFileNumber = getCurrentFileNumber(logFileLocation, serverId, log);
         this.currentSnapshotFileNumber = getCurrentFileNumber(logFileLocation, serverId, snapshot);
     }
-    
+
     public ImmutableMap<String, Integer> getCurrentCount() {
         return ImmutableMap.of(log, currentLogFileNumber, snapshot, currentSnapshotFileNumber);
     }
 
     public void createLogFile() {
-        if(!Files.exists(currentLogFilePath())) {
+        if (!Files.exists(currentLogFilePath())) {
             try {
                 createDir(logFileLocation);
                 Files.createFile(currentLogFilePath());
@@ -78,7 +78,7 @@ public class LogManager {
         List<String> snapshotedObjects = new ArrayList<>();
         snapshotedObjects = getLines(snapshotedObjects, filepath);
 
-        if(!snapshotedObjects.isEmpty()) {
+        if (!snapshotedObjects.isEmpty()) {
             List<Metadata> metadataList = snapshotedObjects.stream().map(Metadata::fromLogString).collect(toList());
             metadataList.forEach(s -> objects.put(s.getId(), s));
             return objects;
@@ -91,19 +91,19 @@ public class LogManager {
         List<Long> removedItems = new ArrayList<>();
         loggedOperations = getLines(loggedOperations, filePath);
 
-        if(!loggedOperations.isEmpty()) {
+        if (!loggedOperations.isEmpty()) {
             List<Metadata> metadataList = loggedOperations.stream().map(Metadata::fromLogString).collect(toList());
-             loggedOperations.forEach(s -> findRemovedObjects(s, removedItems));
+            loggedOperations.forEach(s -> findRemovedObjects(s, removedItems));
             return mergeInformation(metadataList, removedItems);
         }
         return new LinkedHashMap<>();
     }
 
     public void snapshot() {
-        if(Files.exists(currentLogFilePath())) {
+        if (Files.exists(currentLogFilePath())) {
             logger.info("creating new snapshot file: " + currentSnapshotFilePath().toString());
             LinkedHashMap<Long, Metadata> currentLogState = recoverLogInformation(currentLogFilePath());
-            if(!currentLogState.isEmpty()) {
+            if (!currentLogState.isEmpty()) {
                 createSnapshot(currentLogState);
                 currentSnapshotFileNumber++;
                 deleteOldFileIfNeeded(logFileLocation, snapshot, currentLogFileNumber - 3);
@@ -128,7 +128,7 @@ public class LogManager {
     }
 
     private List<String> getLines(List<String> loggedOperations, Path filePath) {
-        if(Files.exists(filePath)) {
+        if (Files.exists(filePath)) {
             try {
                 loggedOperations = Files.readAllLines(filePath);
             } catch (Exception e) {
@@ -162,7 +162,7 @@ public class LogManager {
 
     private void findRemovedObjects(String loggedOperations, List<Long> removedIds) {
         List<String> log = Arrays.asList(loggedOperations.split(","));
-        if(DELETE.name().equals(log.get(6))) {
+        if (DELETE.name().equals(log.get(6))) {
             removedIds.add(Long.valueOf(log.get(0)));
         }
     }
@@ -182,10 +182,10 @@ public class LogManager {
     }
 
     private void findCreationInfo(Metadata m, Metadata current) {
-        if(m.getCreatedAt() != null) {
+        if (m.getCreatedAt() != null) {
             current.setCreatedAt(m.getCreatedAt());
         }
-        if(m.getCreatedBy() != null) {
+        if (m.getCreatedBy() != null) {
             current.setCreatedBy(m.getCreatedBy());
         }
     }
@@ -209,7 +209,7 @@ public class LogManager {
 
     private void deleteOldFileIfNeeded(String fileLocation, String fileType, int fileNumber) {
         Path fileTobeDeleted = Paths.get(resolveCurrentPath(fileLocation, fileType, fileNumber));
-        if(Files.exists(fileTobeDeleted)) {
+        if (Files.exists(fileTobeDeleted)) {
             logger.info("deleting old " + fileType + "file: " + fileTobeDeleted.toString());
             try {
                 Files.delete(fileTobeDeleted);
@@ -229,9 +229,9 @@ public class LogManager {
                     .collect(toList());
 
         } catch (IOException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
-        if(!files.isEmpty()) {
+        if (!files.isEmpty()) {
             List<Integer> fileNumbers = files.stream().map(s -> getCurrent(logFileLocation, serverId, fileType, s.toString())).collect(toList());
             return Collections.max(fileNumbers);
         }
@@ -240,8 +240,7 @@ public class LogManager {
 
     private Integer getCurrent(String fileLocation, long serverId, String fileType, String filePath) {
         Matcher m = Pattern.compile(String.format("%s\\[server-%s]%s-(\\d+)\\.log", fileLocation, serverId, fileType)).matcher(filePath);
-        if(m.matches())
-        {
+        if (m.matches()) {
             return Integer.valueOf(m.group(1));
         }
         return 0;
@@ -257,11 +256,11 @@ public class LogManager {
 
         LinkedHashMap<Long, Metadata> previousSnapshotState = recoverSnapShotInformation(previousSnapshotFilePath());
         previousSnapshotState.putAll(currentLogState);
-        previousSnapshotState.forEach((k,v) -> appendSnapshotInformation(v, SNAPSHOT));
+        previousSnapshotState.forEach((k, v) -> appendSnapshotInformation(v, SNAPSHOT));
     }
 
     private void createDir(String path) {
-        if(!Files.isDirectory(Paths.get(path))) {
+        if (!Files.isDirectory(Paths.get(path))) {
             logger.info("creating new directory to keep log and snapshot files");
             try {
                 Files.createDirectory(Paths.get(path));

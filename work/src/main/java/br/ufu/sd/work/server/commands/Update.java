@@ -1,13 +1,12 @@
 package br.ufu.sd.work.server.commands;
 
-import br.ufu.sd.work.SelectRequest;
+import br.ufu.sd.work.Response;
 import br.ufu.sd.work.UpdateRequest;
-import br.ufu.sd.work.UpdateResponse;
-import br.ufu.sd.work.server.commands.api.ICommand;
-import br.ufu.sd.work.server.log.LogManager;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.model.Metadata;
+import br.ufu.sd.work.server.commands.api.ICommand;
+import br.ufu.sd.work.server.log.LogManager;
 import io.grpc.stub.StreamObserver;
 
 import java.time.LocalDateTime;
@@ -16,7 +15,7 @@ import java.util.logging.Logger;
 import static org.apache.commons.lang3.SerializationUtils.deserialize;
 import static org.apache.commons.lang3.SerializationUtils.serialize;
 
-public class Update implements ICommand<UpdateRequest, UpdateResponse> {
+public class Update implements ICommand<UpdateRequest, Response> {
     private static final Logger logger = Logger.getLogger(Update.class.getName());
 
     private UpdateRequest request;
@@ -29,7 +28,7 @@ public class Update implements ICommand<UpdateRequest, UpdateResponse> {
     }
 
     @Override
-    public void exec(StreamObserver<UpdateResponse> so, Dictionary dictionary) {
+    public void exec(StreamObserver<Response> so, Dictionary dictionary) {
         byte[] metadataBytes = dictionary.getData().get(request.getId());
 
         if (metadataBytes != null) {
@@ -42,11 +41,11 @@ public class Update implements ICommand<UpdateRequest, UpdateResponse> {
             dictionary.getData().put(metadata.getId(), serialize(metadata));
 
             logger.info("object with Id: " + metadata.getId() + " update: " + metadata.toString());
-            so.onNext(UpdateResponse.newBuilder().setResponse("objected with Id: " + metadata.getId() + " updated").build());
+            so.onNext(Response.newBuilder().setResponse("objected with Id: " + metadata.getId() + " updated").build());
             executedWithSucess = true;
         } else {
             logger.info("object with Id: " + request.getId() + " not found");
-            so.onNext(UpdateResponse.newBuilder().setResponse("Object with id " + metadata.getId() + " not found").build());
+            so.onNext(Response.newBuilder().setResponse("Object with id " + metadata.getId() + " not found").build());
         }
 
         so.onCompleted();
