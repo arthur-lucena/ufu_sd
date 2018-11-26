@@ -23,7 +23,7 @@ public class ChordConnector {
     }
 
     public ChordNode connect() throws ChordException {
-        ChordNode node = ChordNode.newBuilder()
+        ChordNode node = ChordNode.getDefaultInstance().newBuilder()
                 .setIp(ip)
                 .setPort(port)
                 .setNodeId(firstNode)
@@ -60,10 +60,22 @@ public class ChordConnector {
         channel.shutdown();
 
         if (response == null) {
-            System.out.println(candidateNode.toString());
+            if (!candidateNode.getFirstNode()) {
+                ManagedChannel channelNext = ManagedChannelBuilder.forAddress(candidateNode.getNextNodeChannel().getIp(), candidateNode.getNextNodeChannel().getPort())
+                        .usePlaintext().build();
+
+                ChordServiceGrpc.ChordServiceBlockingStub stubNext = ChordServiceGrpc.newBlockingStub(channelNext);
+
+                response = stubNext.setPrevious(ChordNodeUtils.toChannelNode(candidateNode));
+
+                candidateNode = candidateNode.toBuilder().setNextNodeChannel(response).build();
+            }
+
+            System.out.println("EU SOU ----\n" + candidateNode.toString());
+
             return candidateNode;
         } else {
-            ChordNode newCandidateNode = ChordNode.newBuilder()
+            ChordNode newCandidateNode = ChordNode.getDefaultInstance().newBuilder()
                     .setIp(ip)
                     .setPort(candidateNode.getPort() + jumpNextPort) // TODO diferenciar de nenhum serviço rodando na porta, de uma porta já ocupada, se porta estiver ocupada só incrementar a porta
                     .setNodeId(candidateNode.getNodeId() - nextNodeSub)

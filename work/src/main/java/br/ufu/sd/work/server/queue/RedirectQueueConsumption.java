@@ -14,13 +14,13 @@ public class RedirectQueueConsumption implements Runnable {
 
     private static final Logger logger = Logger.getLogger(RedirectQueueConsumption.class.getName());
 
-    private BlockingQueue<ResponseCommand> repassQueue;
+    private BlockingQueue<ResponseCommand> redirectQueue;
     private ResponseCommand responseCommand;
-    private ChordNode node;
+    private volatile ChordNode node;
     private volatile boolean running = true;
 
-    public RedirectQueueConsumption(BlockingQueue<ResponseCommand> repassQueue, ChordNode node) {
-        this.repassQueue = repassQueue;
+    public RedirectQueueConsumption(BlockingQueue<ResponseCommand> redirectQueue, ChordNode node) {
+        this.redirectQueue = redirectQueue;
         this.node = node;
     }
 
@@ -31,7 +31,7 @@ public class RedirectQueueConsumption implements Runnable {
     @Override
     public void run() {
         while (running) {
-            if (repassQueue.isEmpty()) {
+            if (redirectQueue.isEmpty()) {
                 waitNewCommand();
                 continue;
             }
@@ -42,9 +42,11 @@ public class RedirectQueueConsumption implements Runnable {
 
     private void consumeCommand() {
         try {
-            responseCommand = repassQueue.take();
+            responseCommand = redirectQueue.take();
 
             Thread thread = null;
+
+            System.out.println(node);
 
             switch (responseCommand.getCommand().getTypeCommand()) {
                 case INSERT:

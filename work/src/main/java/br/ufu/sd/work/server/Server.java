@@ -40,7 +40,7 @@ public class Server {
     private int numberOfNodes;
     private int numberBitsId;
 
-    private ChordNode node;
+    private static volatile ChordNode node;
 
     public Server(String configurationFileName) throws ChordException {
         configure(configurationFileName);
@@ -131,5 +131,4 @@ public class Server {
         this.logFilePath = props.getProperty("server.log.file.path");
         this.snapshotTaskInterval = Long.valueOf(props.getProperty("server.log.snapshot.interval"));
     }
-
 }

@@ -24,7 +24,7 @@ public class QueueOneConsumption implements Runnable {
     private ResponseCommand responseCommand;
     private Dictionary dictionary;
     private LogManager logManager;
-    private ChordNode node;
+    private volatile ChordNode node;
 
     private volatile boolean running = true;
 
