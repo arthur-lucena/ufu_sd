@@ -18,7 +18,7 @@ public class ChordConnector {
         this.port = port;
         this.jumpNextPort = jumpNextPort;
 
-        this.firstNode = (long) Math.pow(2,numberBitsId) - 1;
+        this.firstNode = (long) Math.pow(2, numberBitsId) - 1;
         this.nextNodeSub = (long) Math.pow(2, numberBitsId) / numberOfNodes;
     }
 
@@ -28,6 +28,7 @@ public class ChordConnector {
                 .setPort(port)
                 .setNodeId(firstNode)
                 .setMaxId(firstNode)
+                .setMaxChordId(firstNode)
                 .setMinId(firstNode - nextNodeSub)
                 .setFirstNode(true)
                 .build();
@@ -35,7 +36,7 @@ public class ChordConnector {
         return tryConnectOnRing(node);
     }
 
-    public ChordNode tryConnectOnRing(ChordNode candidateNode) throws ChordException{
+    public ChordNode tryConnectOnRing(ChordNode candidateNode) throws ChordException {
         ManagedChannel channel = ManagedChannelBuilder.forAddress(candidateNode.getIp(), candidateNode.getPort())
                 .usePlaintext().build();
 
@@ -66,6 +67,7 @@ public class ChordConnector {
                     .setNodeId(candidateNode.getNodeId() - nextNodeSub)
                     .setMaxId(candidateNode.getMaxId() - nextNodeSub)
                     .setMinId(candidateNode.getMinId() - nextNodeSub)
+                    .setMaxChordId(firstNode)
                     .setNextNodeChannel(response)
                     .setFirstNode(false)
                     .setLastNode(candidateNode.getNodeId() - nextNodeSub - nextNodeSub == 0)

@@ -13,7 +13,7 @@ public abstract class ChordNodeUtils {
     }
 
     public static ManagedChannel getPossibleResponsibleChannel(ChordNode node, Long id) throws ChordException {
-        if (id > node.getMaxId()) {
+        if (id > node.getMaxChordId()) {
             throw new ChordException("Invalid ID, this ID surpass MAX capacity.");
         }
 

@@ -1,8 +1,8 @@
 package br.ufu.sd.work.server.commands.api;
 
+import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.server.log.LogManager;
-import br.ufu.sd.work.model.Dictionary;
 import io.grpc.stub.StreamObserver;
 
 public interface ICommand<RQ, RE> {

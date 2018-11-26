@@ -1,8 +1,10 @@
 package br.ufu.sd.work.server.service;
 
-import br.ufu.sd.work.*;
-import br.ufu.sd.work.server.commands.Select;
+import br.ufu.sd.work.Response;
+import br.ufu.sd.work.SelectRequest;
+import br.ufu.sd.work.SelectServiceGrpc;
 import br.ufu.sd.work.model.ResponseCommand;
+import br.ufu.sd.work.server.commands.Select;
 import io.grpc.stub.StreamObserver;
 
 import java.util.concurrent.BlockingQueue;
@@ -16,7 +18,7 @@ public class ServiceSelect extends SelectServiceGrpc.SelectServiceImplBase {
     }
 
     @Override
-    public void select(SelectRequest request, StreamObserver<SelectResponse> responseObserver) {
+    public void select(SelectRequest request, StreamObserver<Response> responseObserver) {
         queueOne.add(new ResponseCommand(responseObserver, new Select(request)));
     }
 }

@@ -1,8 +1,8 @@
 package br.ufu.sd.work.request;
 
 import br.ufu.sd.work.InsertRequest;
-import br.ufu.sd.work.InsertResponse;
 import br.ufu.sd.work.InsertServiceGrpc;
+import br.ufu.sd.work.Response;
 import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;
 
@@ -15,30 +15,22 @@ public class ExecuteInsert implements Runnable {
     private InsertServiceGrpc.InsertServiceBlockingStub stub;
     private ManagedChannel channel;
     private InsertRequest request;
-    private String stringResponse;
+    private Response response;
 
-    public ExecuteInsert(InsertRequest request, ManagedChannel channel, String stringResponse) {
+    public ExecuteInsert(InsertRequest request, ManagedChannel channel, Response response) {
         this.request = request;
         this.channel = channel;
-        this.stringResponse = stringResponse;
+        this.response = response;
     }
 
     @Override
     public void run() {
         stub = InsertServiceGrpc.newBlockingStub(channel);
-        InsertResponse response;
 
         try {
             response = stub.insert(request);
         } catch (StatusRuntimeException e) {
-            return;
-        }
-
-        if (stringResponse == null) {
-            logger.info("response from insert request : " + response.getResponse());
-        } else {
-            stringResponse = response.getResponse();
+            logger.info(e.getMessage());
         }
     }
-
 }

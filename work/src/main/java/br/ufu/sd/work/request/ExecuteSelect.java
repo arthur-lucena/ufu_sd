@@ -1,6 +1,8 @@
 package br.ufu.sd.work.request;
 
-import br.ufu.sd.work.*;
+import br.ufu.sd.work.Response;
+import br.ufu.sd.work.SelectRequest;
+import br.ufu.sd.work.SelectServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;
 
@@ -13,30 +15,22 @@ public class ExecuteSelect implements Runnable {
     private SelectServiceGrpc.SelectServiceBlockingStub stub;
     private ManagedChannel channel;
     private SelectRequest request;
-    private String stringResponse;
+    private Response response;
 
-    public ExecuteSelect(SelectRequest request, ManagedChannel channel, String stringResponse) {
+    public ExecuteSelect(SelectRequest request, ManagedChannel channel, Response response) {
         this.request = request;
         this.channel = channel;
-        this.stringResponse = stringResponse;
+        this.response = response;
     }
 
     @Override
     public void run() {
         stub = SelectServiceGrpc.newBlockingStub(channel);
-        SelectResponse response;
 
         try {
             response = stub.select(request);
         } catch (StatusRuntimeException e) {
-            return;
-        }
-
-        if (stringResponse == null) {
-            logger.info("response from select request : " + response.getResponse());
-        } else {
-            stringResponse = response.getResponse();
+            logger.info(e.getMessage());
         }
     }
-
 }

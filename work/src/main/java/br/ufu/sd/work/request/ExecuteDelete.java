@@ -1,8 +1,8 @@
 package br.ufu.sd.work.request;
 
 import br.ufu.sd.work.DeleteRequest;
-import br.ufu.sd.work.DeleteResponse;
 import br.ufu.sd.work.DeleteServiceGrpc;
+import br.ufu.sd.work.Response;
 import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;
 
@@ -15,29 +15,22 @@ public class ExecuteDelete implements Runnable {
     private DeleteServiceGrpc.DeleteServiceBlockingStub stub;
     private ManagedChannel channel;
     private DeleteRequest request;
-    private String stringResponse;
+    private Response response;
 
-    public ExecuteDelete(DeleteRequest request, ManagedChannel channel, String stringResponse) {
+    public ExecuteDelete(DeleteRequest request, ManagedChannel channel, Response response) {
         this.request = request;
         this.channel = channel;
-        this.stringResponse = stringResponse;
+        this.response = response;
     }
 
     @Override
     public void run() {
         stub = DeleteServiceGrpc.newBlockingStub(channel);
-        DeleteResponse response;
 
         try {
             response = stub.delete(request);
         } catch (StatusRuntimeException e) {
-            return;
-        }
-
-        if (stringResponse == null) {
-            logger.info("response from delete request : " + response.getResponse());
-        } else {
-            stringResponse = response.getResponse();
+            logger.info(e.getMessage());
         }
     }
 

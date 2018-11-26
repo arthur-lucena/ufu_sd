@@ -1,10 +1,6 @@
 package br.ufu.sd.work.server.queue;
 
-import br.ufu.sd.work.DeleteRequest;
-import br.ufu.sd.work.InsertRequest;
-import br.ufu.sd.work.SelectRequest;
-import br.ufu.sd.work.UpdateRequest;
-import br.ufu.sd.work.model.Dictionary;
+import br.ufu.sd.work.*;
 import br.ufu.sd.work.model.ResponseCommand;
 import br.ufu.sd.work.request.ExecuteDelete;
 import br.ufu.sd.work.request.ExecuteInsert;
@@ -16,14 +12,16 @@ import br.ufu.sd.work.server.chord.ChordNodeUtils;
 import io.grpc.ManagedChannel;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.logging.Logger;
 
 public class RepassQueueConsumption implements Runnable {
+
+    private static final Logger logger = Logger.getLogger(RepassQueueConsumption.class.getName());
 
     private BlockingQueue<ResponseCommand> repassQueue;
     private ChordNode node;
     private ResponseCommand responseCommand;
     private volatile boolean running = true;
-    private Dictionary dictionary;
 
     public RepassQueueConsumption(BlockingQueue<ResponseCommand> repassQueue, ChordNode node) {
         this.repassQueue = repassQueue;
@@ -54,13 +52,14 @@ public class RepassQueueConsumption implements Runnable {
             try {
                 channel = ChordNodeUtils.getPossibleResponsibleChannel(node, responseCommand.getCommand().getIdRequest());
             } catch (ChordException e) {
-                responseCommand.getStreamObserver().onNext(e.getMessage());
+                logger.info(e.getMessage());
+                responseCommand.getStreamObserver().onNext(Response.newBuilder().setResponse(e.getMessage()).build());
                 responseCommand.getStreamObserver().onCompleted();
                 return;
             }
 
             Runnable runnableCommand = null;
-            String response = null;
+            Response response = null;
 
             switch (responseCommand.getCommand().getTypeCommand()) {
                 case INSERT:

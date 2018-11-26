@@ -1,7 +1,7 @@
 package br.ufu.sd.work.request;
 
+import br.ufu.sd.work.Response;
 import br.ufu.sd.work.UpdateRequest;
-import br.ufu.sd.work.UpdateResponse;
 import br.ufu.sd.work.UpdateServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;
@@ -15,30 +15,22 @@ public class ExecuteUpdate implements Runnable {
     private UpdateServiceGrpc.UpdateServiceBlockingStub stub;
     private ManagedChannel channel;
     private UpdateRequest request;
-    private String stringResponse;
+    private Response response;
 
-    public ExecuteUpdate(UpdateRequest request, ManagedChannel channel, String stringResponse) {
+    public ExecuteUpdate(UpdateRequest request, ManagedChannel channel, Response response) {
         this.request = request;
         this.channel = channel;
-        this.stringResponse = stringResponse;
+        this.response = response;
     }
 
     @Override
     public void run() {
         stub = UpdateServiceGrpc.newBlockingStub(channel);
-        UpdateResponse response;
 
         try {
             response = stub.update(request);
         } catch (StatusRuntimeException e) {
-            return;
-        }
-
-        if (stringResponse == null) {
-            logger.info("response from update request : " + response.getResponse());
-        } else {
-            stringResponse = response.getResponse();
+            logger.info(e.getMessage());
         }
     }
-
 }

@@ -42,7 +42,7 @@ public class Server {
 
     private ChordNode node;
 
-    public Server(String configurationFileName) throws ChordException{
+    public Server(String configurationFileName) throws ChordException {
         configure(configurationFileName);
         connectionChord();
 
@@ -111,7 +111,7 @@ public class Server {
     private void recreateDictionaryIfNeeded() {
         if (dictionary.getData().isEmpty()) {
             LinkedHashMap<Long, Metadata> loggedData = logManager.recoverInformation();
-            if(!loggedData.isEmpty()) {
+            if (!loggedData.isEmpty()) {
                 loggedData.forEach((k, v) -> dictionary.getData().put(k, serialize(v)));
                 List<Long> ids = new ArrayList<>(loggedData.keySet());
                 Collections.reverse(ids);
