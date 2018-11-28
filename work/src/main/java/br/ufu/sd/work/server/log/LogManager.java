@@ -263,7 +263,7 @@ public class LogManager {
         if (!Files.isDirectory(Paths.get(path))) {
             logger.info("creating new directory to keep log and snapshot files");
             try {
-                Files.createDirectory(Paths.get(path));
+                Files.createDirectories(Paths.get(path));
             } catch (IOException e) {
                 e.printStackTrace();
             }
