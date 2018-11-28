@@ -7,6 +7,9 @@ import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.model.Metadata;
 import br.ufu.sd.work.server.commands.api.ICommand;
 import br.ufu.sd.work.server.log.LogManager;
+import br.ufu.sd.work.model.Dictionary;
+import br.ufu.sd.work.model.Metadata;
+import com.google.gson.Gson;
 import io.grpc.stub.StreamObserver;
 
 import java.util.logging.Logger;
@@ -30,7 +33,7 @@ public class Select implements ICommand<SelectRequest, Response> {
             Metadata metadata = deserialize(metadataBytes);
 
             logger.info("object with Id: " + request.getId() + " found");
-            so.onNext(Response.newBuilder().setResponse("object with Id: " + request.getId() + " found: " + metadata.toString()).build());
+            so.onNext(Response.newBuilder().setResponse(new Gson().toJson(metadata)).build());
         } else {
             logger.info("object with Id: " + request.getId() + " not found");
             so.onNext(Response.newBuilder().setResponse("not found").build());

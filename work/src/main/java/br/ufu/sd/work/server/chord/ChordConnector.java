@@ -83,6 +83,7 @@ public class ChordConnector {
                     .setMinId(candidateNode.getMinId() - nextNodeSub)
                     .setMaxChordId(firstNode)
                     .setNextNodeChannel(response)
+                    .setPreviousNodeChannel(previousChannel)
                     .setFirstNode(false)
                     .setLastNode(candidateNode.getNodeId() - nextNodeSub - nextNodeSub == 0)
                     .build();
