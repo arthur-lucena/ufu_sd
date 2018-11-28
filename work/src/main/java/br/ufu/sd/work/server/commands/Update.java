@@ -7,6 +7,7 @@ import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.model.Metadata;
 import br.ufu.sd.work.server.commands.api.ICommand;
 import br.ufu.sd.work.server.log.LogManager;
+import com.google.gson.Gson;
 import io.grpc.stub.StreamObserver;
 
 import java.time.LocalDateTime;
@@ -41,16 +42,17 @@ public class Update implements ICommand<UpdateRequest, Response> {
             dictionary.getData().put(metadata.getId(), serialize(metadata));
 
             logger.info("object with Id: " + metadata.getId() + " update: " + metadata.toString());
-            so.onNext(Response.newBuilder().setResponse("objected with Id: " + metadata.getId() + " updated").build());
+            so.onNext(Response.newBuilder().setResponse(new Gson().toJson(metadata)).build());
             executedWithSucess = true;
         } else {
             logger.info("object with Id: " + request.getId() + " not found");
-            so.onNext(Response.newBuilder().setResponse("Object with id " + metadata.getId() + " not found").build());
+            so.onNext(Response.newBuilder().setResponse("Object with id " + request.getId() + " not found").build());
         }
 
         so.onCompleted();
         executed = true;
     }
+
 
     @Override
     public void log(LogManager logManager) {

@@ -8,6 +8,11 @@ public class ExecuteUpdate implements Runnable {
 
     private ManagedChannel channel;
     private UpdateRequest request;
+    private String response;
+
+    public String getResponse() {
+        return response;
+    }
 
     public ExecuteUpdate(UpdateRequest request, ManagedChannel channel) {
         this.request = request;
@@ -17,6 +22,7 @@ public class ExecuteUpdate implements Runnable {
     @Override
     public void run() {
         UpdateServiceGrpc.UpdateServiceBlockingStub stub = UpdateServiceGrpc.newBlockingStub(channel);
-        System.out.println(stub.update(request).getResponse());
+        this.response = stub.update(request).getResponse();
+        System.out.println(this.response);
     }
 }

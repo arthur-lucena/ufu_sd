@@ -8,6 +8,7 @@ public class ExecuteInsert implements Runnable {
 
     private ManagedChannel channel;
     private InsertRequest request;
+    private String response;
 
     public ExecuteInsert(InsertRequest request, ManagedChannel channel) {
         this.request = request;
@@ -17,6 +18,11 @@ public class ExecuteInsert implements Runnable {
     @Override
     public void run() {
         InsertServiceGrpc.InsertServiceBlockingStub stub = InsertServiceGrpc.newBlockingStub(channel);
-        System.out.println(stub.insert(request).getResponse());
+        this.response = stub.insert(request).getResponse();
+        System.out.println(this.response);
+    }
+
+    public String getResponse() {
+        return response;
     }
 }

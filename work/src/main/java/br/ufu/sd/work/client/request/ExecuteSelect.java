@@ -8,6 +8,11 @@ public class ExecuteSelect implements Runnable {
 
     private ManagedChannel channel;
     private SelectRequest request;
+    private String response;
+
+    public String getResponse() {
+        return response;
+    }
 
     public ExecuteSelect(SelectRequest request, ManagedChannel channel) {
         this.request = request;
@@ -17,6 +22,7 @@ public class ExecuteSelect implements Runnable {
     @Override
     public void run() {
         SelectServiceGrpc.SelectServiceBlockingStub stub = SelectServiceGrpc.newBlockingStub(channel);
-        System.out.println(stub.select(request).getResponse());
+        this.response = stub.select(request).getResponse();
+        System.out.println(this.response);
     }
 }

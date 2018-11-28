@@ -7,6 +7,7 @@ import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.model.Metadata;
 import br.ufu.sd.work.server.commands.api.ICommand;
 import br.ufu.sd.work.server.log.LogManager;
+import com.google.gson.Gson;
 import io.grpc.stub.StreamObserver;
 
 import java.time.LocalDateTime;
@@ -33,7 +34,7 @@ public class Insert implements ICommand<InsertRequest, Response> {
         if (!dictionary.getData().containsKey(metadata.getId())) {
             dictionary.getData().put(metadata.getId(), serialize(metadata));
             logger.info("insert with " + metadata);
-            so.onNext(Response.newBuilder().setResponse("insert success: " + metadata).build());
+            so.onNext(Response.newBuilder().setResponse(new Gson().toJson(metadata)).build());
             executedWithSucess = true;
         } else {
             logger.info("object with Id: " + metadata.getId() + " not created");
