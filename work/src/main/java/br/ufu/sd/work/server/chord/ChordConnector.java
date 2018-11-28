@@ -57,7 +57,9 @@ public class ChordConnector {
 
         }
 
-        channel.shutdown();
+        if (!channel.isShutdown()) {
+            channel.shutdownNow();
+        }
 
         if (response == null) {
             if (!candidateNode.getFirstNode()) {
@@ -69,23 +71,28 @@ public class ChordConnector {
                 response = stubNext.setPrevious(ChordNodeUtils.toChannelNode(candidateNode));
 
                 candidateNode = candidateNode.toBuilder().setNextNodeChannel(response).build();
+
+                if (!channelNext.isShutdown()) {
+                    channelNext.shutdownNow();
+                }
             }
 
             System.out.println("EU SOU ----\n" + candidateNode.toString());
 
             return candidateNode;
         } else {
+            boolean lastNode = candidateNode.getMinId() - nextNodeSub - 1 <= 0;
+
             ChordNode newCandidateNode = ChordNode.getDefaultInstance().newBuilder()
                     .setIp(ip)
                     .setPort(candidateNode.getPort() + jumpNextPort) // TODO diferenciar de nenhum serviço rodando na porta, de uma porta já ocupada, se porta estiver ocupada só incrementar a porta
                     .setNodeId(candidateNode.getNodeId() - nextNodeSub)
                     .setMaxId(candidateNode.getMaxId() - nextNodeSub)
-                    .setMinId(candidateNode.getMinId() - nextNodeSub)
+                    .setMinId(lastNode ? 0 : candidateNode.getMinId() - nextNodeSub)
                     .setMaxChordId(firstNode)
                     .setNextNodeChannel(response)
-                    .setPreviousNodeChannel(previousChannel)
                     .setFirstNode(false)
-                    .setLastNode(candidateNode.getNodeId() - nextNodeSub - nextNodeSub == 0)
+                    .setLastNode(lastNode)
                     .build();
 
             if (newCandidateNode.getNodeId() > 0) {

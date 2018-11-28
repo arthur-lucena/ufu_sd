@@ -142,7 +142,7 @@ public class ServerTest {
         t4.start();
         t4.join();
 
-        Assert.assertEquals("objected with Id: 15 deleted", executeDelete.getResponse());
+        Assert.assertEquals("objected with Id: 0 deleted", executeDelete.getResponse());
 
     }
 
