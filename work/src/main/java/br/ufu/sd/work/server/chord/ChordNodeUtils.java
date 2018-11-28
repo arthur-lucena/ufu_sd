@@ -9,11 +9,11 @@ public abstract class ChordNodeUtils {
             throw new ChordException("Invalid ID, this ID surpass MAX capacity.");
         }
 
-        if (id <= 0) {
-            throw new ChordException("Invalid ID, can be Zero ou below.");
+        if (id < 0) {
+            throw new ChordException("Invalid ID, can be below Zero.");
         }
 
-        return node.getMinId() < id && id <= node.getMaxId();
+        return (node.getMinId() < id && id <= node.getMaxId()) || (id == 0 && node.getLastNode());
     }
 
     public static ChannelNode toChannelNode(ChordNode node) {
@@ -23,7 +23,7 @@ public abstract class ChordNodeUtils {
     public static ManagedChannel getPossibleResponsibleChannel(ChordNode node, Long id) {
         ChannelNode possibleChannelNode;
 
-        if (id <= node.getMinId()) {
+        if (id <= node.getMinId() && !node.getLastNode()) {
             possibleChannelNode = node.getPreviousNodeChannel();
         } else if (id > node.getMaxId()) {
             possibleChannelNode = node.getNextNodeChannel();
