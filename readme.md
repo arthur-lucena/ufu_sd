@@ -1,26 +1,26 @@
  ### Terceira entrega
 
-** Motivação **
+**Motivação**
 Agora que seu banco de dados está gigante, cheio de dados importantes, você não pode mais permitir que falhas levem à indisponibilidade de dados. 
 Como discutido nas últimas semanas, replicação de máquinas de estados é uma forma correta e "simples", mesmo que não muito eficiente de tornar um serviço tolerante a falhas. Vocês aplicarão esta técnica na terceira entrega.
 
-** Difusão Totalmente Ordenada **
+**Difusão Totalmente Ordenada**
 - [ ] Para Implementar a máquina de estados replicada, você precisa da implementação de um algoritmo de difusão totalmente ordenada. Dado que todos os trabalhos ou foram implementados em Python ou em Java, recomendo que usem o Atomix (visto em sala de aula, para Java) ou o OpenReplica (http://openreplica.org/, para Python). Ambos funcionam de forma muito parecida, então a dificuldade será a mesma em ambos os casos.
 
-** O quê fazer? **
+**O quê fazer?**
 - [ ] Cada servidor do seu sistema é um ponto simples de falhas (SPOF) para os dados pelos quais é responsável. Para remover este SPOF, vocês usarão a implementação da difusão totalmente ordenada escolhida, replicando cada servidor em 3 vias.
 
-** Topologia **
+**Topologia**
 - [ ] Seja um anel como construído para a segunda entrega com N servidores. Na terceira entrega, haverão N*3 servidores, sendo que cada 3 servidores ocupam a mesma posição no anel.
 
-** Comunicação **
+**Comunicação**
 - [ ] A comunicação entre cliente e servidores continua por gRPC. O cliente se conecta a qualquer servidor que conheça.
 - [ ] Ao receber uma requisição, o servidor decide-se por executá-la ou por passá-la adiante para outro servidor. Se for passá-la adiante, usa gRPC.
 - [ ] Se for executá-la, procede como antes para que seja logada. Contudo, em vez de fazer como antes para que seja executada, usa a difusão confiável para propagar a requisição para as 3 réplicas (inclusive si mesmo).
 - [ ] Ao receber a requisição via difusão confiável, o servidor simplesmente a executa, tendo a certeza de que suas réplicas farão o mesmo.
 - [ ] Operações de leitura também deverão ser feitas via o framework de difusão atômica. No caso do Atomix, por exemplo, usando uma query.
 
-** Testes **
+**Testes**
 
 Os testes a serem executados são os mesmos das entregas anteriores, mais o teste do cenário em que réplicas de cada faixa de chaves são reiniciada repetidamente, sendo que no máximo uma réplica por faixa é reiniciada por vez, e enquanto operações de escrita e leitura são feitas nas faixas correspondentes.
  
