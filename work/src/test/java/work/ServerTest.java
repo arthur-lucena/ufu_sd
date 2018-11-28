@@ -239,4 +239,48 @@ public class ServerTest {
         Assert.assertEquals("objected with Id: 14 deleted", executeDelete.getResponse());
     }
 
+    @Test
+    public void testCrudWithNegative() throws InterruptedException {
+
+        String IP = "127.0.0.1";
+        int PORT = 51666;
+
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(IP, PORT)
+                .usePlaintext().build();
+        InsertRequest insertRequest = InsertRequest.newBuilder().setId(-1L)
+                .setValue("teste")
+                .setIdClient("1").build();
+
+        ExecuteInsert runnable = new ExecuteInsert(insertRequest, channel);
+
+        Thread t1 = new Thread(runnable);
+        t1.start();
+        t1.join();
+
+        Assert.assertEquals("Invalid ID, can be below Zero.", runnable.getResponse());
+
+    }
+
+    @Test
+    public void testCrudWithKeyBiggerThem() throws InterruptedException {
+
+        String IP = "127.0.0.1";
+        int PORT = 51666;
+
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(IP, PORT)
+                .usePlaintext().build();
+        InsertRequest insertRequest = InsertRequest.newBuilder().setId(43L)
+                .setValue("teste")
+                .setIdClient("1").build();
+
+        ExecuteInsert runnable = new ExecuteInsert(insertRequest, channel);
+
+        Thread t1 = new Thread(runnable);
+        t1.start();
+        t1.join();
+
+        Assert.assertEquals("Invalid ID, this ID surpass MAX capacity.", runnable.getResponse());
+
+    }
+
 }
