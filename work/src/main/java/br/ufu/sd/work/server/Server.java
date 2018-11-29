@@ -76,10 +76,7 @@ public class Server {
         threadStarter.start();
 
         server = ServerBuilder.forPort(node.getPort())
-                .addService(new ServiceInsert(queueOne))
-                .addService(new ServiceSelect(queueOne))
-                .addService(new ServiceDelete(queueOne))
-                .addService(new ServiceUpdate(queueOne))
+                .addService(new CrudService(queueOne))
                 .addService(new ServiceChord(node))
                 .build()
                 .start();

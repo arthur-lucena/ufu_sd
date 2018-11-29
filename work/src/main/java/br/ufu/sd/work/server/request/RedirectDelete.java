@@ -1,7 +1,7 @@
 package br.ufu.sd.work.server.request;
 
+import br.ufu.sd.work.CrudServiceGrpc;
 import br.ufu.sd.work.DeleteRequest;
-import br.ufu.sd.work.DeleteServiceGrpc;
 import br.ufu.sd.work.Response;
 import br.ufu.sd.work.model.ResponseCommand;
 import br.ufu.sd.work.server.chord.ChordNode;
@@ -21,7 +21,7 @@ public class RedirectDelete implements Runnable {
     @Override
     public void run() {
         ManagedChannel channel = ChordNodeUtils.getPossibleResponsibleChannel(node, responseCommand.getCommand().getIdRequest());
-        DeleteServiceGrpc.DeleteServiceBlockingStub stub = DeleteServiceGrpc.newBlockingStub(channel);
+        CrudServiceGrpc.CrudServiceBlockingStub stub = CrudServiceGrpc.newBlockingStub(channel);
         Response response = stub.delete((DeleteRequest) responseCommand.getCommand().getRequest());
         responseCommand.getStreamObserver().onNext(response);
         responseCommand.getStreamObserver().onCompleted();

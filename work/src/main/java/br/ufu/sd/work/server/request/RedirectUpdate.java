@@ -1,6 +1,8 @@
 package br.ufu.sd.work.server.request;
 
-import br.ufu.sd.work.*;
+import br.ufu.sd.work.CrudServiceGrpc;
+import br.ufu.sd.work.Response;
+import br.ufu.sd.work.UpdateRequest;
 import br.ufu.sd.work.model.ResponseCommand;
 import br.ufu.sd.work.server.chord.ChordNode;
 import br.ufu.sd.work.server.chord.ChordNodeUtils;
@@ -19,7 +21,7 @@ public class RedirectUpdate implements Runnable {
     @Override
     public void run() {
         ManagedChannel channel = ChordNodeUtils.getPossibleResponsibleChannel(node, responseCommand.getCommand().getIdRequest());
-        UpdateServiceGrpc.UpdateServiceBlockingStub stub = UpdateServiceGrpc.newBlockingStub(channel);
+        CrudServiceGrpc.CrudServiceBlockingStub stub = CrudServiceGrpc.newBlockingStub(channel);
         Response response = stub.update((UpdateRequest) responseCommand.getCommand().getRequest());
         responseCommand.getStreamObserver().onNext(response);
         responseCommand.getStreamObserver().onCompleted();

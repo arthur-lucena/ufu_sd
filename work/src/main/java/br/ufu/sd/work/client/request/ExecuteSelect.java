@@ -1,7 +1,7 @@
 package br.ufu.sd.work.client.request;
 
+import br.ufu.sd.work.CrudServiceGrpc;
 import br.ufu.sd.work.SelectRequest;
-import br.ufu.sd.work.SelectServiceGrpc;
 import io.grpc.ManagedChannel;
 
 public class ExecuteSelect implements Runnable {
@@ -21,7 +21,7 @@ public class ExecuteSelect implements Runnable {
 
     @Override
     public void run() {
-        SelectServiceGrpc.SelectServiceBlockingStub stub = SelectServiceGrpc.newBlockingStub(channel);
+        CrudServiceGrpc.CrudServiceBlockingStub stub = CrudServiceGrpc.newBlockingStub(channel);
         this.response = stub.select(request).getResponse();
         System.out.println(this.response);
     }

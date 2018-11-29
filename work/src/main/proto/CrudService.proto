@@ -27,18 +27,12 @@ message DeleteRequest {
     string idClient = 2;
 }
 
-service SelectService {
+service CrudService {
     rpc select (SelectRequest) returns (Response);
-}
 
-service InsertService {
     rpc insert (InsertRequest) returns (Response);
-}
 
-service UpdateService {
     rpc update (UpdateRequest) returns (Response);
-}
 
-service DeleteService {
     rpc delete (DeleteRequest) returns (Response);
 }
