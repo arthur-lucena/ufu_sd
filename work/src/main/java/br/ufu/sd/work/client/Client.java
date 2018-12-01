@@ -1,20 +1,19 @@
 package br.ufu.sd.work.client;
 
 import br.ufu.sd.work.*;
-import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.client.request.ExecuteDelete;
-import br.ufu.sd.work.client.request.ExecuteInsert;
 import br.ufu.sd.work.client.request.ExecuteSelect;
-import br.ufu.sd.work.client.request.ExecuteUpdate;
+import br.ufu.sd.work.model.ETypeCommand;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.stub.StreamObserver;
 
 import java.util.Scanner;
 import java.util.logging.Logger;
 
 public class Client {
     private static final String IP = "127.0.0.1";
-    private static final int PORT = 52666;
+    private static final int PORT = 51666;
 
     private static final Logger logger = Logger.getLogger(Client.class.getName());
 
@@ -30,6 +29,25 @@ public class Client {
 
         Scanner s = new Scanner(System.in);
         boolean running = true;
+
+        StreamObserver<Response> so = new StreamObserver<Response>() {
+            @Override
+            public void onNext(Response value) {
+                System.out.println(value);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+
+            }
+
+            @Override
+            public void onCompleted() {
+
+            }
+        };
+
+        CrudServiceGrpc.CrudServiceStub stub = CrudServiceGrpc.newStub(channel);
 
         while (running) {
             try {
@@ -53,8 +71,6 @@ public class Client {
                     continue;
                 }
 
-                Thread thread = null;
-
                 switch (command) {
                     case INSERT:
                         InsertRequest ir = InsertRequest.newBuilder()
@@ -62,7 +78,9 @@ public class Client {
                                 .setValue(args[1])
                                 .setIdClient("1")
                                 .build();
-                        thread = new Thread(new ExecuteInsert(ir, channel));
+
+                        stub.insert(ir, so);
+
                         break;
                     case UPDATE:
                         UpdateRequest ur = UpdateRequest.newBuilder()
@@ -70,20 +88,25 @@ public class Client {
                                 .setValue(args[1])
                                 .setIdClient("1")
                                 .build();
-                        thread = new Thread(new ExecuteUpdate(ur, channel));
+
+                        stub.update(ur, so);
                         break;
                     case DELETE:
                         DeleteRequest dr = DeleteRequest.newBuilder()
                                 .setId(Long.valueOf(args[0]))
                                 .setIdClient("1")
                                 .build();
-                        thread = new Thread(new ExecuteDelete(dr, channel));
+
+                        stub.delete(dr, so);
+
                         break;
                     case SELECT:
                         SelectRequest sr = SelectRequest.newBuilder()
                                 .setId(Long.valueOf(args[0]))
                                 .build();
-                        thread = new Thread(new ExecuteSelect(sr, channel));
+
+                        stub.select(sr, so);
+
                         break;
                     case EXIT:
                         running = false;
@@ -99,8 +122,6 @@ public class Client {
                         logger.warning("invalid command");
                         break;
                 }
-
-                thread.start();
             } catch (Exception e) {
                 e.printStackTrace();
             }
