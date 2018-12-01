@@ -1,12 +1,10 @@
 package br.ufu.sd.work.server.queue;
 
+import br.ufu.sd.work.client.Client;
 import br.ufu.sd.work.model.ResponseCommand;
-import br.ufu.sd.work.server.chord.ChordNode;
 import br.ufu.sd.work.server.chord.ChordNodeWrapper;
-import br.ufu.sd.work.server.request.RedirectDelete;
-import br.ufu.sd.work.server.request.RedirectInsert;
-import br.ufu.sd.work.server.request.RedirectSelect;
-import br.ufu.sd.work.server.request.RedirectUpdate;
+import br.ufu.sd.work.server.commands.api.ICommand;
+import io.grpc.stub.StreamObserver;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Logger;
@@ -19,10 +17,14 @@ public class RedirectQueueConsumption implements Runnable {
     private ResponseCommand responseCommand;
     private volatile ChordNodeWrapper node;
     private volatile boolean running = true;
+    private Client nextNode;
+    private Client previousNode;
+    private int delayCommand;
 
-    public RedirectQueueConsumption(BlockingQueue<ResponseCommand> redirectQueue, ChordNodeWrapper node) {
+    public RedirectQueueConsumption(BlockingQueue<ResponseCommand> redirectQueue, ChordNodeWrapper node, int delayCommand) {
         this.redirectQueue = redirectQueue;
         this.node = node;
+        this.delayCommand = delayCommand;
     }
 
     public void terminate() {
@@ -43,32 +45,38 @@ public class RedirectQueueConsumption implements Runnable {
 
     private void consumeCommand() {
         try {
-            responseCommand = redirectQueue.take();
+            Client clientRedirect;
 
-            Thread thread = null;
-
-            System.out.println(node.getChordNode());
-
-            switch (responseCommand.getCommand().getTypeCommand()) {
-                case INSERT:
-                    thread = new Thread(new RedirectInsert(node.getChordNode(), responseCommand));
-                    break;
-                case UPDATE:
-                    thread = new Thread(new RedirectUpdate(node.getChordNode(), responseCommand));
-                    break;
-                case DELETE:
-                    thread = new Thread(new RedirectDelete(node.getChordNode(), responseCommand));
-                    break;
-                case SELECT:
-                    thread = new Thread(new RedirectSelect(node.getChordNode(), responseCommand));
-                    break;
-                default:
-                    break;
+            if (nextNode == null && !node.isFirstNode()) {
+                nextNode = new Client(node.getIpNext(), node.getPortNext());
             }
 
-            logger.info("Command " + responseCommand.getCommand().getTypeCommand() + " redirect : " + responseCommand.getCommand().getRequest().toString());
+            if (previousNode == null && !node.isLastNode()) {
+                if (node.getIpPrevious() != null) {
+                    previousNode = new Client(node.getIpPrevious(), node.getPortPrevious());
+                }
+            }
 
-            thread.start();
+            responseCommand = redirectQueue.take();
+
+            ICommand command = responseCommand.getCommand();
+
+            int direction =  getPossibleRedirection(node, command.getIdRequest());
+
+            if (direction > 0) {
+                clientRedirect = nextNode;
+            } else if (direction < 0) {
+                clientRedirect = previousNode;
+            } else {
+                logger.warning("HOW U CAME HERE!??!?!");
+                return;
+            }
+
+            StreamObserver sos = new StreamObserverServer(responseCommand.getStreamObserver());
+
+            clientRedirect.sendCommand(command.getRequest(), command.getTypeCommand(), sos);
+
+            logger.info("Command " + command.getTypeCommand() + " redirect : " + command.getRequest().toString());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -76,9 +84,19 @@ public class RedirectQueueConsumption implements Runnable {
 
     private void waitNewCommand() {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(delayCommand);
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static int getPossibleRedirection(ChordNodeWrapper node, Long id) {
+        if (id <= node.getMinId() && !node.isLastNode()) {
+            return -1;
+        } else if (id > node.getMaxId()) {
+            return 1;
+        } else {
+            return 0;
         }
     }
 }

@@ -40,6 +40,9 @@ public class Server {
     private int numberOfNodes;
     private int numberBitsId;
 
+    private int delayCommand;
+    private int delayLog;
+
     private static volatile ChordNodeWrapper node;
 
     public Server(String configurationFileName) throws ChordException {
@@ -65,7 +68,7 @@ public class Server {
     private void start() throws IOException {
         BlockingQueue<ResponseCommand> queueOne = new ArrayBlockingQueue<>(1000000);
 
-        QueueOneConsumption queueOneConsumption = new QueueOneConsumption(queueOne, dictionary, logManager, node);
+        QueueOneConsumption queueOneConsumption = new QueueOneConsumption(queueOne, dictionary, logManager, node, delayCommand, delayLog);
 
         createLogFileIfNeeded();
         recreateDictionaryIfNeeded();
@@ -125,6 +128,9 @@ public class Server {
         this.jumpNextPort = Integer.valueOf(props.getProperty("server.chord-node.jump-next-port"));
         this.numberOfNodes = Integer.valueOf(props.getProperty("server.chord-node.number-of-nodes"));
         this.numberBitsId = Integer.valueOf(props.getProperty("server.chord-node.number-of-bit-id"));
+
+        this.delayCommand = Integer.valueOf(props.getProperty("server.queue.await-command"));
+        this.delayLog = Integer.valueOf(props.getProperty("server.queue.await-log"));
 
         this.logFilePath = props.getProperty("server.log.file.path");
         this.snapshotTaskInterval = Long.valueOf(props.getProperty("server.log.snapshot.interval"));

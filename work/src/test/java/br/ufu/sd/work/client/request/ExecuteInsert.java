@@ -1,16 +1,16 @@
 package br.ufu.sd.work.client.request;
 
 import br.ufu.sd.work.CrudServiceGrpc;
-import br.ufu.sd.work.InsertRequest;
+import br.ufu.sd.work.Request;
 import io.grpc.ManagedChannel;
 
 public class ExecuteInsert implements Runnable {
 
     private ManagedChannel channel;
-    private InsertRequest request;
+    private Request request;
     private String response;
 
-    public ExecuteInsert(InsertRequest request, ManagedChannel channel) {
+    public ExecuteInsert(Request request, ManagedChannel channel) {
         this.request = request;
         this.channel = channel;
     }

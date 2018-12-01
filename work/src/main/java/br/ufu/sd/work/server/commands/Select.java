@@ -1,7 +1,7 @@
 package br.ufu.sd.work.server.commands;
 
 import br.ufu.sd.work.Response;
-import br.ufu.sd.work.SelectRequest;
+import br.ufu.sd.work.Request;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.model.Metadata;
@@ -16,12 +16,12 @@ import java.util.logging.Logger;
 
 import static org.apache.commons.lang3.SerializationUtils.deserialize;
 
-public class Select implements ICommand<SelectRequest, Response> {
+public class Select implements ICommand {
     private static final Logger logger = Logger.getLogger(Select.class.getName());
 
-    private SelectRequest request;
+    private Request request;
 
-    public Select(SelectRequest request) {
+    public Select(Request request) {
         this.request = request;
     }
 
@@ -58,7 +58,7 @@ public class Select implements ICommand<SelectRequest, Response> {
     }
 
     @Override
-    public SelectRequest getRequest() {
+    public Request getRequest() {
         return request;
     }
 

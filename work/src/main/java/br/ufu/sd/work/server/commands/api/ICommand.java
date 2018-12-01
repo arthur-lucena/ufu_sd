@@ -1,12 +1,14 @@
 package br.ufu.sd.work.server.commands.api;
 
+import br.ufu.sd.work.Request;
+import br.ufu.sd.work.Response;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.server.log.LogManager;
 import io.grpc.stub.StreamObserver;
 
-public interface ICommand<RQ, RE> {
-    void exec(StreamObserver<RE> so, Dictionary dictionary);
+public interface ICommand{
+    void exec(StreamObserver<Response> so, Dictionary dictionary);
 
     void log(LogManager logManager);
 
@@ -14,7 +16,7 @@ public interface ICommand<RQ, RE> {
 
     long getIdRequest();
 
-    RQ getRequest();
+    Request getRequest();
 
     ETypeCommand getTypeCommand();
 }

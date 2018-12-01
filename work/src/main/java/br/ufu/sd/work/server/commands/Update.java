@@ -1,7 +1,7 @@
 package br.ufu.sd.work.server.commands;
 
 import br.ufu.sd.work.Response;
-import br.ufu.sd.work.UpdateRequest;
+import br.ufu.sd.work.Request;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.ETypeCommand;
 import br.ufu.sd.work.model.Metadata;
@@ -16,15 +16,15 @@ import java.util.logging.Logger;
 import static org.apache.commons.lang3.SerializationUtils.deserialize;
 import static org.apache.commons.lang3.SerializationUtils.serialize;
 
-public class Update implements ICommand<UpdateRequest, Response> {
+public class Update implements ICommand {
     private static final Logger logger = Logger.getLogger(Update.class.getName());
 
-    private UpdateRequest request;
+    private Request request;
     private volatile boolean executed = false;
     private volatile boolean executedWithSucess = false;
     private volatile Metadata metadata;
 
-    public Update(UpdateRequest request) {
+    public Update(Request request) {
         this.request = request;
     }
 
@@ -36,7 +36,7 @@ public class Update implements ICommand<UpdateRequest, Response> {
             metadata = deserialize(metadataBytes);
 
             metadata.setMessage(request.getValue());
-            metadata.setUpdatedBy(request.getIdClient());
+            metadata.setUpdatedBy(request.getClient());
             metadata.setUpdatedAt(LocalDateTime.now());
 
             dictionary.getData().put(metadata.getId(), serialize(metadata));
@@ -73,7 +73,7 @@ public class Update implements ICommand<UpdateRequest, Response> {
     }
 
     @Override
-    public UpdateRequest getRequest() {
+    public Request getRequest() {
         return request;
     }
 

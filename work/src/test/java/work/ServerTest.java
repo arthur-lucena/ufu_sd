@@ -1,9 +1,6 @@
 package work;
 
-import br.ufu.sd.work.DeleteRequest;
-import br.ufu.sd.work.InsertRequest;
-import br.ufu.sd.work.SelectRequest;
-import br.ufu.sd.work.UpdateRequest;
+import br.ufu.sd.work.Request;
 import br.ufu.sd.work.client.request.ExecuteDelete;
 import br.ufu.sd.work.client.request.ExecuteInsert;
 import br.ufu.sd.work.client.request.ExecuteSelect;
@@ -30,9 +27,9 @@ public class ServerTest {
 
         ManagedChannel channel  = ManagedChannelBuilder.forAddress(IP, PORT)
                 .usePlaintext().build();
-        InsertRequest insertRequest = InsertRequest.newBuilder().setId(15L)
+        Request insertRequest = Request.newBuilder().setId(15L)
                 .setValue("teste")
-                .setIdClient("1").build();
+                .setClient("1").build();
 
         ExecuteInsert runnable =  new ExecuteInsert(insertRequest, channel);
 
@@ -46,7 +43,7 @@ public class ServerTest {
         Assert.assertEquals(id, response.getId());
         Assert.assertEquals("1", response.getCreatedBy());
 
-        SelectRequest selectRequest = SelectRequest.newBuilder().setId(15L).build();
+        Request selectRequest = Request.newBuilder().setId(15L).build();
         ExecuteSelect runnableSelect = new ExecuteSelect(selectRequest, channel);
 
         Thread t2= new Thread(runnableSelect);
@@ -58,8 +55,8 @@ public class ServerTest {
         Assert.assertEquals(id, responseSelect.getId());
         Assert.assertEquals("1", responseSelect.getCreatedBy());
 
-        UpdateRequest updateRequest = UpdateRequest.newBuilder().setId(15L)
-                .setIdClient("1")
+        Request updateRequest = Request.newBuilder().setId(15L)
+                .setClient("1")
                 .setValue("teste2")
                 .build();
         ExecuteUpdate executeUpdate = new ExecuteUpdate(updateRequest, channel);
@@ -72,8 +69,8 @@ public class ServerTest {
         Assert.assertEquals(id, responseUpdate.getId());
         Assert.assertEquals("1", responseUpdate.getCreatedBy());
 
-        DeleteRequest deleteRequest = DeleteRequest.newBuilder().setId(15L)
-                .setIdClient("1")
+        Request deleteRequest = Request.newBuilder().setId(15L)
+                .setClient("1")
                 .build();
         ExecuteDelete executeDelete = new ExecuteDelete(deleteRequest, channel);
         Thread t4 = new Thread(executeDelete);
@@ -91,9 +88,9 @@ public class ServerTest {
 
         ManagedChannel channel  = ManagedChannelBuilder.forAddress(IP, PORT)
                 .usePlaintext().build();
-        InsertRequest insertRequest = InsertRequest.newBuilder().setId(0L)
+        Request insertRequest = Request.newBuilder().setId(0L)
                 .setValue("teste")
-                .setIdClient("1").build();
+                .setClient("1").build();
         String stringResponse = "";
 
         ExecuteInsert runnable =  new ExecuteInsert(insertRequest, channel);
@@ -108,7 +105,7 @@ public class ServerTest {
         Assert.assertEquals(id, response.getId());
         Assert.assertEquals("1", response.getCreatedBy());
 
-        SelectRequest selectRequest = SelectRequest.newBuilder().setId(0L).build();
+        Request selectRequest = Request.newBuilder().setId(0L).build();
         ExecuteSelect runnableSelect = new ExecuteSelect(selectRequest, channel);
 
         Thread t2= new Thread(runnableSelect);
@@ -120,8 +117,8 @@ public class ServerTest {
         Assert.assertEquals(id, responseSelect.getId());
         Assert.assertEquals("1", responseSelect.getCreatedBy());
 
-        UpdateRequest updateRequest = UpdateRequest.newBuilder().setId(0L)
-                .setIdClient("1")
+        Request updateRequest = Request.newBuilder().setId(0L)
+                .setClient("1")
                 .setValue("teste2")
                 .build();
         ExecuteUpdate executeUpdate = new ExecuteUpdate(updateRequest, channel);
@@ -134,8 +131,8 @@ public class ServerTest {
         Assert.assertEquals(id, responseUpdate.getId());
         Assert.assertEquals("1", responseUpdate.getCreatedBy());
 
-        DeleteRequest deleteRequest = DeleteRequest.newBuilder().setId(0L)
-                .setIdClient("1")
+        Request deleteRequest = Request.newBuilder().setId(0L)
+                .setClient("1")
                 .build();
         ExecuteDelete executeDelete = new ExecuteDelete(deleteRequest, channel);
         Thread t4 = new Thread(executeDelete);
@@ -154,9 +151,9 @@ public class ServerTest {
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress(IP, PORT)
                 .usePlaintext().build();
-        InsertRequest insertRequest = InsertRequest.newBuilder().setId(13L)
+        Request insertRequest = Request.newBuilder().setId(13L)
                 .setValue("teste")
-                .setIdClient("1").build();
+                .setClient("1").build();
         String stringResponse = "";
 
         ExecuteInsert runnable = new ExecuteInsert(insertRequest, channel);
@@ -171,9 +168,9 @@ public class ServerTest {
         Assert.assertEquals(id, response.getId());
         Assert.assertEquals("1", response.getCreatedBy());
 
-        InsertRequest insertRequestTwo = InsertRequest.newBuilder().setId(13L)
+        Request insertRequestTwo = Request.newBuilder().setId(13L)
                 .setValue("teste")
-                .setIdClient("1").build();
+                .setClient("1").build();
 
         ExecuteInsert executeInsertTwo = new ExecuteInsert(insertRequestTwo, channel);
 
@@ -183,7 +180,7 @@ public class ServerTest {
 
         Assert.assertEquals("Id 13 existing", executeInsertTwo.getResponse());
 
-        SelectRequest selectRequest = SelectRequest.newBuilder().setId(14L).build();
+        Request selectRequest = Request.newBuilder().setId(14L).build();
         ExecuteSelect runnableSelect = new ExecuteSelect(selectRequest, channel);
 
         Thread t3 = new Thread(runnableSelect);
@@ -192,8 +189,8 @@ public class ServerTest {
 
         Assert.assertEquals("not found", runnableSelect.getResponse());
 
-        UpdateRequest updateRequest = UpdateRequest.newBuilder().setId(14L)
-                .setIdClient("1")
+        Request updateRequest = Request.newBuilder().setId(14L)
+                .setClient("1")
                 .setValue("teste2")
                 .build();
         ExecuteUpdate executeUpdate = new ExecuteUpdate(updateRequest, channel);
@@ -203,9 +200,9 @@ public class ServerTest {
 
         Assert.assertEquals("Object with id 14 not found", executeUpdate.getResponse());
 
-        InsertRequest insertRequestThree = InsertRequest.newBuilder().setId(14L)
+        Request insertRequestThree = Request.newBuilder().setId(14L)
                 .setValue("teste2")
-                .setIdClient("1").build();
+                .setClient("1").build();
 
         ExecuteInsert executeInsert2 = new ExecuteInsert(insertRequestThree, channel);
 
@@ -228,8 +225,8 @@ public class ServerTest {
         Assert.assertEquals(id_2, responseSelect.getId());
         Assert.assertEquals("1", responseSelect.getCreatedBy());
 
-        DeleteRequest deleteRequest = DeleteRequest.newBuilder().setId(14L)
-                .setIdClient("1")
+        Request deleteRequest = Request.newBuilder().setId(14L)
+                .setClient("1")
                 .build();
         ExecuteDelete executeDelete = new ExecuteDelete(deleteRequest, channel);
         Thread t7 = new Thread(executeDelete);
@@ -247,9 +244,9 @@ public class ServerTest {
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress(IP, PORT)
                 .usePlaintext().build();
-        InsertRequest insertRequest = InsertRequest.newBuilder().setId(-1L)
+        Request insertRequest = Request.newBuilder().setId(-1L)
                 .setValue("teste")
-                .setIdClient("1").build();
+                .setClient("1").build();
 
         ExecuteInsert runnable = new ExecuteInsert(insertRequest, channel);
 
@@ -269,9 +266,9 @@ public class ServerTest {
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress(IP, PORT)
                 .usePlaintext().build();
-        InsertRequest insertRequest = InsertRequest.newBuilder().setId(43L)
+        Request insertRequest = Request.newBuilder().setId(43L)
                 .setValue("teste")
-                .setIdClient("1").build();
+                .setClient("1").build();
 
         ExecuteInsert runnable = new ExecuteInsert(insertRequest, channel);
 

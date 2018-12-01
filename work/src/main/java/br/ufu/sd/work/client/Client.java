@@ -1,8 +1,6 @@
 package br.ufu.sd.work.client;
 
 import br.ufu.sd.work.*;
-import br.ufu.sd.work.client.request.ExecuteDelete;
-import br.ufu.sd.work.client.request.ExecuteSelect;
 import br.ufu.sd.work.model.ETypeCommand;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -12,121 +10,113 @@ import java.util.Scanner;
 import java.util.logging.Logger;
 
 public class Client {
-    private static final String IP = "127.0.0.1";
-    private static final int PORT = 51666;
 
     private static final Logger logger = Logger.getLogger(Client.class.getName());
 
-    private ManagedChannel channel;
+    private CrudServiceGrpc.CrudServiceStub stub;
 
     public static void main(String[] args) {
-        new Client().start();
+        new Client( "127.0.0.1", 51666).runOnterminal();
     }
 
-    public void start() {
-        channel = ManagedChannelBuilder.forAddress(IP, PORT)
+    public Client(String ip, int port) {
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(ip, port)
                 .usePlaintext().build();
+        stub = CrudServiceGrpc.newStub(channel);
+    }
 
+    public void runOnterminal() {
         Scanner s = new Scanner(System.in);
         boolean running = true;
-
-        StreamObserver<Response> so = new StreamObserver<Response>() {
-            @Override
-            public void onNext(Response value) {
-                System.out.println(value);
-            }
-
-            @Override
-            public void onError(Throwable t) {
-
-            }
-
-            @Override
-            public void onCompleted() {
-
-            }
-        };
-
-        CrudServiceGrpc.CrudServiceStub stub = CrudServiceGrpc.newStub(channel);
+        Request request = Request.getDefaultInstance();
+        StreamObserverClient soc = new StreamObserverClient();
 
         while (running) {
             try {
-                System.out.println("type a command: (insert <id:value> | update <id:value> | delete <id> | select <id>) - exit : to exit");
-                String allCommand = s.nextLine();
-
-                String[] allCommandArray = allCommand.split(" ");
-
-                if (allCommandArray.length != 2) {
-                    logger.warning("invalid command");
-                    continue;
-                }
-
-                String stringCommand = allCommandArray[0];
-                String[] args = allCommandArray[1].split(":");
-
-                ETypeCommand command = ETypeCommand.fromString(stringCommand);
+                String allCommand = readCommand(s);
+                ETypeCommand command = ETypeCommand.fromString(allCommand);
+                String[] args;
 
                 if (command == null) {
-                    logger.warning("invalid command");
-                    continue;
-                }
+                    String[] allCommandArray = allCommand.split(" ");
 
-                switch (command) {
-                    case INSERT:
-                        InsertRequest ir = InsertRequest.newBuilder()
-                                .setId(Long.valueOf(args[0]))
-                                .setValue(args[1])
-                                .setIdClient("1")
-                                .build();
-
-                        stub.insert(ir, so);
-
-                        break;
-                    case UPDATE:
-                        UpdateRequest ur = UpdateRequest.newBuilder()
-                                .setId(Long.valueOf(args[0]))
-                                .setValue(args[1])
-                                .setIdClient("1")
-                                .build();
-
-                        stub.update(ur, so);
-                        break;
-                    case DELETE:
-                        DeleteRequest dr = DeleteRequest.newBuilder()
-                                .setId(Long.valueOf(args[0]))
-                                .setIdClient("1")
-                                .build();
-
-                        stub.delete(dr, so);
-
-                        break;
-                    case SELECT:
-                        SelectRequest sr = SelectRequest.newBuilder()
-                                .setId(Long.valueOf(args[0]))
-                                .build();
-
-                        stub.select(sr, so);
-
-                        break;
-                    case EXIT:
-                        running = false;
-
-                        try {
-                            Thread.sleep(5000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-                        break;
-                    default:
+                    if (allCommandArray.length != 2) {
                         logger.warning("invalid command");
-                        break;
+                        continue;
+                    }
+
+                    String stringCommand = allCommandArray[0];
+                    args = allCommandArray[1].split(":");
+
+                    command = ETypeCommand.fromString(stringCommand);
+
+                    if (command == null) {
+                        logger.warning("invalid command");
+                        continue;
+                    }
+
+                    if (args.length == 1) {
+                        request = request.toBuilder()
+                                .setId(Long.valueOf(args[0]))
+                                .setValue("")
+                                .setClient("terminal")
+                                .build();
+                    } else {
+                        request = request.toBuilder()
+                                .setId(Long.valueOf(args[0]))
+                                .setValue(args[1])
+                                .setClient("terminal")
+                                .build();
+                    }
+
+
                 }
+
+                running = sendCommand(request, command, soc);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
         logger.info("exiting... =D");
+    }
+
+    public boolean sendCommand(Request request, ETypeCommand command, StreamObserver soc) {
+        boolean running = true;
+
+        switch (command) {
+            case INSERT:
+                stub.insert(request, soc);
+                break;
+            case UPDATE:
+                stub.update(request, soc);
+                break;
+            case DELETE:
+                stub.delete(request, soc);
+                break;
+            case SELECT:
+                stub.select(request, soc);
+                break;
+            case EXIT:
+                running = false;
+
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                break;
+            default:
+                logger.warning("invalid command");
+                break;
+        }
+
+        return running;
+    }
+
+    private String readCommand(Scanner s) {
+        System.out.println("type a command: (insert <id:value> | update <id:value> | delete <id> | select <id>) - exit : to exit");
+        return s.nextLine();
     }
 }

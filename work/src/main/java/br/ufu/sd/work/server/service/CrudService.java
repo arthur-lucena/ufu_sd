@@ -19,22 +19,22 @@ public class CrudService extends CrudServiceGrpc.CrudServiceImplBase{
     }
 
     @Override
-    public void select(SelectRequest request, StreamObserver<Response> responseObserver) {
+    public void select(Request request, StreamObserver<Response> responseObserver) {
         queueOne.add(new ResponseCommand(responseObserver, new Select(request)));
     }
 
     @Override
-    public void insert(InsertRequest request, StreamObserver<Response> responseObserver) {
+    public void insert(Request request, StreamObserver<Response> responseObserver) {
         queueOne.add(new ResponseCommand(responseObserver, new Insert(request)));
     }
 
     @Override
-    public void update(UpdateRequest request, StreamObserver<Response> responseObserver) {
+    public void update(Request request, StreamObserver<Response> responseObserver) {
         queueOne.add(new ResponseCommand(responseObserver, new Update(request)));
     }
 
     @Override
-    public void delete(DeleteRequest request, StreamObserver<Response> responseObserver) {
+    public void delete(Request request, StreamObserver<Response> responseObserver) {
         queueOne.add(new ResponseCommand(responseObserver, new Delete(request)));
     }
 }

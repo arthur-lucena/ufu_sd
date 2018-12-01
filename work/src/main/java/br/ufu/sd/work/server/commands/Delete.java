@@ -1,6 +1,6 @@
 package br.ufu.sd.work.server.commands;
 
-import br.ufu.sd.work.DeleteRequest;
+import br.ufu.sd.work.Request;
 import br.ufu.sd.work.Response;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.ETypeCommand;
@@ -12,24 +12,24 @@ import io.grpc.stub.StreamObserver;
 import java.time.LocalDateTime;
 import java.util.logging.Logger;
 
-public class Delete implements ICommand<DeleteRequest, Response> {
+public class Delete implements ICommand {
 
     private static final Logger logger = Logger.getLogger(Delete.class.getName());
 
-    private DeleteRequest request;
+    private Request request;
     private volatile boolean executed = false;
     private volatile boolean executedWithSucess = false;
 
-    public Delete(DeleteRequest request) {
+    public Delete(Request request) {
         this.request = request;
     }
 
     @Override
-    public void exec(StreamObserver<Response> so, Dictionary dictionary) {
+    public void exec(StreamObserver so, Dictionary dictionary) {
         if (dictionary.getData().containsKey(request.getId())) {
             dictionary.getData().remove(request.getId());
             logger.info("object with Id: " + request.getId() + " deleted");
-            so.onNext(Response.newBuilder().setResponse("objected with Id: " + request.getId() + " deleted").build());
+            so.onNext(Response.newBuilder().setResponse("Object with Id: " + request.getId() + " deleted").build());
             executedWithSucess = true;
         } else {
             logger.info("object with Id: " + request.getId() + " not found");
@@ -60,7 +60,7 @@ public class Delete implements ICommand<DeleteRequest, Response> {
     }
 
     @Override
-    public DeleteRequest getRequest() {
+    public Request getRequest() {
         return request;
     }
 
@@ -69,7 +69,7 @@ public class Delete implements ICommand<DeleteRequest, Response> {
         return ETypeCommand.DELETE;
     }
 
-    private Metadata genMetadata(DeleteRequest request) {
-        return new Metadata(request.getId(), null, null, null, request.getIdClient(), LocalDateTime.now());
+    private Metadata genMetadata(Request request) {
+        return new Metadata(request.getId(), null, null, null, request.getClient(), LocalDateTime.now());
     }
 }

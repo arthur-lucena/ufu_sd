@@ -6,33 +6,18 @@ message Response {
     string response = 1;
 }
 
-message SelectRequest {
-    int64 id = 1;
-}
-
-message InsertRequest {
+message Request {
     int64 id = 1;
     string value = 2;
-    string idClient = 3;
-}
-
-message UpdateRequest {
-    int64 id = 1;
-    string value = 2;
-    string idClient = 3;
-}
-
-message DeleteRequest {
-    int64 id = 1;
-    string idClient = 2;
+    string client = 3;
 }
 
 service CrudService {
-    rpc select (SelectRequest) returns (Response);
+    rpc select (Request) returns (Response);
 
-    rpc insert (InsertRequest) returns (Response);
+    rpc insert (Request) returns (Response);
 
-    rpc update (UpdateRequest) returns (Response);
+    rpc update (Request) returns (Response);
 
-    rpc delete (DeleteRequest) returns (Response);
+    rpc delete (Request) returns (Response);
 }

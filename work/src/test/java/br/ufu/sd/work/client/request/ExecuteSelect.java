@@ -1,20 +1,20 @@
 package br.ufu.sd.work.client.request;
 
 import br.ufu.sd.work.CrudServiceGrpc;
-import br.ufu.sd.work.SelectRequest;
+import br.ufu.sd.work.Request;
 import io.grpc.ManagedChannel;
 
 public class ExecuteSelect implements Runnable {
 
     private ManagedChannel channel;
-    private SelectRequest request;
+    private Request request;
     private String response;
 
     public String getResponse() {
         return response;
     }
 
-    public ExecuteSelect(SelectRequest request, ManagedChannel channel) {
+    public ExecuteSelect(Request request, ManagedChannel channel) {
         this.request = request;
         this.channel = channel;
     }

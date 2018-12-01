@@ -10,11 +10,13 @@ public class LogQueueConsumption implements Runnable {
     private BlockingQueue<ICommand> logQueue;
     private LogManager logManager;
     private ICommand command;
+    private int delayLog;
     private volatile boolean running = true;
 
-    public LogQueueConsumption(BlockingQueue<ICommand> logQueue, LogManager logManager) {
+    public LogQueueConsumption(BlockingQueue<ICommand> logQueue, LogManager logManager, int delayLog) {
         this.logQueue = logQueue;
         this.logManager = logManager;
+        this.delayLog = delayLog;
     }
 
     public void terminate() {
@@ -49,7 +51,7 @@ public class LogQueueConsumption implements Runnable {
 
     private void waitNewCommand() {
         try {
-            Thread.sleep(2500);
+            Thread.sleep(delayLog);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

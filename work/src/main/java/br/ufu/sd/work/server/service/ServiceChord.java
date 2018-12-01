@@ -12,16 +12,15 @@ public class ServiceChord extends ChordServiceGrpc.ChordServiceImplBase {
     }
 
     @Override
-    public void heyListen(ChordNode request, StreamObserver<ChannelNode> responseObserver) {
-        responseObserver.onNext(ChordNodeUtils.toChannelNode(node.getChordNode()));
+    public void heyListen(ChordNode request, StreamObserver<ChordNode> responseObserver) {
+        responseObserver.onNext(node.getChordNode());
         responseObserver.onCompleted();
     }
 
     @Override
     public void setPrevious(ChannelNode request, StreamObserver<ChannelNode> responseObserver) {
         node.setPrevious(request);
-
-        responseObserver.onNext(ChordNodeUtils.toChannelNode(node.getChordNode()));
+        responseObserver.onNext(node.getChannelNode());
         responseObserver.onCompleted();
     }
 }

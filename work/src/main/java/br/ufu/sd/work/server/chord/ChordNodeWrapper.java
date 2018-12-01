@@ -15,6 +15,13 @@ public class ChordNodeWrapper {
     private String ipPrevious;
     private int portPrevious;
 
+    public ChannelNode getChannelNode() {
+        return ChannelNode.newBuilder()
+                .setIp(ip)
+                .setPort(port)
+                .build();
+    }
+
     public ChordNode getChordNode() {
         ChannelNode next = ChannelNode.newBuilder()
                 .setIp(ipNext)
