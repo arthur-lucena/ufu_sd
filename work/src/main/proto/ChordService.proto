@@ -21,7 +21,7 @@ message ChordNode {
 }
 
 service ChordService {
-    rpc heyListen (ChordNode) returns (ChannelNode);
+    rpc heyListen (ChordNode) returns (ChordNode);
 
     rpc setPrevious (ChannelNode) returns (ChannelNode);
 }

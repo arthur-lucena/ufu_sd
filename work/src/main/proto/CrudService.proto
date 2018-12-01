@@ -1,0 +1,23 @@
+syntax = "proto3";
+option java_multiple_files = true;
+package br.ufu.sd.work;
+
+message Response {
+    string response = 1;
+}
+
+message Request {
+    int64 id = 1;
+    string value = 2;
+    string client = 3;
+}
+
+service CrudService {
+    rpc select (Request) returns (Response);
+
+    rpc insert (Request) returns (Response);
+
+    rpc update (Request) returns (Response);
+
+    rpc delete (Request) returns (Response);
+}

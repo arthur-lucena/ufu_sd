@@ -1,10 +1,8 @@
 package br.ufu.sd.work.server.queue;
 
-import br.ufu.sd.work.Response;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.ResponseCommand;
 import br.ufu.sd.work.server.chord.ChordException;
-import br.ufu.sd.work.server.chord.ChordNodeUtils;
 import br.ufu.sd.work.server.chord.ChordNodeWrapper;
 import br.ufu.sd.work.server.commands.api.ICommand;
 import br.ufu.sd.work.server.log.LogManager;
@@ -28,13 +26,17 @@ public class QueueOneConsumption implements Runnable {
 
     private volatile boolean running = true;
 
+    private int delayCommand;
+    private int delayLog;
 
     public QueueOneConsumption(BlockingQueue<ResponseCommand> queueOne, Dictionary dictionary,
-                               LogManager logManager, ChordNodeWrapper node) {
+                               LogManager logManager, ChordNodeWrapper node, int delayCommand, int delayLog) {
         this.queueOne = queueOne;
         this.dictionary = dictionary;
         this.logManager = logManager;
         this.node = node;
+        this.delayCommand = delayCommand;
+        this.delayLog = delayLog;
     }
 
     public void terminate() {
@@ -47,20 +49,20 @@ public class QueueOneConsumption implements Runnable {
         logQueue = new ArrayBlockingQueue<>(1000000);
         redirectQueue = new ArrayBlockingQueue<>(1000000);
 
-        ExecutionQueueConsumption executionQueueConsumption = new ExecutionQueueConsumption(executionQueue, dictionary);
+        ExecutionQueueConsumption executionQueueConsumption = new ExecutionQueueConsumption(executionQueue, dictionary, delayCommand);
         Thread threadStarter1 = new Thread(executionQueueConsumption);
         threadStarter1.start();
 
-        LogQueueConsumption logQueueConsumption = new LogQueueConsumption(logQueue, logManager);
+        LogQueueConsumption logQueueConsumption = new LogQueueConsumption(logQueue, logManager, delayLog);
         Thread threadStarter2 = new Thread(logQueueConsumption);
         threadStarter2.start();
 
-        RedirectQueueConsumption redirectQueueConsumption = new RedirectQueueConsumption(redirectQueue, node);
+        RedirectQueueConsumption redirectQueueConsumption = new RedirectQueueConsumption(redirectQueue, node, delayCommand);
         Thread threadStarter3 = new Thread(redirectQueueConsumption);
         threadStarter3.start();
 
         int counterSleep = 0;
-        int limitSleepLog = 15;
+        int limitSleepLog = 50;
 
         while (running) {
             if (queueOne.isEmpty()) {
@@ -84,7 +86,7 @@ public class QueueOneConsumption implements Runnable {
         try {
             responseCommand = queueOne.take();
 
-            if (ChordNodeUtils.isMyResponsibility(node.getChordNode(), responseCommand.getCommand().getIdRequest())) {
+            if (isMyResponsibility(node, responseCommand.getCommand().getIdRequest())) {
                 executionQueue.add(responseCommand);
                 logQueue.add(responseCommand.getCommand());
             } else {
@@ -92,8 +94,7 @@ public class QueueOneConsumption implements Runnable {
             }
         } catch (ChordException e) {
             logger.warning(e.getMessage());
-            responseCommand.getStreamObserver().onNext(Response.newBuilder().setResponse(e.getMessage()).build());
-            responseCommand.getStreamObserver().onCompleted();
+            responseCommand.getStreamObserver().onError(e);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -101,9 +102,21 @@ public class QueueOneConsumption implements Runnable {
 
     private void waitNewCommand() {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(delayCommand);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean isMyResponsibility(ChordNodeWrapper node, long id) throws ChordException {
+        if (id > node.getMaxChordId()) {
+            throw new ChordException("Invalid ID, this ID surpass MAX capacity.");
+        }
+
+        if (id < 0) {
+            throw new ChordException("Invalid ID, can be below Zero.");
+        }
+
+        return (node.getMinId() < id && id <= node.getMaxId()) || (id == 0 && node.isLastNode());
     }
 }

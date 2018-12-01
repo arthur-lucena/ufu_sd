@@ -1,6 +1,6 @@
 package br.ufu.sd.work.server.commands;
 
-import br.ufu.sd.work.InsertRequest;
+import br.ufu.sd.work.Request;
 import br.ufu.sd.work.Response;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.ETypeCommand;
@@ -15,27 +15,27 @@ import java.util.logging.Logger;
 
 import static org.apache.commons.lang3.SerializationUtils.serialize;
 
-public class Insert implements ICommand<InsertRequest, Response> {
+public class Insert implements ICommand {
     private static final Logger logger = Logger.getLogger(Insert.class.getName());
 
-    private InsertRequest request;
+    private Request request;
     private volatile boolean executed = false;
-    private volatile boolean executedWithSucess = false;
+    private volatile boolean executedWithSuccess = false;
     private volatile Metadata metadata;
 
-    public Insert(InsertRequest request) {
+    public Insert(Request request) {
         this.request = request;
     }
 
     @Override
-    public void exec(StreamObserver<Response> so, Dictionary dictionary) {
+    public void exec(StreamObserver so, Dictionary dictionary) {
         metadata = genMetadata(request);
 
         if (!dictionary.getData().containsKey(metadata.getId())) {
             dictionary.getData().put(metadata.getId(), serialize(metadata));
             logger.info("insert with " + metadata);
             so.onNext(Response.newBuilder().setResponse(new Gson().toJson(metadata)).build());
-            executedWithSucess = true;
+            executedWithSuccess = true;
         } else {
             logger.info("object with Id: " + metadata.getId() + " not created");
             so.onNext(Response.newBuilder().setResponse("Id " + metadata.getId() + " existing").build());
@@ -47,14 +47,14 @@ public class Insert implements ICommand<InsertRequest, Response> {
 
     @Override
     public void log(LogManager logManager) {
-        if (executedWithSucess) {
+        if (executedWithSuccess) {
             logger.info("logging INSERT with " + metadata);
             logManager.appendLog(metadata, getTypeCommand());
         }
     }
 
-    private Metadata genMetadata(InsertRequest request) {
-        return new Metadata(request.getId(), request.getValue(), request.getIdClient(), LocalDateTime.now(), request.getIdClient(), LocalDateTime.now());
+    private Metadata genMetadata(Request request) {
+        return new Metadata(request.getId(), request.getValue(), request.getClient(), LocalDateTime.now(), request.getClient(), LocalDateTime.now());
     }
 
     @Override
@@ -68,7 +68,7 @@ public class Insert implements ICommand<InsertRequest, Response> {
     }
 
     @Override
-    public InsertRequest getRequest() {
+    public Request getRequest() {
         return request;
     }
 

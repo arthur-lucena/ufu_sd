@@ -11,10 +11,12 @@ public class ExecutionQueueConsumption implements Runnable {
     private ResponseCommand responseCommand;
     private volatile boolean running = true;
     private Dictionary dictionary;
+    private int delayCommand;
 
-    public ExecutionQueueConsumption(BlockingQueue<ResponseCommand> executionQueue, Dictionary dictionary) {
+    public ExecutionQueueConsumption(BlockingQueue<ResponseCommand> executionQueue, Dictionary dictionary, int delayCommand) {
         this.executionQueue = executionQueue;
         this.dictionary = dictionary;
+        this.delayCommand = delayCommand;
     }
 
     public void terminate() {
@@ -44,7 +46,7 @@ public class ExecutionQueueConsumption implements Runnable {
 
     private void waitNewCommand() {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(delayCommand);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
