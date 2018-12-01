@@ -53,12 +53,12 @@ O particionamento da responsabilidade sobre os dados seguirá o esquema de anel 
 - [x] Toda comunicação deve ser agora feira usando gRPC. Cada operação é realizada via uma função diferente (i.e., há uma função para C, outra para R, ...). 
 - [x] Servidores redirecionam requisições também usando gRPC, usando a mesma interface usada por clientes. 
 - [x] Toda requisição é executada assincronamente do ponto de vista de quem invoca a requisição. 
-- [ ] Uma requisição é redirecionada para o nó seguinte ou anterior, dependendo de qual o caminho mais curto até o nó responsável pelos dados. 
+- [x] Uma requisição é redirecionada para o nó seguinte ou anterior, dependendo de qual o caminho mais curto até o nó responsável pelos dados. 
 - [x] Múltiplos saltos podem ser necessários até que a requisição seja respondida.
 
 **Tratamento de falhas** 
-- [ ] Assuma que não haverão falhas permanentes ou envio de requisições enquanto algum nó estiver falho. 
-- [ ] Nós podem ser reiniciados e, como na primeira entrega, devem ter seu estado recuperado pelo uso do log de operações e de snapshot do banco de dados.
+- [x] Assuma que não haverão falhas permanentes ou envio de requisições enquanto algum nó estiver falho. 
+- [x] Nós podem ser reiniciados e, como na primeira entrega, devem ter seu estado recuperado pelo uso do log de operações e de snapshot do banco de dados.
 
 **Log + Snapshot** 
 - [x] Para evitar que o log se torne grande demais, frequentemente serão feitos snapshots do estado atual do banco de dados. 
