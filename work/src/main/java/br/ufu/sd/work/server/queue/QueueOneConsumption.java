@@ -3,7 +3,7 @@ package br.ufu.sd.work.server.queue;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.ResponseCommand;
 import br.ufu.sd.work.server.chord.ChordException;
-import br.ufu.sd.work.server.chord.ChordNodeWrapper;
+import br.ufu.sd.work.server.chord.ChordNode;
 import br.ufu.sd.work.server.commands.api.ICommand;
 import br.ufu.sd.work.server.log.LogManager;
 
@@ -22,7 +22,7 @@ public class QueueOneConsumption implements Runnable {
     private ResponseCommand responseCommand;
     private Dictionary dictionary;
     private LogManager logManager;
-    private static volatile ChordNodeWrapper node;
+    private static volatile ChordNode node;
 
     private volatile boolean running = true;
 
@@ -30,7 +30,7 @@ public class QueueOneConsumption implements Runnable {
     private int delayLog;
 
     public QueueOneConsumption(BlockingQueue<ResponseCommand> queueOne, Dictionary dictionary,
-                               LogManager logManager, ChordNodeWrapper node, int delayCommand, int delayLog) {
+                               LogManager logManager, ChordNode node, int delayCommand, int delayLog) {
         this.queueOne = queueOne;
         this.dictionary = dictionary;
         this.logManager = logManager;
@@ -108,7 +108,7 @@ public class QueueOneConsumption implements Runnable {
         }
     }
 
-    private boolean isMyResponsibility(ChordNodeWrapper node, long id) throws ChordException {
+    private boolean isMyResponsibility(ChordNode node, long id) throws ChordException {
         if (id > node.getMaxChordId()) {
             throw new ChordException("Invalid ID, this ID surpass MAX capacity.");
         }

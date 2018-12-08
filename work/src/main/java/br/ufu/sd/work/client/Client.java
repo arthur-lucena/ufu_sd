@@ -16,7 +16,7 @@ public class Client {
     private CrudServiceGrpc.CrudServiceStub stub;
 
     public static void main(String[] args) {
-        new Client( "127.0.0.1", 51666).runOnterminal();
+        new Client( "127.0.0.1", 51666).runOnTerminal();
     }
 
     public Client(String ip, int port) {
@@ -25,7 +25,7 @@ public class Client {
         stub = CrudServiceGrpc.newStub(channel);
     }
 
-    public void runOnterminal() {
+    public void runOnTerminal() {
         Scanner s = new Scanner(System.in);
         boolean running = true;
         Request request = Request.getDefaultInstance();

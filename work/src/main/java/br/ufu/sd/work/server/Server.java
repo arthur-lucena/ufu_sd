@@ -5,7 +5,7 @@ import br.ufu.sd.work.model.Metadata;
 import br.ufu.sd.work.model.ResponseCommand;
 import br.ufu.sd.work.server.chord.ChordConnector;
 import br.ufu.sd.work.server.chord.ChordException;
-import br.ufu.sd.work.server.chord.ChordNodeWrapper;
+import br.ufu.sd.work.server.chord.ChordNode;
 import br.ufu.sd.work.server.configuration.Configuration;
 import br.ufu.sd.work.server.log.LogManager;
 import br.ufu.sd.work.server.log.SnapshotScheduler;
@@ -43,7 +43,7 @@ public class Server {
     private int delayCommand;
     private int delayLog;
 
-    private static volatile ChordNodeWrapper node;
+    private static volatile ChordNode node;
 
     public Server(String configurationFileName) throws ChordException {
         configure(configurationFileName);
@@ -54,18 +54,29 @@ public class Server {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException, ChordException {
-        Server server = new Server("configuration.properties");
-        server.start();
-        server.blockUntilShutdown();
+        Server server0 = new Server("configuration.properties");
+        server0.start();
+
+        Server server1 = new Server("configuration.properties");
+        server1.start();
+
+        Server server2 = new Server("configuration.properties");
+        server2.start();
+
+        Server server3 = new Server("configuration.properties");
+        server3.start();
+
+        Server server4 = new Server("configuration.properties");
+        server4.start();
     }
 
     private void connectionChord() throws ChordException {
         ChordConnector chordConnector = new ChordConnector(this.ip, this.firstPort, this.jumpNextPort, this.numberOfNodes, this.numberBitsId);
-        this.node = new ChordNodeWrapper();
-        node.setByChordNode(chordConnector.connect());
+        this.node = chordConnector.connect();
     }
 
-    private void start() throws IOException {
+    private void start() throws IOException, InterruptedException {
+        this.blockUntilShutdown();
         BlockingQueue<ResponseCommand> queueOne = new ArrayBlockingQueue<>(1000000);
 
         QueueOneConsumption queueOneConsumption = new QueueOneConsumption(queueOne, dictionary, logManager, node, delayCommand, delayLog);
@@ -80,7 +91,7 @@ public class Server {
 
         server = ServerBuilder.forPort(node.getPort())
                 .addService(new CrudService(queueOne))
-                .addService(new ServiceChord(node))
+                .addService(new ChordService(node))
                 .build()
                 .start();
 

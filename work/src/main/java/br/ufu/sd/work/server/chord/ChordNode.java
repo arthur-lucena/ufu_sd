@@ -1,7 +1,6 @@
 package br.ufu.sd.work.server.chord;
 
-public class ChordNodeWrapper {
-
+public class ChordNode {
     private long nodeId;
     private long minId;
     private long maxId;
@@ -15,61 +14,21 @@ public class ChordNodeWrapper {
     private String ipPrevious;
     private int portPrevious;
 
-    public ChannelNode getChannelNode() {
-        return ChannelNode.newBuilder()
-                .setIp(ip)
-                .setPort(port)
-                .build();
-    }
-
-    public ChordNode getChordNode() {
-        ChannelNode next = ChannelNode.newBuilder()
-                .setIp(ipNext)
-                .setPort(portNext)
-                .build();
-
-        ChannelNode previous = ChannelNode.newBuilder()
-                .setIp(ipPrevious)
-                .setPort(portPrevious)
-                .build();
-
-        return ChordNode.newBuilder()
-                .setNodeId(nodeId)
-                .setMinId(minId)
-                .setMaxId(maxId)
-                .setMaxChordId(maxChordId)
-                .setIp(ip)
-                .setPort(port)
-                .setFirstNode(firstNode)
-                .setLastNode(lastNode)
-                .setNextNodeChannel(next)
-                .setPreviousNodeChannel(previous)
-                .build();
-    }
-
-    public void setByChordNode(ChordNode node) {
-        this.nodeId = node.getNodeId();
-        this.minId = node.getMinId();
-        this.maxId = node.getMaxId();
-        this.maxChordId = node.getMaxChordId();
-        this.ip = node.getIp();
-        this.port = node.getPort();
-        this.firstNode = node.getFirstNode();
-        this.lastNode = node.getLastNode();
-        this.ipNext = node.getNextNodeChannel().getIp();
-        this.portNext = node.getNextNodeChannel().getPort();
-        this.ipPrevious = node.getPreviousNodeChannel().getIp();
-        this.portPrevious = node.getPreviousNodeChannel().getPort();
-    }
-
-    public void setNext(ChannelNode channelNode) {
+    public void setNext(DataNode channelNode) {
         this.ipNext = channelNode.getIp();
         this.portNext = channelNode.getPort();
     }
 
-    public void setPrevious(ChannelNode channelNode) {
+    public void setPrevious(DataNode channelNode) {
         this.ipPrevious = channelNode.getIp();
         this.portPrevious = channelNode.getPort();
+    }
+
+    public DataNode getDataNode() {
+        return DataNode.newBuilder()
+                .setIp(this.ip)
+                .setPort(this.port)
+                .build();
     }
 
     public long getNodeId() {
@@ -166,5 +125,23 @@ public class ChordNodeWrapper {
 
     public void setPortPrevious(int portPrevious) {
         this.portPrevious = portPrevious;
+    }
+
+    @Override
+    public String toString() {
+        return "ChordNode{" +
+                "\nnodeId=" + nodeId +
+                "\n, minId=" + minId +
+                "\n, maxId=" + maxId +
+                "\n, maxChordId=" + maxChordId +
+                "\n, ip='" + ip + '\'' +
+                "\n, port=" + port +
+                "\n, firstNode=" + firstNode +
+                "\n, lastNode=" + lastNode +
+                "\n, ipNext='" + ipNext + '\'' +
+                "\n, portNext=" + portNext +
+                "\n, ipPrevious='" + ipPrevious + '\'' +
+                "\n, portPrevious=" + portPrevious +
+                "\n}";
     }
 }

@@ -2,7 +2,7 @@ package br.ufu.sd.work.server.queue;
 
 import br.ufu.sd.work.client.Client;
 import br.ufu.sd.work.model.ResponseCommand;
-import br.ufu.sd.work.server.chord.ChordNodeWrapper;
+import br.ufu.sd.work.server.chord.ChordNode;
 import br.ufu.sd.work.server.commands.api.ICommand;
 import io.grpc.stub.StreamObserver;
 
@@ -15,13 +15,13 @@ public class RedirectQueueConsumption implements Runnable {
 
     private BlockingQueue<ResponseCommand> redirectQueue;
     private ResponseCommand responseCommand;
-    private volatile ChordNodeWrapper node;
+    private volatile ChordNode node;
     private volatile boolean running = true;
     private Client nextNode;
     private Client previousNode;
     private int delayCommand;
 
-    public RedirectQueueConsumption(BlockingQueue<ResponseCommand> redirectQueue, ChordNodeWrapper node, int delayCommand) {
+    public RedirectQueueConsumption(BlockingQueue<ResponseCommand> redirectQueue, ChordNode node, int delayCommand) {
         this.redirectQueue = redirectQueue;
         this.node = node;
         this.delayCommand = delayCommand;
@@ -90,7 +90,7 @@ public class RedirectQueueConsumption implements Runnable {
         }
     }
 
-    public static int getPossibleRedirection(ChordNodeWrapper node, Long id) {
+    public static int getPossibleRedirection(ChordNode node, Long id) {
         if (id <= node.getMinId() && !node.isLastNode()) {
             return -1;
         } else if (id > node.getMaxId()) {
