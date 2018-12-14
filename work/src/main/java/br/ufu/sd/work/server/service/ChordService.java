@@ -26,4 +26,15 @@ public class ChordService extends ChordServiceGrpc.ChordServiceImplBase {
         responseObserver.onNext(Empty.newBuilder().build());
         responseObserver.onCompleted();
     }
+
+    @Override
+    public void setLastNode(DataNode request, StreamObserver<Empty> responseObserver) {
+        if (node.isFirstNode()) {
+
+        }
+
+        node.setPrevious(request);
+        responseObserver.onNext(Empty.newBuilder().build());
+        responseObserver.onCompleted();
+    }
 }

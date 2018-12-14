@@ -1,6 +1,5 @@
-package br.com.callink.importcsv;
-
 public class TestRedirect {
+	// https://matjaz.it/shortest-path-problem-in-ring-buffer-or-circular-double-linked-list/
 	public static void main(String[] args) {
 		int circ = 5;
 		

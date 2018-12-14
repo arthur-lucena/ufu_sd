@@ -14,4 +14,6 @@ service ChordService {
     rpc heyListen (google.protobuf.Empty) returns (DataNode);
 
     rpc setPrevious (DataNode) returns (google.protobuf.Empty);
+
+    rpc setLastNode (DataNode) returns (google.protobuf.Empty);
 }
