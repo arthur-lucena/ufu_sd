@@ -56,18 +56,6 @@ public class Server {
     public static void main(String[] args) throws IOException, InterruptedException, ChordException {
         Server server0 = new Server("configuration.properties");
         server0.start();
-
-//        Server server1 = new Server("configuration.properties");
-//        server1.start();
-//
-//        Server server2 = new Server("configuration.properties");
-//        server2.start();
-//
-//        Server server3 = new Server("configuration.properties");
-//        server3.start();
-//
-//        Server server4 = new Server("configuration.properties");
-//        server4.start();
     }
 
     private void connectionChord() throws ChordException {
