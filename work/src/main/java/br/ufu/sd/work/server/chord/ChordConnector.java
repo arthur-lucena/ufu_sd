@@ -10,6 +10,7 @@ public class ChordConnector {
     private int jumpNextPort;
     private long firstNode;
     private long nextNodeSub;
+    private int numberOfNodes;
 
     public ChordConnector(String ip, int port, int jumpNextPort, int numberOfNodes, int numberBitsId) {
         this.ip = ip;
@@ -18,13 +19,14 @@ public class ChordConnector {
 
         this.firstNode = (long) Math.pow(2, numberBitsId) - 1;
         this.nextNodeSub = (long) Math.pow(2, numberBitsId) / numberOfNodes;
+        this.numberOfNodes = numberOfNodes;
     }
 
     public ChordNode connect() throws ChordException {
         ChordNode node = new ChordNode();
+        node.setNodeId(numberOfNodes);
         node.setIp(ip);
         node.setPort(port);
-        node.setNodeId(firstNode);
         node.setMaxId(firstNode);
         node.setMaxChordId(firstNode);
         node.setMinId(firstNode - nextNodeSub);
@@ -103,9 +105,9 @@ public class ChordConnector {
             boolean lastNode = candidateNode.getMinId() - nextNodeSub - nextNodeSub <= 0l;
 
             ChordNode newCandidateNode = new ChordNode();
+            newCandidateNode.setNodeId(candidateNode.getNodeId() - 1);
             newCandidateNode.setIp(ip);
             newCandidateNode.setPort(candidateNode.getPort() + jumpNextPort);// TODO diferenciar de nenhum serviço rodando na porta, de uma porta já ocupada, se porta estiver ocupada só incrementar a porta
-            newCandidateNode.setNodeId(candidateNode.getNodeId() - nextNodeSub);
             newCandidateNode.setMaxId(candidateNode.getMaxId() - nextNodeSub);
             newCandidateNode.setMinId(lastNode ? 0 : candidateNode.getMinId() - nextNodeSub);
             newCandidateNode.setMaxChordId(firstNode);
