@@ -2,7 +2,7 @@ syntax = "proto3";
 option java_multiple_files = true;
 package br.ufu.sd.work.server.chord;
 
-import "google/protobuf/Empty.proto";
+import "google/protobuf/empty.proto";
 
 message DataNode {
     string ip = 1;
@@ -15,5 +15,5 @@ service ChordService {
 
     rpc setPrevious (DataNode) returns (google.protobuf.Empty);
 
-    rpc setLastNode (DataNode) returns (google.protobuf.Empty);
+    rpc setFirstAndLastNode (DataNode) returns (DataNode);
 }

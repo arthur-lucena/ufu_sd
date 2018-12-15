@@ -76,6 +76,26 @@ public class ChordConnector {
                 }
             }
 
+            if (candidateNode.isLastNode()) {
+                ManagedChannel channelNext = ManagedChannelBuilder.forAddress(candidateNode.getIpNext(), candidateNode.getPortNext())
+                        .usePlaintext().build();
+
+                ChordServiceGrpc.ChordServiceBlockingStub stubNext = ChordServiceGrpc.newBlockingStub(channelNext);
+
+                DataNode lastNode = DataNode.newBuilder()
+                        .setIp(candidateNode.getIp())
+                        .setPort(candidateNode.getPort())
+                        .build();
+
+                DataNode first = stubNext.setFirstAndLastNode(lastNode);
+
+                candidateNode.setPrevious(first);
+
+                if (!channelNext.isShutdown()) {
+                    channelNext.shutdownNow();
+                }
+            }
+
             System.out.println("EU SOU ----\n" + candidateNode.toString());
 
             return candidateNode;

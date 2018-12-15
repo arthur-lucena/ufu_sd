@@ -13,11 +13,6 @@ public class ChordNode {
     private int portNext;
     private String ipPrevious;
     private int portPrevious;
-    private String ipFirst;
-    private int portFirst;
-    private String ipLast;
-    private int portLast;
-
 
     public void setNext(DataNode channelNode) {
         this.ipNext = channelNode.getIp();
@@ -128,42 +123,6 @@ public class ChordNode {
         return portPrevious;
     }
 
-    public void setPortPrevious(int portPrevious) {
-        this.portPrevious = portPrevious;
-    }
-
-    public String getIpFirst() {
-        return ipFirst;
-    }
-
-    public void setIpFirst(String ipFirst) {
-        this.ipFirst = ipFirst;
-    }
-
-    public int getPortFirst() {
-        return portFirst;
-    }
-
-    public void setPortFirst(int portFirst) {
-        this.portFirst = portFirst;
-    }
-
-    public String getIpLast() {
-        return ipLast;
-    }
-
-    public void setIpLast(String ipLast) {
-        this.ipLast = ipLast;
-    }
-
-    public int getPortLast() {
-        return portLast;
-    }
-
-    public void setPortLast(int portLast) {
-        this.portLast = portLast;
-    }
-
     @Override
     public String toString() {
         return "ChordNode{" +
@@ -179,10 +138,6 @@ public class ChordNode {
                 "\n, portNext=" + portNext +
                 "\n, ipPrevious='" + ipPrevious + '\'' +
                 "\n, portPrevious=" + portPrevious +
-                "\n, ipPrevious='" + ipFirst + '\'' +
-                "\n, portPrevious=" + portFirst +
-                "\n, ipPrevious='" + ipLast + '\'' +
-                "\n, portPrevious=" + portLast +
                 "\n}";
     }
 }

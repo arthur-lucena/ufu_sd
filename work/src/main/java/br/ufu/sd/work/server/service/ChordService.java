@@ -4,6 +4,8 @@ import br.ufu.sd.work.server.chord.ChordNode;
 import br.ufu.sd.work.server.chord.ChordServiceGrpc;
 import br.ufu.sd.work.server.chord.DataNode;
 import com.google.protobuf.Empty;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 
 public class ChordService extends ChordServiceGrpc.ChordServiceImplBase {
@@ -25,16 +27,32 @@ public class ChordService extends ChordServiceGrpc.ChordServiceImplBase {
         node.setPrevious(request);
         responseObserver.onNext(Empty.newBuilder().build());
         responseObserver.onCompleted();
+        System.out.println(node);
     }
 
     @Override
-    public void setLastNode(DataNode request, StreamObserver<Empty> responseObserver) {
+    public void setFirstAndLastNode(DataNode request, StreamObserver<DataNode> responseObserver) {
         if (node.isFirstNode()) {
+            node.setNext(request);
 
+            DataNode firstNode = DataNode.newBuilder()
+                    .setIp(node.getIp())
+                    .setPort(node.getPort())
+                    .build();
+
+            responseObserver.onNext(firstNode);
+            responseObserver.onCompleted();
+            System.out.println(node);
+        } else {
+            ManagedChannel channelNext = ManagedChannelBuilder.forAddress(node.getIpNext(), node.getPortNext())
+                    .usePlaintext().build();
+
+            ChordServiceGrpc.ChordServiceBlockingStub stubNext = ChordServiceGrpc.newBlockingStub(channelNext);
+
+            DataNode first = stubNext.setFirstAndLastNode(request);
+
+            responseObserver.onNext(first);
+            responseObserver.onCompleted();
         }
-
-        node.setPrevious(request);
-        responseObserver.onNext(Empty.newBuilder().build());
-        responseObserver.onCompleted();
     }
 }
