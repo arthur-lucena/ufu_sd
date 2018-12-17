@@ -20,11 +20,15 @@ public class RedirectQueueConsumption implements Runnable {
     private Client nextNode;
     private Client previousNode;
     private int delayCommand;
+    private int numberOfNodes;
+    private int numberBitsId)
 
-    public RedirectQueueConsumption(BlockingQueue<ResponseCommand> redirectQueue, ChordNode node, int delayCommand) {
+    public RedirectQueueConsumption(BlockingQueue<ResponseCommand> redirectQueue, ChordNode node, int delayCommand, int numberOfNodes, int numberBitsId)) {
         this.redirectQueue = redirectQueue;
         this.node = node;
         this.delayCommand = delayCommand;
+        this.numberOfNodes = numberOfNodes;
+        this.numberBitsId = numberBitsId;
     }
 
     public void terminate() {
@@ -61,15 +65,12 @@ public class RedirectQueueConsumption implements Runnable {
 
             ICommand command = responseCommand.getCommand();
 
-            int direction =  getPossibleRedirection(node, command.getIdRequest());
+            int clockwise = getPossibleRedirection(node, command.getIdRequest());
 
-            if (direction > 0) {
+            if (clockwise) {
                 clientRedirect = nextNode;
-            } else if (direction < 0) {
+            } else if (clockwise) {
                 clientRedirect = previousNode;
-            } else {
-                logger.warning("HOW U CAME HERE!??!?!");
-                return;
             }
 
             StreamObserver sos = new StreamObserverServer(responseCommand.getStreamObserver());
@@ -90,7 +91,7 @@ public class RedirectQueueConsumption implements Runnable {
         }
     }
 
-    public static int getPossibleRedirection(ChordNode node, Long id) {
+    public static boolean getPossibleRedirection(ChordNode node, Long id) {
         if (id <= node.getMinId() && !node.isLastNode()) {
             return -1;
         } else if (id > node.getMaxId()) {

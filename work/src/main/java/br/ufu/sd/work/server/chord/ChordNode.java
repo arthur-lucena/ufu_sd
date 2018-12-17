@@ -2,13 +2,12 @@ package br.ufu.sd.work.server.chord;
 
 public class ChordNode {
     private long nodeId;
-    private long minId;
+    private long offSetId;
     private long maxId;
-    private long maxChordId;
-    private String ip;
-    private int port;
     private boolean firstNode;
     private boolean lastNode;
+    private String ip;
+    private int port;
     private String ipNext;
     private int portNext;
     private String ipPrevious;
@@ -39,12 +38,12 @@ public class ChordNode {
         this.nodeId = nodeId;
     }
 
-    public long getMinId() {
-        return minId;
+    public long getOffSetId() {
+        return offSetId;
     }
 
-    public void setMinId(long minId) {
-        this.minId = minId;
+    public void setOffSetId(long offSetId) {
+        this.offSetId = offSetId;
     }
 
     public long getMaxId() {
@@ -53,14 +52,6 @@ public class ChordNode {
 
     public void setMaxId(long maxId) {
         this.maxId = maxId;
-    }
-
-    public long getMaxChordId() {
-        return maxChordId;
-    }
-
-    public void setMaxChordId(long maxChordId) {
-        this.maxChordId = maxChordId;
     }
 
     public String getIp() {
@@ -127,9 +118,8 @@ public class ChordNode {
     public String toString() {
         return "ChordNode{" +
                 "\nnodeId=" + nodeId +
-                "\n, minId=" + minId +
+                "\n, offSetId=" + offSetId +
                 "\n, maxId=" + maxId +
-                "\n, maxChordId=" + maxChordId +
                 "\n, ip='" + ip + '\'' +
                 "\n, port=" + port +
                 "\n, firstNode=" + firstNode +

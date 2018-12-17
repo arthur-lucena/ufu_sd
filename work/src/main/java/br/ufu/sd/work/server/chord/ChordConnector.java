@@ -9,7 +9,7 @@ public class ChordConnector {
     private int port;
     private int jumpNextPort;
     private long firstNode;
-    private long nextNodeSub;
+    private long offSetId;
     private int numberOfNodes;
 
     public ChordConnector(String ip, int port, int jumpNextPort, int numberOfNodes, int numberBitsId) {
@@ -18,7 +18,7 @@ public class ChordConnector {
         this.jumpNextPort = jumpNextPort;
 
         this.firstNode = (long) Math.pow(2, numberBitsId) - 1;
-        this.nextNodeSub = (long) Math.pow(2, numberBitsId) / numberOfNodes;
+        this.offSetId = (long) Math.pow(2, numberBitsId) / numberOfNodes;
         this.numberOfNodes = numberOfNodes;
     }
 
@@ -28,8 +28,7 @@ public class ChordConnector {
         node.setIp(ip);
         node.setPort(port);
         node.setMaxId(firstNode);
-        node.setMaxChordId(firstNode);
-        node.setMinId(firstNode - nextNodeSub);
+        node.setOffSetId(offSetId);
         node.setFirstNode(true);
 
         return tryConnectOnRing(node);
@@ -102,15 +101,15 @@ public class ChordConnector {
 
             return candidateNode;
         } else {
-            boolean lastNode = candidateNode.getMinId() - nextNodeSub - nextNodeSub <= 0l;
+            boolean lastNode = candidateNode.getNodeId() - 1 == 0l;
 
             ChordNode newCandidateNode = new ChordNode();
             newCandidateNode.setNodeId(candidateNode.getNodeId() - 1);
             newCandidateNode.setIp(ip);
             newCandidateNode.setPort(candidateNode.getPort() + jumpNextPort);// TODO diferenciar de nenhum serviço rodando na porta, de uma porta já ocupada, se porta estiver ocupada só incrementar a porta
-            newCandidateNode.setMaxId(candidateNode.getMaxId() - nextNodeSub);
-            newCandidateNode.setMinId(lastNode ? 0 : candidateNode.getMinId() - nextNodeSub);
-            newCandidateNode.setMaxChordId(firstNode);
+            newCandidateNode.setMaxId(candidateNode.getMaxId());
+            newCandidateNode.setOffSetId(offSetId);
+            newCandidateNode.setMaxId(firstNode);
             newCandidateNode.setNext(channelNodeFromNext);
             newCandidateNode.setFirstNode(false);
             newCandidateNode.setLastNode(lastNode);

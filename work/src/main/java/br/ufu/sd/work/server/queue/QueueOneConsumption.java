@@ -22,7 +22,9 @@ public class QueueOneConsumption implements Runnable {
     private ResponseCommand responseCommand;
     private Dictionary dictionary;
     private LogManager logManager;
-    private static volatile ChordNode node;
+    private volatile ChordNode node;
+    private long maxNodeId;
+    private long minNodeId;
 
     private volatile boolean running = true;
 
@@ -37,6 +39,9 @@ public class QueueOneConsumption implements Runnable {
         this.node = node;
         this.delayCommand = delayCommand;
         this.delayLog = delayLog;
+
+        this.maxNodeId = node.getOffSetId() * node.getNodeId();
+        this.minNodeId = node.getOffSetId() * (node.getNodeId() - 1);
     }
 
     public void terminate() {
@@ -109,7 +114,7 @@ public class QueueOneConsumption implements Runnable {
     }
 
     private boolean isMyResponsibility(ChordNode node, long id) throws ChordException {
-        if (id > node.getMaxChordId()) {
+        if (id > node.getMaxId()) {
             throw new ChordException("Invalid ID, this ID surpass MAX capacity.");
         }
 
@@ -117,6 +122,6 @@ public class QueueOneConsumption implements Runnable {
             throw new ChordException("Invalid ID, can be below Zero.");
         }
 
-        return (node.getMinId() < id && id <= node.getMaxId()) || (id == 0 && node.isLastNode());
+        return (this.minNodeId < id && id <= this.maxNodeId) || (id == 0 && node.isLastNode());
     }
 }

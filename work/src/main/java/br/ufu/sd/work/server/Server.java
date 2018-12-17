@@ -43,7 +43,7 @@ public class Server {
     private int delayCommand;
     private int delayLog;
 
-    private static volatile ChordNode node;
+    private volatile ChordNode node;
 
     public Server(String configurationFileName) throws ChordException {
         configure(configurationFileName);
