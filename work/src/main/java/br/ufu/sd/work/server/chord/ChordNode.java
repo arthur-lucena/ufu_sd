@@ -4,6 +4,7 @@ public class ChordNode {
     private long nodeId;
     private long offSetId;
     private long maxId;
+    private int numberOfNodes;
     private boolean firstNode;
     private boolean lastNode;
     private String ip;
@@ -54,20 +55,12 @@ public class ChordNode {
         this.maxId = maxId;
     }
 
-    public String getIp() {
-        return ip;
+    public int getNumberOfNodes() {
+        return numberOfNodes;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
+    public void setNumberOfNodes(int numberOfNodes) {
+        this.numberOfNodes = numberOfNodes;
     }
 
     public boolean isFirstNode() {
@@ -84,6 +77,22 @@ public class ChordNode {
 
     public void setLastNode(boolean lastNode) {
         this.lastNode = lastNode;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 
     public String getIpNext() {
@@ -114,12 +123,17 @@ public class ChordNode {
         return portPrevious;
     }
 
+    public void setPortPrevious(int portPrevious) {
+        this.portPrevious = portPrevious;
+    }
+
     @Override
     public String toString() {
         return "ChordNode{" +
                 "\nnodeId=" + nodeId +
                 "\n, offSetId=" + offSetId +
                 "\n, maxId=" + maxId +
+                "\n, numberOfNodes=" + numberOfNodes +
                 "\n, ip='" + ip + '\'' +
                 "\n, port=" + port +
                 "\n, firstNode=" + firstNode +
