@@ -28,6 +28,7 @@ public class ChordConnector {
         node.setIp(ip);
         node.setPort(port);
         node.setMaxId(firstNode);
+        node.setNumberOfNodes(numberOfNodes);
         node.setOffSetId(offSetId);
         node.setFirstNode(true);
 
@@ -101,13 +102,14 @@ public class ChordConnector {
 
             return candidateNode;
         } else {
-            boolean lastNode = candidateNode.getNodeId() - 1 == 0l;
+            boolean lastNode = candidateNode.getNodeId() - 1 == 1l;
 
             ChordNode newCandidateNode = new ChordNode();
             newCandidateNode.setNodeId(candidateNode.getNodeId() - 1);
             newCandidateNode.setIp(ip);
             newCandidateNode.setPort(candidateNode.getPort() + jumpNextPort);// TODO diferenciar de nenhum serviço rodando na porta, de uma porta já ocupada, se porta estiver ocupada só incrementar a porta
             newCandidateNode.setMaxId(candidateNode.getMaxId());
+            newCandidateNode.setNumberOfNodes(numberOfNodes);
             newCandidateNode.setOffSetId(offSetId);
             newCandidateNode.setMaxId(firstNode);
             newCandidateNode.setNext(channelNodeFromNext);
