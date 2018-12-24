@@ -2,26 +2,18 @@ syntax = "proto3";
 option java_multiple_files = true;
 package br.ufu.sd.work.server.chord;
 
-message ChannelNode {
+import "google/protobuf/empty.proto";
+
+message DataNode {
     string ip = 1;
     int32 port = 2;
-}
-
-message ChordNode {
-    int64 nodeId = 1;
-    int64 minId = 2;
-    int64 maxId = 3;
-    int64 maxChordId = 4;
-    string ip = 5;
-    int32 port = 6;
-    bool firstNode = 7;
-    bool lastNode = 8;
-    ChannelNode nextNodeChannel = 9;
-    ChannelNode previousNodeChannel = 10;
+    bool lastNode = 3;
 }
 
 service ChordService {
-    rpc heyListen (ChordNode) returns (ChordNode);
+    rpc heyListen (google.protobuf.Empty) returns (DataNode);
 
-    rpc setPrevious (ChannelNode) returns (ChannelNode);
+    rpc setPrevious (DataNode) returns (google.protobuf.Empty);
+
+    rpc setFirstAndLastNode (DataNode) returns (DataNode);
 }

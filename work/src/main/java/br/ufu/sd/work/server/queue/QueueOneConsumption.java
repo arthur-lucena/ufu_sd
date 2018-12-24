@@ -3,7 +3,7 @@ package br.ufu.sd.work.server.queue;
 import br.ufu.sd.work.model.Dictionary;
 import br.ufu.sd.work.model.ResponseCommand;
 import br.ufu.sd.work.server.chord.ChordException;
-import br.ufu.sd.work.server.chord.ChordNodeWrapper;
+import br.ufu.sd.work.server.chord.ChordNode;
 import br.ufu.sd.work.server.commands.api.ICommand;
 import br.ufu.sd.work.server.log.LogManager;
 
@@ -22,21 +22,32 @@ public class QueueOneConsumption implements Runnable {
     private ResponseCommand responseCommand;
     private Dictionary dictionary;
     private LogManager logManager;
-    private static volatile ChordNodeWrapper node;
+    private volatile ChordNode node;
+    private long maxNodeId;
+    private long minNodeId;
 
     private volatile boolean running = true;
 
     private int delayCommand;
     private int delayLog;
+    private int numberOfNodes;
+    private int numberBitsId;
 
     public QueueOneConsumption(BlockingQueue<ResponseCommand> queueOne, Dictionary dictionary,
-                               LogManager logManager, ChordNodeWrapper node, int delayCommand, int delayLog) {
+                               LogManager logManager, ChordNode node, int delayCommand, int delayLog) {
         this.queueOne = queueOne;
         this.dictionary = dictionary;
         this.logManager = logManager;
         this.node = node;
         this.delayCommand = delayCommand;
         this.delayLog = delayLog;
+        this.numberOfNodes = numberOfNodes;
+        this.numberBitsId = numberBitsId;
+
+        this.maxNodeId = calcIdNode(node.getOffSetId(), node.getNodeId(), node.getMaxId(), node.getNumberOfNodes());
+        this.minNodeId = node.isLastNode() ? 0 : calcIdNode(node.getOffSetId(), node.getNodeId() - 1, node.getMaxId(), node.getNumberOfNodes());
+
+        System.out.println("maxNodeId:" + maxNodeId + ", minNodeId:" + minNodeId);
     }
 
     public void terminate() {
@@ -108,8 +119,8 @@ public class QueueOneConsumption implements Runnable {
         }
     }
 
-    private boolean isMyResponsibility(ChordNodeWrapper node, long id) throws ChordException {
-        if (id > node.getMaxChordId()) {
+    private boolean isMyResponsibility(ChordNode node, long id) throws ChordException {
+        if (id > node.getMaxId()) {
             throw new ChordException("Invalid ID, this ID surpass MAX capacity.");
         }
 
@@ -117,6 +128,17 @@ public class QueueOneConsumption implements Runnable {
             throw new ChordException("Invalid ID, can be below Zero.");
         }
 
-        return (node.getMinId() < id && id <= node.getMaxId()) || (id == 0 && node.isLastNode());
+        return (this.minNodeId < id && id <= this.maxNodeId) || (id == 0 && node.isLastNode());
+    }
+
+    private long calcIdNode(long offSet, long node, long maxId, long numberOfNodes) {
+        long count = numberOfNodes;
+
+        while (count > node) {
+            maxId = maxId - offSet;
+            count--;
+        }
+
+        return maxId;
     }
 }
