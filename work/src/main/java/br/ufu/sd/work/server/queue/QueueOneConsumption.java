@@ -30,6 +30,8 @@ public class QueueOneConsumption implements Runnable {
 
     private int delayCommand;
     private int delayLog;
+    private int numberOfNodes;
+    private int numberBitsId;
 
     public QueueOneConsumption(BlockingQueue<ResponseCommand> queueOne, Dictionary dictionary,
                                LogManager logManager, ChordNode node, int delayCommand, int delayLog) {
@@ -39,9 +41,13 @@ public class QueueOneConsumption implements Runnable {
         this.node = node;
         this.delayCommand = delayCommand;
         this.delayLog = delayLog;
+        this.numberOfNodes = numberOfNodes;
+        this.numberBitsId = numberBitsId;
 
-        this.maxNodeId = node.getOffSetId() * node.getNodeId();
-        this.minNodeId = node.getOffSetId() * (node.getNodeId() - 1);
+        this.maxNodeId = calcIdNode(node.getOffSetId(), node.getNodeId(), node.getMaxId(), node.getNumberOfNodes());
+        this.minNodeId = node.isLastNode() ? 0 : calcIdNode(node.getOffSetId(), node.getNodeId() - 1, node.getMaxId(), node.getNumberOfNodes());
+
+        System.out.println("maxNodeId:" + maxNodeId + ", minNodeId:" + minNodeId);
     }
 
     public void terminate() {
@@ -123,5 +129,16 @@ public class QueueOneConsumption implements Runnable {
         }
 
         return (this.minNodeId < id && id <= this.maxNodeId) || (id == 0 && node.isLastNode());
+    }
+
+    private long calcIdNode(long offSet, long node, long maxId, long numberOfNodes) {
+        long count = numberOfNodes;
+
+        while (count > node) {
+            maxId = maxId - offSet;
+            count--;
+        }
+
+        return maxId;
     }
 }

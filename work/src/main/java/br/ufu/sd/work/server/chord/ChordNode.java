@@ -1,7 +1,7 @@
 package br.ufu.sd.work.server.chord;
 
 public class ChordNode {
-    private long nodeId;
+    private int nodeId;
     private long offSetId;
     private long maxId;
     private int numberOfNodes;
@@ -31,11 +31,11 @@ public class ChordNode {
                 .build();
     }
 
-    public long getNodeId() {
+    public int getNodeId() {
         return nodeId;
     }
 
-    public void setNodeId(long nodeId) {
+    public void setNodeId(int nodeId) {
         this.nodeId = nodeId;
     }
 

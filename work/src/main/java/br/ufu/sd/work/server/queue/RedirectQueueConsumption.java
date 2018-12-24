@@ -20,15 +20,38 @@ public class RedirectQueueConsumption implements Runnable {
     private Client nextNode;
     private Client previousNode;
     private int delayCommand;
-    private int numberOfNodes;
-    private int numberBitsId)
+    private long firstNode;
+    private long offSetId;
+    private long[] mapIdNode;
 
-    public RedirectQueueConsumption(BlockingQueue<ResponseCommand> redirectQueue, ChordNode node, int delayCommand, int numberOfNodes, int numberBitsId)) {
+    public RedirectQueueConsumption(BlockingQueue<ResponseCommand> redirectQueue, ChordNode node, int delayCommand) {
         this.redirectQueue = redirectQueue;
         this.node = node;
         this.delayCommand = delayCommand;
-        this.numberOfNodes = numberOfNodes;
-        this.numberBitsId = numberBitsId;
+
+        this.firstNode = node.getMaxId();
+        this.offSetId = node.getOffSetId();
+
+        this.mapIdNode = new long[node.getNumberOfNodes()+1];
+
+        int count = node.getNumberOfNodes();
+
+        while (count > 0) {
+            mapIdNode[count] = firstNode;
+            firstNode = firstNode - offSetId;
+            count--;
+        }
+
+        count = node.getNumberOfNodes();
+        while (count >= 0) {
+            System.out.print(mapIdNode[count]);
+            count--;
+
+            if (count >= 0) {
+                System.out.print(":");
+            }
+        }
+        System.out.println();
     }
 
     public void terminate() {
@@ -51,11 +74,11 @@ public class RedirectQueueConsumption implements Runnable {
         try {
             Client clientRedirect;
 
-            if (nextNode == null && !node.isFirstNode()) {
+            if (nextNode == null) {
                 nextNode = new Client(node.getIpNext(), node.getPortNext());
             }
 
-            if (previousNode == null && !node.isLastNode()) {
+            if (previousNode == null) {
                 if (node.getIpPrevious() != null) {
                     previousNode = new Client(node.getIpPrevious(), node.getPortPrevious());
                 }
@@ -65,11 +88,11 @@ public class RedirectQueueConsumption implements Runnable {
 
             ICommand command = responseCommand.getCommand();
 
-            int clockwise = getPossibleRedirection(node, command.getIdRequest());
+            Boolean clockwise = getPossibleRedirection(node, command.getIdRequest());
 
             if (clockwise) {
                 clientRedirect = nextNode;
-            } else if (clockwise) {
+            } else {
                 clientRedirect = previousNode;
             }
 
@@ -77,7 +100,7 @@ public class RedirectQueueConsumption implements Runnable {
 
             clientRedirect.sendCommand(command.getRequest(), command.getTypeCommand(), sos);
 
-            logger.info("Command " + command.getTypeCommand() + " redirect : " + command.getRequest().toString());
+            logger.info("Command " + command.getTypeCommand() + " redirect to " + (clockwise ? "next" : "previous") + " node - " + command.getRequest().toString());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -91,13 +114,36 @@ public class RedirectQueueConsumption implements Runnable {
         }
     }
 
-    public static boolean getPossibleRedirection(ChordNode node, Long id) {
-        if (id <= node.getMinId() && !node.isLastNode()) {
-            return -1;
-        } else if (id > node.getMaxId()) {
-            return 1;
+    public boolean getPossibleRedirection(ChordNode node, long id) {
+        return minDistanceOnRing(node.getNodeId(), getDestNode(id), node.getNumberOfNodes());
+    }
+
+    private int getDestNode(long id) {
+        int curNode = node.getNumberOfNodes();
+        int prevNode = curNode - 1;
+
+        while (curNode >= 0) {
+            if ((mapIdNode[prevNode] < id && id <= mapIdNode[curNode]) || mapIdNode[prevNode] == 0) {
+                return curNode;
+            } else {
+                curNode--;
+                prevNode--;
+            }
+        }
+
+        return -1;
+    }
+
+    public static boolean minDistanceOnRing(int startNode, int destineNode, int ringCirc) {
+        int distance = startNode - destineNode;
+        boolean direction = distance >= 0;
+
+        distance = Math.abs(distance);
+
+        if (distance <= (ringCirc - distance)) {
+            return !direction;
         } else {
-            return 0;
+            return direction;
         }
     }
 }
