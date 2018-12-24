@@ -2,6 +2,7 @@ package br.ufu.sd.work.server.service;
 
 import br.ufu.sd.work.server.chord.ChordNode;
 import br.ufu.sd.work.server.chord.ChordServiceGrpc;
+import br.ufu.sd.work.server.chord.Cluster;
 import br.ufu.sd.work.server.chord.DataNode;
 import com.google.protobuf.Empty;
 import io.grpc.ManagedChannel;
@@ -17,8 +18,8 @@ public class ChordService extends ChordServiceGrpc.ChordServiceImplBase {
     }
 
     @Override
-    public void heyListen(Empty request, StreamObserver<DataNode> responseObserver) {
-        responseObserver.onNext(node.getDataNode());
+    public void heyListen(Empty request, StreamObserver<Cluster> responseObserver) {
+        responseObserver.onNext(node.getCluster());
         responseObserver.onCompleted();
     }
 

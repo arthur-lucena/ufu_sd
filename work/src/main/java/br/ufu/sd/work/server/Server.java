@@ -39,6 +39,7 @@ public class Server {
     private int jumpNextPort;
     private int numberOfNodes;
     private int numberBitsId;
+    private int machinesPerNode;
 
     private int delayCommand;
     private int delayLog;
@@ -59,7 +60,7 @@ public class Server {
     }
 
     private void connectionChord() throws ChordException {
-        ChordConnector chordConnector = new ChordConnector(this.ip, this.firstPort, this.jumpNextPort, this.numberOfNodes, this.numberBitsId);
+        ChordConnector chordConnector = new ChordConnector(this.ip, this.firstPort, this.jumpNextPort, this.numberOfNodes, this.numberBitsId, this.machinesPerNode);
         this.node = chordConnector.connect();
     }
 
@@ -127,6 +128,7 @@ public class Server {
         this.jumpNextPort = Integer.valueOf(props.getProperty("server.chord-node.jump-next-port"));
         this.numberOfNodes = Integer.valueOf(props.getProperty("server.chord-node.number-of-nodes"));
         this.numberBitsId = Integer.valueOf(props.getProperty("server.chord-node.number-of-bit-id"));
+        this.machinesPerNode = Integer.valueOf(props.getProperty("server.chord-node.machines-per-node"));
 
         this.delayCommand = Integer.valueOf(props.getProperty("server.queue.await-command"));
         this.delayLog = Integer.valueOf(props.getProperty("server.queue.await-log"));

@@ -11,8 +11,10 @@ public class ChordConnector {
     private long firstNode;
     private long offSetId;
     private int numberOfNodes;
+    private int machinesPerNode;
 
-    public ChordConnector(String ip, int port, int jumpNextPort, int numberOfNodes, int numberBitsId) {
+
+    public ChordConnector(String ip, int port, int jumpNextPort, int numberOfNodes, int numberBitsId, int machinesPerNode) {
         this.ip = ip;
         this.port = port;
         this.jumpNextPort = jumpNextPort;
@@ -20,6 +22,7 @@ public class ChordConnector {
         this.firstNode = (long) Math.pow(2, numberBitsId) - 1;
         this.offSetId = (long) Math.pow(2, numberBitsId) / numberOfNodes;
         this.numberOfNodes = numberOfNodes;
+        this.machinesPerNode = machinesPerNode;
     }
 
     public ChordNode connect() throws ChordException {
@@ -31,6 +34,15 @@ public class ChordConnector {
         node.setNumberOfNodes(numberOfNodes);
         node.setOffSetId(offSetId);
         node.setFirstNode(true);
+
+        // criar nó candidato
+        // tentar connectar na primeira porta
+            // se alguem responder
+                // verificar cluster está cheiro
+                    // se estiver cheio [1](criar um novo cluster e entrar no cluster criado)
+                    // se não estive cheio entrar no cluster e avisar os outros nós do cluster
+            // se ngm responder
+                // [1](criar um novo cluster e entrar no cluster criado)
 
         return tryConnectOnRing(node);
     }
@@ -47,11 +59,11 @@ public class ChordConnector {
         } catch (StatusRuntimeException e) {
             // TODO diferenciar de nenhum serviço rodando na porta, de uma porta já ocupada
             if (e.getStatus().getCode().equals(Status.Code.UNAVAILABLE)) {
-                System.out.println("não tem ngm");
+                System.out.println("no one in this port");
             }
 
             if (e.getStatus().getCode().equals(Status.Code.ALREADY_EXISTS) || e.getStatus().getCode().equals(Status.Code.UNIMPLEMENTED)) {
-                System.out.println("ocupada outro serviço ou outro servidor grpc");
+                System.out.println("another service running");
             }
         }
 
@@ -98,7 +110,7 @@ public class ChordConnector {
                 }
             }
 
-            System.out.println("EU SOU ----\n" + candidateNode.toString());
+            System.out.println("Node:\n" + candidateNode.toString());
 
             return candidateNode;
         } else {

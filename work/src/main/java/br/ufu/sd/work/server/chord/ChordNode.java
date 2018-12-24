@@ -2,33 +2,26 @@ package br.ufu.sd.work.server.chord;
 
 public class ChordNode {
     private int nodeId;
+    private int clusterId;
     private long offSetId;
     private long maxId;
     private int numberOfNodes;
     private boolean firstNode;
     private boolean lastNode;
-    private String ip;
-    private int port;
-    private String ipNext;
-    private int portNext;
-    private String ipPrevious;
-    private int portPrevious;
+    private Cluster cluster;
+    private Cluster nextCluster;
+    private Cluster previousCluster;
 
-    public void setNext(DataNode channelNode) {
-        this.ipNext = channelNode.getIp();
-        this.portNext = channelNode.getPort();
+    public void addNodeToCluster(DataNode node) {
+        cluster.toBuilder().addListDataNode(node);
     }
 
-    public void setPrevious(DataNode channelNode) {
-        this.ipPrevious = channelNode.getIp();
-        this.portPrevious = channelNode.getPort();
+    public void addNodeToNextCluster(DataNode node) {
+        nextCluster.toBuilder().addListDataNode(node);
     }
 
-    public DataNode getDataNode() {
-        return DataNode.newBuilder()
-                .setIp(this.ip)
-                .setPort(this.port)
-                .build();
+    public void addNodeToPreviousCluster(DataNode node) {
+        previousCluster.toBuilder().addListDataNode(node);
     }
 
     public int getNodeId() {
@@ -37,6 +30,14 @@ public class ChordNode {
 
     public void setNodeId(int nodeId) {
         this.nodeId = nodeId;
+    }
+
+    public int getClusterId() {
+        return clusterId;
+    }
+
+    public void setClusterId(int clusterId) {
+        this.clusterId = clusterId;
     }
 
     public long getOffSetId() {
@@ -79,69 +80,74 @@ public class ChordNode {
         this.lastNode = lastNode;
     }
 
-    public String getIp() {
-        return ip;
+    public Cluster getCluster() {
+        return cluster;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setCluster(Cluster cluster) {
+        this.cluster = cluster;
     }
 
-    public int getPort() {
-        return port;
+    public Cluster getNextCluster() {
+        return nextCluster;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setNextCluster(Cluster nextCluster) {
+        this.nextCluster = nextCluster;
     }
 
-    public String getIpNext() {
-        return ipNext;
+    public Cluster getPreviousCluster() {
+        return previousCluster;
     }
 
-    public void setIpNext(String ipNext) {
-        this.ipNext = ipNext;
-    }
-
-    public int getPortNext() {
-        return portNext;
-    }
-
-    public void setPortNext(int portNext) {
-        this.portNext = portNext;
-    }
-
-    public String getIpPrevious() {
-        return ipPrevious;
-    }
-
-    public void setIpPrevious(String ipPrevious) {
-        this.ipPrevious = ipPrevious;
-    }
-
-    public int getPortPrevious() {
-        return portPrevious;
-    }
-
-    public void setPortPrevious(int portPrevious) {
-        this.portPrevious = portPrevious;
+    public void setPreviousCluster(Cluster previousCluster) {
+        this.previousCluster = previousCluster;
     }
 
     @Override
     public String toString() {
-        return "ChordNode{" +
-                "\nnodeId=" + nodeId +
-                "\n, offSetId=" + offSetId +
-                "\n, maxId=" + maxId +
-                "\n, numberOfNodes=" + numberOfNodes +
-                "\n, ip='" + ip + '\'' +
-                "\n, port=" + port +
-                "\n, firstNode=" + firstNode +
-                "\n, lastNode=" + lastNode +
-                "\n, ipNext='" + ipNext + '\'' +
-                "\n, portNext=" + portNext +
-                "\n, ipPrevious='" + ipPrevious + '\'' +
-                "\n, portPrevious=" + portPrevious +
-                "\n}";
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("ChordNode{");
+        sb.append("\nnodeId=");
+        sb.append(nodeId);
+        sb.append("\noffSetId=");
+        sb.append(offSetId);
+        sb.append("\nmaxId=");
+        sb.append(maxId);
+        sb.append("\nnumberOfNodes=");
+        sb.append(numberOfNodes);
+        sb.append("\nfirstNode=");
+        sb.append(firstNode);
+        sb.append("\nlastNode=");
+        sb.append(lastNode);
+        sb.append("\ncluster=");
+        sb.append(listDataNodeToString(cluster));
+        sb.append("\nnextCluster=");
+        sb.append(listDataNodeToString(nextCluster));
+        sb.append("\npreviousCluster=");
+        sb.append(listDataNodeToString(previousCluster));
+        sb.append("\n}");
+        return sb.toString();
+    }
+
+    private String listDataNodeToString(Cluster cl) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("[");
+
+        for (DataNode dn : cl.getListDataNodeList()) {
+            sb.append("{\nip=");
+            sb.append(dn.getIp());
+            sb.append("\nport=");
+            sb.append(dn.getPort());
+            sb.append("\nlocal=");
+            sb.append(dn.getLocal());
+            sb.append("\n}");
+        }
+
+        sb.append("]");
+
+        return sb.toString();
     }
 }

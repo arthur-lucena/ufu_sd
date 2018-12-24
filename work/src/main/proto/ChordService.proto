@@ -7,13 +7,21 @@ import "google/protobuf/empty.proto";
 message DataNode {
     string ip = 1;
     int32 port = 2;
-    bool lastNode = 3;
+    bool local = 3;
+}
+
+message Cluster {
+    int32 idCluster = 1;
+    repeated DataNode listDataNode = 2;
+    bool lastCluster = 3;
 }
 
 service ChordService {
-    rpc heyListen (google.protobuf.Empty) returns (DataNode);
+    rpc heyListen (google.protobuf.Empty) returns (Cluster);
 
-    rpc setPrevious (DataNode) returns (google.protobuf.Empty);
+    rpc setClusterPrevious (Cluster) returns (google.protobuf.Empty);
 
-    rpc setFirstAndLastNode (DataNode) returns (DataNode);
+    rpc setFirstAndLastNode (Cluster) returns (Cluster);
+
+    rpc notifyClusterNode (DataNode) returns (Cluster);
 }
